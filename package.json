@@ -79,6 +79,7 @@
       "fancy-log": "~2.0",
       "glob": "~8.0",
       "istextorbinary": "~6.0",
+      "liquidjs": "~9.42",
       "slash": "~5.0"
    },
    "devDependencies": {
@@ -92,7 +93,6 @@
       "copy-file-util": "~0.1",
       "eslint": "~8.24",
       "jshint": "~2.13",
-      "liquidjs": "~9.42",
       "mocha": "~10.0",
       "npm-run-all2": "~6.0",
       "rev-web-assets": "~0.1",
