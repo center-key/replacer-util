@@ -1,0 +1,102 @@
+{
+   "name": "files-replace",
+   "version": "0.0.0",
+   "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)",
+   "license": "MIT",
+   "type": "module",
+   "module": "dist/files-replace.js",
+   "main": "dist/files-replace.umd.cjs",
+   "types": "dist/files-replace.d.ts",
+   "files": [
+      "dist"
+   ],
+   "exports": {
+      ".": {
+         "import": "./dist/files-replace.js",
+         "require": "./dist/files-replace.umd.cjs"
+      },
+      "./": "./dist/"
+   },
+   "bin": {
+      "files-replace": "bin/cli.js"
+   },
+   "repository": "github:center-key/files-replace",
+   "homepage": "https://github.com/center-key/files-replace",
+   "bugs": "https://github.com/center-key/files-replace/issues",
+   "docs": "https://github.com/center-key/files-replace#readme",
+   "author": "Center Key (https://centerkey.com)",
+   "keywords": [
+      "cli",
+      "files",
+      "recursive",
+      "replace",
+      "scripts",
+      "search",
+      "template"
+   ],
+   "jshintConfig": {
+      "esversion": 11,
+      "strict": "implied",
+      "eqeqeq": true,
+      "undef": true,
+      "unused": true,
+      "varstmt": true,
+      "node": true,
+      "mocha": true
+   },
+   "eslintConfig": {
+      "ignorePatterns": [
+         "build",
+         "dist",
+         "node_modules"
+      ],
+      "root": true,
+      "parser": "@typescript-eslint/parser",
+      "plugins": [
+         "@typescript-eslint"
+      ],
+      "extends": [
+         "eslint:recommended",
+         "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+         "@typescript-eslint/no-non-null-assertion": "off"
+      }
+   },
+   "scripts": {
+      "step:01": "rimraf build dist spec/fixtures/target **/.DS_Store",
+      "step:02": "jshint . --exclude-path .gitignore",
+      "step:03": "eslint --max-warnings 0 . --ext .ts",
+      "step:04": "tsc",
+      "step:05": "tsc --module UMD --outDir build/umd",
+      "step:06": "copy-file build/umd/files-replace.js build/files-replace.umd.cjs",
+      "step:07": "add-dist-header build dist",
+      "pretest": "npm-run-all step:*",
+      "test": "mocha spec/*.spec.js"
+   },
+   "dependencies": {
+      "chalk": "~5.1",
+      "fancy-log": "~2.0",
+      "glob": "~8.0",
+      "istextorbinary": "~6.0",
+      "slash": "~5.0"
+   },
+   "devDependencies": {
+      "@types/fancy-log": "~2.0",
+      "@types/glob": "~8.0",
+      "@types/node": "~18.8",
+      "@typescript-eslint/eslint-plugin": "~5.39",
+      "@typescript-eslint/parser": "~5.39",
+      "add-dist-header": "~0.3",
+      "assert-deep-strict-equal": "~1.0",
+      "copy-file-util": "~0.1",
+      "eslint": "~8.24",
+      "jshint": "~2.13",
+      "liquidjs": "~9.42",
+      "mocha": "~10.0",
+      "npm-run-all2": "~6.0",
+      "rev-web-assets": "~0.1",
+      "rimraf": "~3.0",
+      "typescript": "~4.8"
+   }
+}
