@@ -1,2 +1,2 @@
 /*! files-replace ~~ MIT License */
-h1.📂📂📂 { border: 2px solid firebrick; }
+h1.{{pkg.name}} { border: 2px solid firebrick; }

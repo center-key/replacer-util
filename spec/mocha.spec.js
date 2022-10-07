@@ -3,6 +3,7 @@
 
 // Imports
 import { assertDeepStrictEqual } from 'assert-deep-strict-equal';
+import { revWebAssets } from 'rev-web-assets';
 import assert from 'assert';
 import fs from     'fs';
 
@@ -36,6 +37,29 @@ describe('Library module', () => {
    it('has a transform() function', () => {
       const actual =   { validate: typeof filesReplace.transform };
       const expected = { validate: 'function' };
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('Calling filesReplace.transform()', () => {
+
+   it('creates the correct text files in the target folder', () => {
+      const options = {
+         cd:  'spec/fixtures',
+         pkg: true,
+         };
+      filesReplace.transform('source', 'target', options);
+      const actual = revWebAssets.readFolderRecursive('spec/fixtures/target');
+      const expected = [
+         'spec/fixtures/target/mock1.html',
+         'spec/fixtures/target/mock1.js',
+         'spec/fixtures/target/mock1.min.css',
+         'spec/fixtures/target/subfolder/mock2.html',
+         'spec/fixtures/target/subfolder/mock2.js',
+         'spec/fixtures/target/subfolder/mock2.min.css',
+         ];
       assertDeepStrictEqual(actual, expected);
       });
 

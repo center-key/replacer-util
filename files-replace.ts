@@ -8,11 +8,11 @@ import path  from 'path';
 import slash from 'slash';
 
 export type Settings = {
-   cd:             string,         //change working directory before starting copy
-   fileExtensions: string[],       //filter files by file extensions, example: ['.js', '.css']
-   find:           string | null,  //text to search for in the source input files
-   replacement:    string | null,  //text to insert into the target output files
-   usePackageJson: false,          //load package.json and make it available as "pkg"
+   cd:          string,         //change working directory before starting copy
+   extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
+   find:        string | null,  //text to search for in the source input files
+   replacement: string | null,  //text to insert into the target output files
+   pkg:         false,          //load package.json and make it available as "pkg"
    };
 export type Options = Partial<Settings>;
 export type Results = {
@@ -40,10 +40,10 @@ const filesReplace = {
    transform(sourceFolder: string, targetFolder: string, options?: Options): Results {
       const defaults = {
          cd:             null,
-         fileExtensions: [],
+         extensions: [],
          find:           null,
          replacement:    null,
-         usePackageJson: false,
+         pkg: false,
          };
       const settings = { ...defaults, ...options };
       const startTime = Date.now();
@@ -64,18 +64,18 @@ const filesReplace = {
          null;
       if (errorMessage)
          throw Error('[files-replace] ' + errorMessage);
-      const extFiles =   settings.fileExtensions.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
-      const inputFiles = settings.fileExtensions.length ? extFiles : glob.sync(source + '/**/*');
-      const textFiles =  inputFiles.filter(util.isTextFile).map(file => slash(file));
-      const files = textFiles.map(
-         file => ({ origin: file, dest: target + '/' + file.substring(source.length + 1) }));
+      const resultsFile = (file: string) =>
+         ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
+      const extFiles = settings.extensions.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
+      const origins =  settings.extensions.length ? extFiles : glob.sync(source + '/**/*');
+      const files =    origins.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
       const engine = new Liquid();
-      const pkg = settings.usePackageJson ? util.readPackageJson() : null;
+      const pkg = settings.pkg ? util.readPackageJson() : null;
       const processFile = (file: ResultsFile) => {
-         const value = settings.replacement ?? '';
-         const text =  fs.readFileSync(file.origin, 'utf-8');
-         const text2 = settings.find ? text.replaceAll(settings.find, value) : text;
-         const final = settings.usePackageJson ? engine.parseAndRenderSync(text2, { pkg }) : text2;
+         const newStr =  settings.replacement ?? '';
+         const text =    fs.readFileSync(file.origin, 'utf-8');
+         const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
+         const final =   settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          fs.writeFileSync(file.dest, final);
          };

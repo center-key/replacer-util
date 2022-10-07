@@ -7,7 +7,7 @@
 // Usage in package.json:
 //    "scripts": {
 //       "make-web": "files-replace src/web dist/website --pkg
-//       "make-poetry": "files-replace poems dystopian-poems --find=humans --replacement=robots
+//       "the-end": "files-replace poems dystopian-poems --find=humans --replacement=robots
 //    },
 //
 // Usage from command line:
@@ -18,7 +18,7 @@
 //    $ cd files-replace
 //    $ npm install
 //    $ npm test
-//    $ node bin/cli.js --cd=spec/fixtures source target --pkg
+//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.
 
 // Imports
 import { filesReplace } from '../dist/files-replace.js';
@@ -62,11 +62,11 @@ const error =
 if (error)
    throw Error('[files-replace] ' + error);
 const options = {
-   cd:             flagMap.cd ?? null,
-   fileExtensions: flagMap.ext?.split(',') ?? [],
-   find:           flagMap.find ?? null,
-   replacement:    flagMap.replacement ?? null,
-   usePackageJson: flagOn.pkg,
+   cd:          flagMap.cd ?? null,
+   extensions:  flagMap.ext?.split(',') ?? [],
+   find:        flagMap.find ?? null,
+   replacement: flagMap.replacement ?? null,
+   pkg:         flagOn.pkg,
    };
 const results = filesReplace.transform(source, target, options);
 if (!flagOn.quiet)

@@ -2,10 +2,15 @@
 <html lang=en>
    <head>
       <meta charset=utf-8>
-      <title>📂📂📂 files-replace 📂📂📂</title>
+      <title>🔍🔍🔍 {{pkg.name}} 🔍🔍🔍</title>
+      <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json}}/dist/pretty-print-json.css>
+      <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json}}/dist/pretty-print-json.min.js></script>
+      <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.devDependencies.fetch-json}}/dist/fetch-json.min.js></script>
    </head>
    <body>
-      <h1>📂📂📂 files-replace 📂📂📂</h1>
-      <h2>Recursively copy a folder (CLI tool designed for use in npm scripts)</h2>
+      <h1>🔍🔍🔍 {{pkg.name}} v{{pkg.version}} 🔍🔍🔍</h1>
+      <h2>{{pkg.description}}</h2>
+      <p>I, for one, welcome our new insect overlords.</p>
+      </p>
    </body>
 </html>
