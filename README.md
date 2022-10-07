@@ -49,8 +49,7 @@ Command-line flags:
 | --------------- | ----------------------------------------------------- | ---------- |
 | `--cd`          | Change working directory before starting search.      | **string** |
 | `--find`        | Text to search for in the source input files.         | **string** |
-| `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify
-multiple extensions. | **string** |
+| `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--quiet`       | Suppress informational messages.                      | N/A        |
 | `--replacement` | Text to insert into the target output files.          | **string** |
@@ -59,7 +58,7 @@ multiple extensions. | **string** |
 Examples:
    - `files-replace src build --pkg`           &nbsp; Recursively copy all the files in the src folder to the build folder using the data in **package.json** to update the template outputs.
    - `files-replace src build --pkg --summary` &nbsp; Displays the summary but not the individual files copied.
-   - `files-replace --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.` &nbsp; Transforms [mock1.html](spec/fixtures/source/mock1.html) into [mock1.html](spec/fixtures/target/mock1.html)
+   - `files-replace --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.` &nbsp; Transforms [mock1.html](spec/fixtures/source/mock1.html) into [mock1.html](spec/fixtures/target/mock1.html).
 
 ## C) Application Code
 Even though **files-replace** is primarily intended for build scripts, the package can easily be used programmatically in ESM and TypeScript projects.
