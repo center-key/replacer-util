@@ -23,7 +23,9 @@
 // Imports
 import { filesReplace } from '../dist/files-replace.js';
 import chalk from 'chalk';
+import fs    from 'fs';
 import log   from 'fancy-log';
+import path  from 'path';
 
 // Parameters
 const validFlags =  ['cd', 'find', 'ext', 'pkg', 'quiet', 'replacement', 'summary'];
@@ -35,8 +37,8 @@ const invalidFlag = Object.keys(flagMap).find(key => !validFlags.includes(key));
 const params =      args.filter(arg => !/^--/.test(arg));
 
 // Data
-const source = params[0];
-const target = params[1];
+const source = params[0];  //origin file or folder
+const target = params[1];  //destination folder
 
 // Reporting
 const printReport = (results) => {
@@ -61,13 +63,17 @@ const error =
    null;
 if (error)
    throw Error('[files-replace] ' + error);
+const sourceFile =   path.join(flagMap.cd ?? '', source);
+const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
+const sourceFolder = isFile ? path.dirname(source) : source;
 const options = {
    cd:          flagMap.cd ?? null,
    extensions:  flagMap.ext?.split(',') ?? [],
+   filename:    isFile ? path.basename(source) : null,
    find:        flagMap.find ?? null,
    replacement: flagMap.replacement ?? null,
    pkg:         flagOn.pkg,
    };
-const results = filesReplace.transform(source, target, options);
+const results = filesReplace.transform(sourceFolder, target, options);
 if (!flagOn.quiet)
    printReport(results);

@@ -10,6 +10,7 @@ import slash from 'slash';
 export type Settings = {
    cd:          string,         //change working directory before starting copy
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
+   filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
    replacement: string | null,  //text to insert into the target output files
    pkg:         false,          //load package.json and make it available as "pkg"
@@ -66,9 +67,10 @@ const filesReplace = {
          throw Error('[files-replace] ' + errorMessage);
       const resultsFile = (file: string) =>
          ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
-      const extFiles = settings.extensions.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
-      const origins =  settings.extensions.length ? extFiles : glob.sync(source + '/**/*');
-      const files =    origins.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
+      const exts =      settings.extensions.length ? settings.extensions : [''];
+      const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
+      const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
+      const files =     filesRaw.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
       const engine = new Liquid();
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');

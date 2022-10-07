@@ -3,7 +3,7 @@
 const info = {
    banner:      '🔍🔍🔍 files-replace v0.0.2 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)',
-   list:        'insect, insect, insect',
+   list:        'A.I., A.I., A.I.',
    };
 
 export { info };

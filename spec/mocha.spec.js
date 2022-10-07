@@ -47,8 +47,10 @@ describe('Calling filesReplace.transform()', () => {
 
    it('creates the correct text files in the target folder', () => {
       const options = {
-         cd:  'spec/fixtures',
-         pkg: true,
+         cd:          'spec/fixtures',
+         pkg:         true,
+         find:        'insect',
+         replacement: 'A.I.',
          };
       filesReplace.transform('source', 'target', options);
       const actual = revWebAssets.readFolderRecursive('spec/fixtures/target');
