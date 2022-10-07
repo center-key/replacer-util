@@ -3,14 +3,19 @@
    <head>
       <meta charset=utf-8>
       <title>🔍🔍🔍 {{pkg.name}} 🔍🔍🔍</title>
-      <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json}}/dist/pretty-print-json.css>
-      <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json}}/dist/pretty-print-json.min.js></script>
-      <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.devDependencies.fetch-json}}/dist/fetch-json.min.js></script>
+      <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json|version}}/dist/pretty-print-json.css>
+      <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json|version}}/dist/pretty-print-json.min.js></script>
+      <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.devDependencies.fetch-json|version}}/dist/fetch-json.min.js></script>
    </head>
    <body>
-      <h1>🔍🔍🔍 {{pkg.name}} v{{pkg.version}} 🔍🔍🔍</h1>
+      <h1>🔍🔍🔍 {{pkg.name}} 🔍🔍🔍</h1>
       <h2>{{pkg.description}}</h2>
       <p>I, for one, welcome our new insect overlords.</p>
+      <ul>
+         <li>Release: v{{pkg.version | version}}</li>
+         <li>Minor:   v{{pkg.version | version-minor}}</li>
+         <li>Major:   v{{pkg.version | version-major}}</li>
+      </ul>
       </p>
    </body>
 </html>

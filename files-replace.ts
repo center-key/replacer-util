@@ -70,6 +70,11 @@ const filesReplace = {
       const origins =  settings.extensions.length ? extFiles : glob.sync(source + '/**/*');
       const files =    origins.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
       const engine = new Liquid();
+      const versionFormatter = (numIds: number) =>
+         (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
+      engine.registerFilter('version',       versionFormatter(3));
+      engine.registerFilter('version-minor', versionFormatter(2));
+      engine.registerFilter('version-major', versionFormatter(1));
       const pkg = settings.pkg ? util.readPackageJson() : null;
       const processFile = (file: ResultsFile) => {
          const newStr =  settings.replacement ?? '';
