@@ -1,4 +1,4 @@
-//! files-replace v0.0.2 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.0.3 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -21,10 +21,10 @@ const filesReplace = {
     transform(sourceFolder, targetFolder, options) {
         const defaults = {
             cd: null,
-            fileExtensions: [],
+            extensions: [],
             find: null,
             replacement: null,
-            usePackageJson: false,
+            pkg: false,
         };
         const settings = { ...defaults, ...options };
         const startTime = Date.now();
@@ -44,17 +44,22 @@ const filesReplace = {
                                     null;
         if (errorMessage)
             throw Error('[files-replace] ' + errorMessage);
-        const extFiles = settings.fileExtensions.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
-        const inputFiles = settings.fileExtensions.length ? extFiles : glob.sync(source + '/**/*');
-        const textFiles = inputFiles.filter(util.isTextFile).map(file => slash(file));
-        const files = textFiles.map(file => ({ origin: file, dest: target + '/' + file.substring(source.length + 1) }));
+        const resultsFile = (file) => ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
+        const exts = settings.extensions.length ? settings.extensions : [''];
+        const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
+        const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
+        const files = filesRaw.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
         const engine = new Liquid();
-        const pkg = settings.usePackageJson ? util.readPackageJson() : null;
+        const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
+        engine.registerFilter('version', versionFormatter(3));
+        engine.registerFilter('version-minor', versionFormatter(2));
+        engine.registerFilter('version-major', versionFormatter(1));
+        const pkg = settings.pkg ? util.readPackageJson() : null;
         const processFile = (file) => {
-            const value = settings.replacement ?? '';
+            const newStr = settings.replacement ?? '';
             const text = fs.readFileSync(file.origin, 'utf-8');
-            const text2 = settings.find ? text.replaceAll(settings.find, value) : text;
-            const final = settings.usePackageJson ? engine.parseAndRenderSync(text2, { pkg }) : text2;
+            const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
+            const final = settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             fs.writeFileSync(file.dest, final);
         };

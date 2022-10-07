@@ -6,8 +6,8 @@
 
 // Usage in package.json:
 //    "scripts": {
-//       "make-web": "files-replace src/web dist/website --pkg
-//       "the-end": "files-replace poems dystopian-poems --find=humans --replacement=robots
+//       "build-web": "files-replace src/web --ext=.html dist/website --pkg",
+//       "poetry": "files-replace poems dystopian-poems --find=humans --replacement=robots"
 //    },
 //
 // Usage from command line:

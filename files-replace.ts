@@ -8,7 +8,7 @@ import path  from 'path';
 import slash from 'slash';
 
 export type Settings = {
-   cd:          string,         //change working directory before starting copy
+   cd:          string,         //change working directory before starting search
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
