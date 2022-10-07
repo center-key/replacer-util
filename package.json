@@ -72,7 +72,8 @@
       "step:06": "copy-file build/umd/files-replace.js build/files-replace.umd.cjs",
       "step:07": "add-dist-header build dist",
       "pretest": "npm-run-all step:*",
-      "test": "mocha spec/*.spec.js"
+      "test": "mocha spec/*.spec.js",
+      "posttest": "html-validator spec/fixtures/target"
    },
    "dependencies": {
       "chalk": "~5.1",
@@ -99,6 +100,7 @@
       "pretty-print-json": "~1.3",
       "rev-web-assets": "~0.1",
       "rimraf": "~3.0",
-      "typescript": "~4.8"
+      "typescript": "~4.8",
+      "w3c-html-validator": "~1.1"
    }
 }
