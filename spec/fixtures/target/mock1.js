@@ -1,4 +1,5 @@
 //! files-replace ~~ MIT License
+// File: mock1.js
 
 const info = {
    banner:      '🔍🔍🔍 files-replace v0.0.3 🔍🔍🔍',

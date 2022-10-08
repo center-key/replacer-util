@@ -48,6 +48,7 @@ Command-line flags:
 | Flag            | Description                                           | Value      |
 | --------------- | ----------------------------------------------------- | ---------- |
 | `--cd`          | Change working directory before starting search.      | **string** |
+| `--concat`      | Merge all files into one file in the target folder.   | **string** |
 | `--find`        | Text to search for in the source input files.         | **string** |
 | `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
@@ -57,6 +58,7 @@ Command-line flags:
 
 Examples:
    - `files-replace src build --pkg`           &nbsp; Recursively copy all the files in the src folder to the build folder using the data in **package.json** to update the template outputs.
+   - `files-replace src --ext=.js build --pkg --concat=bundle.js` &nbsp; Merge all JS files into **build/bundle.js**.
    - `files-replace src build --pkg --summary` &nbsp; Displays the summary but not the individual files copied.
    - `files-replace --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.` &nbsp; Transforms [mock1.html](spec/fixtures/source/mock1.html) into [mock1.html](spec/fixtures/target/mock1.html).
 

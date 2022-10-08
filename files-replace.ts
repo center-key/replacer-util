@@ -9,6 +9,7 @@ import slash from 'slash';
 
 export type Settings = {
    cd:          string,         //change working directory before starting search
+   concat:      string | null,  //merge all files into one file in the target folder
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
@@ -40,17 +41,19 @@ const util = {
 const filesReplace = {
    transform(sourceFolder: string, targetFolder: string, options?: Options): Results {
       const defaults = {
-         cd:             null,
-         extensions: [],
-         find:           null,
-         replacement:    null,
-         pkg: false,
+         cd:          null,
+         concat:      null,
+         extensions:  [],
+         find:        null,
+         replacement: null,
+         pkg:         false,
          };
       const settings = { ...defaults, ...options };
       const startTime = Date.now();
       const startFolder = settings.cd ? util.normalizeFolder(settings.cd) + '/' : '';
       const source =      util.normalizeFolder(startFolder + sourceFolder);
       const target =      util.normalizeFolder(startFolder + targetFolder);
+      const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
       const missingFind = !settings.find && !!settings.replacement;
       if (targetFolder)
          fs.mkdirSync(target, { recursive: true });
@@ -65,8 +68,10 @@ const filesReplace = {
          null;
       if (errorMessage)
          throw Error('[files-replace] ' + errorMessage);
-      const resultsFile = (file: string) =>
-         ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
+      const resultsFile = (file: string) =>({
+         origin: file,
+         dest:   concatFile ?? target + '/' + file.substring(source.length + 1),
+         });
       const exts =      settings.extensions.length ? settings.extensions : [''];
       const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
       const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
@@ -78,13 +83,16 @@ const filesReplace = {
       engine.registerFilter('version-minor', versionFormatter(2));
       engine.registerFilter('version-major', versionFormatter(1));
       const pkg = settings.pkg ? util.readPackageJson() : null;
-      const processFile = (file: ResultsFile) => {
+      const processFile = (file: ResultsFile, index: number) => {
          const newStr =  settings.replacement ?? '';
          const text =    fs.readFileSync(file.origin, 'utf-8');
          const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
          const final =   settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
-         fs.writeFileSync(file.dest, final);
+         if (settings.concat && index > 0)
+            fs.appendFileSync(file.dest, final);
+         else
+            fs.writeFileSync(file.dest, final);
          };
       files.map(processFile);
       const relativePaths = (file: ResultsFile) => ({
