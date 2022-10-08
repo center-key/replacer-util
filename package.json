@@ -1,6 +1,6 @@
 {
    "name": "files-replace",
-   "version": "0.0.3",
+   "version": "0.1.0",
    "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)",
    "license": "MIT",
    "type": "module",
@@ -92,7 +92,7 @@
       "add-dist-header": "~0.3",
       "assert-deep-strict-equal": "~1.0",
       "copy-file-util": "~0.1",
-      "eslint": "~8.24",
+      "eslint": "~8.25",
       "fetch-json": "~2.6",
       "jshint": "~2.13",
       "mocha": "~10.0",

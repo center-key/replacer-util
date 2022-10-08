@@ -1,4 +1,4 @@
-//! files-replace v0.0.3 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.0 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -21,6 +21,7 @@ const filesReplace = {
     transform(sourceFolder, targetFolder, options) {
         const defaults = {
             cd: null,
+            concat: null,
             extensions: [],
             find: null,
             replacement: null,
@@ -31,6 +32,7 @@ const filesReplace = {
         const startFolder = settings.cd ? util.normalizeFolder(settings.cd) + '/' : '';
         const source = util.normalizeFolder(startFolder + sourceFolder);
         const target = util.normalizeFolder(startFolder + targetFolder);
+        const concatFile = settings.concat ? path.join(target, settings.concat) : null;
         const missingFind = !settings.find && !!settings.replacement;
         if (targetFolder)
             fs.mkdirSync(target, { recursive: true });
@@ -44,7 +46,10 @@ const filesReplace = {
                                     null;
         if (errorMessage)
             throw Error('[files-replace] ' + errorMessage);
-        const resultsFile = (file) => ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
+        const resultsFile = (file) => ({
+            origin: file,
+            dest: concatFile ?? target + '/' + file.substring(source.length + 1),
+        });
         const exts = settings.extensions.length ? settings.extensions : [''];
         const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
         const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
@@ -55,13 +60,16 @@ const filesReplace = {
         engine.registerFilter('version-minor', versionFormatter(2));
         engine.registerFilter('version-major', versionFormatter(1));
         const pkg = settings.pkg ? util.readPackageJson() : null;
-        const processFile = (file) => {
+        const processFile = (file, index) => {
             const newStr = settings.replacement ?? '';
             const text = fs.readFileSync(file.origin, 'utf-8');
             const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
             const final = settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
-            fs.writeFileSync(file.dest, final);
+            if (settings.concat && index > 0)
+                fs.appendFileSync(file.dest, final);
+            else
+                fs.writeFileSync(file.dest, final);
         };
         files.map(processFile);
         const relativePaths = (file) => ({

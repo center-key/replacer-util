@@ -1,4 +1,4 @@
-//! files-replace v0.0.3 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.0 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         transform(sourceFolder, targetFolder, options) {
             const defaults = {
                 cd: null,
+                concat: null,
                 extensions: [],
                 find: null,
                 replacement: null,
@@ -46,6 +47,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const startFolder = settings.cd ? util.normalizeFolder(settings.cd) + '/' : '';
             const source = util.normalizeFolder(startFolder + sourceFolder);
             const target = util.normalizeFolder(startFolder + targetFolder);
+            const concatFile = settings.concat ? path_1.default.join(target, settings.concat) : null;
             const missingFind = !settings.find && !!settings.replacement;
             if (targetFolder)
                 fs_1.default.mkdirSync(target, { recursive: true });
@@ -59,7 +61,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         null;
             if (errorMessage)
                 throw Error('[files-replace] ' + errorMessage);
-            const resultsFile = (file) => ({ origin: file, dest: target + '/' + file.substring(source.length + 1) });
+            const resultsFile = (file) => ({
+                origin: file,
+                dest: concatFile ?? target + '/' + file.substring(source.length + 1),
+            });
             const exts = settings.extensions.length ? settings.extensions : [''];
             const globFiles = () => exts.map(ext => glob_1.default.sync(source + '/**/*' + ext)).flat().sort();
             const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
@@ -70,13 +75,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             engine.registerFilter('version-minor', versionFormatter(2));
             engine.registerFilter('version-major', versionFormatter(1));
             const pkg = settings.pkg ? util.readPackageJson() : null;
-            const processFile = (file) => {
+            const processFile = (file, index) => {
                 const newStr = settings.replacement ?? '';
                 const text = fs_1.default.readFileSync(file.origin, 'utf-8');
                 const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
                 const final = settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
                 fs_1.default.mkdirSync(path_1.default.dirname(file.dest), { recursive: true });
-                fs_1.default.writeFileSync(file.dest, final);
+                if (settings.concat && index > 0)
+                    fs_1.default.appendFileSync(file.dest, final);
+                else
+                    fs_1.default.writeFileSync(file.dest, final);
             };
             files.map(processFile);
             const relativePaths = (file) => ({
