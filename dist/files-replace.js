@@ -1,4 +1,4 @@
-//! files-replace v0.1.0 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.1 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -24,6 +24,7 @@ const filesReplace = {
             concat: null,
             extensions: [],
             find: null,
+            regex: null,
             replacement: null,
             pkg: false,
         };
@@ -33,7 +34,7 @@ const filesReplace = {
         const source = util.normalizeFolder(startFolder + sourceFolder);
         const target = util.normalizeFolder(startFolder + targetFolder);
         const concatFile = settings.concat ? path.join(target, settings.concat) : null;
-        const missingFind = !settings.find && !!settings.replacement;
+        const missingFind = !settings.find && !settings.regex && !!settings.replacement;
         if (targetFolder)
             fs.mkdirSync(target, { recursive: true });
         const errorMessage = !sourceFolder ? 'Must specify the source folder path.' :
@@ -42,7 +43,7 @@ const filesReplace = {
                     !fs.existsSync(target) ? 'Target folder cannot be created: ' + target :
                         !fs.statSync(source).isDirectory() ? 'Source is not a folder: ' + source :
                             !fs.statSync(target).isDirectory() ? 'Target is not a folder: ' + target :
-                                missingFind ? 'Must specify search text with --find' :
+                                missingFind ? 'Must specify search text with --find or --regex' :
                                     null;
         if (errorMessage)
             throw Error('[files-replace] ' + errorMessage);
@@ -61,10 +62,11 @@ const filesReplace = {
         engine.registerFilter('version-major', versionFormatter(1));
         const pkg = settings.pkg ? util.readPackageJson() : null;
         const processFile = (file, index) => {
+            const content = fs.readFileSync(file.origin, 'utf-8');
             const newStr = settings.replacement ?? '';
-            const text = fs.readFileSync(file.origin, 'utf-8');
-            const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
-            const final = settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
+            const out1 = settings.find ? content.replaceAll(settings.find, newStr) : content;
+            const out2 = settings.regex ? out1.replace(settings.regex, newStr) : out1;
+            const final = settings.pkg ? engine.parseAndRenderSync(out2, { pkg }) : out2;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             if (settings.concat && index > 0)
                 fs.appendFileSync(file.dest, final);

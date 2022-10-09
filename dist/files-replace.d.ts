@@ -1,4 +1,4 @@
-//! files-replace v0.1.0 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.1 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 export declare type Settings = {
     cd: string;
@@ -6,6 +6,7 @@ export declare type Settings = {
     extensions: string[];
     filename: string | null;
     find: string | null;
+    regex: RegExp | null;
     replacement: string | null;
     pkg: false;
 };

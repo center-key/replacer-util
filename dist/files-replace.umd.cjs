@@ -1,4 +1,4 @@
-//! files-replace v0.1.0 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.1 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 concat: null,
                 extensions: [],
                 find: null,
+                regex: null,
                 replacement: null,
                 pkg: false,
             };
@@ -48,7 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const source = util.normalizeFolder(startFolder + sourceFolder);
             const target = util.normalizeFolder(startFolder + targetFolder);
             const concatFile = settings.concat ? path_1.default.join(target, settings.concat) : null;
-            const missingFind = !settings.find && !!settings.replacement;
+            const missingFind = !settings.find && !settings.regex && !!settings.replacement;
             if (targetFolder)
                 fs_1.default.mkdirSync(target, { recursive: true });
             const errorMessage = !sourceFolder ? 'Must specify the source folder path.' :
@@ -57,7 +58,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         !fs_1.default.existsSync(target) ? 'Target folder cannot be created: ' + target :
                             !fs_1.default.statSync(source).isDirectory() ? 'Source is not a folder: ' + source :
                                 !fs_1.default.statSync(target).isDirectory() ? 'Target is not a folder: ' + target :
-                                    missingFind ? 'Must specify search text with --find' :
+                                    missingFind ? 'Must specify search text with --find or --regex' :
                                         null;
             if (errorMessage)
                 throw Error('[files-replace] ' + errorMessage);
@@ -76,10 +77,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             engine.registerFilter('version-major', versionFormatter(1));
             const pkg = settings.pkg ? util.readPackageJson() : null;
             const processFile = (file, index) => {
+                const content = fs_1.default.readFileSync(file.origin, 'utf-8');
                 const newStr = settings.replacement ?? '';
-                const text = fs_1.default.readFileSync(file.origin, 'utf-8');
-                const updated = settings.find ? text.replaceAll(settings.find, newStr) : text;
-                const final = settings.pkg ? engine.parseAndRenderSync(updated, { pkg }) : updated;
+                const out1 = settings.find ? content.replaceAll(settings.find, newStr) : content;
+                const out2 = settings.regex ? out1.replace(settings.regex, newStr) : out1;
+                const final = settings.pkg ? engine.parseAndRenderSync(out2, { pkg }) : out2;
                 fs_1.default.mkdirSync(path_1.default.dirname(file.dest), { recursive: true });
                 if (settings.concat && index > 0)
                     fs_1.default.appendFileSync(file.dest, final);
