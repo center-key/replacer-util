@@ -1,4 +1,4 @@
-//! files-replace v0.1.1 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.2 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 export declare type Settings = {
     cd: string;

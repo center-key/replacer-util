@@ -1,4 +1,4 @@
-//! files-replace v0.1.1 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.2 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -58,8 +58,8 @@ const filesReplace = {
         const engine = new Liquid();
         const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
         engine.registerFilter('version', versionFormatter(3));
-        engine.registerFilter('version-minor', versionFormatter(2));
-        engine.registerFilter('version-major', versionFormatter(1));
+        engine.registerFilter('minor-version', versionFormatter(2));
+        engine.registerFilter('major-version', versionFormatter(1));
         const pkg = settings.pkg ? util.readPackageJson() : null;
         const processFile = (file, index) => {
             const content = fs.readFileSync(file.origin, 'utf-8');
