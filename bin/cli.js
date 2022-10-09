@@ -13,6 +13,7 @@
 // Usage from command line:
 //    $ npm install --global files-replace
 //    $ files-replace src/web --ext=.html docs --pkg --quiet
+//    $ files-replace src --ext=.js build --regex=/^let/gm --replacement=const
 //
 // Contributors to this project:
 //    $ cd files-replace
@@ -28,7 +29,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters
-const validFlags =  ['cd', 'concat', 'find', 'ext', 'pkg', 'quiet', 'replacement', 'summary'];
+const validFlags =  ['cd', 'concat', 'find', 'ext', 'pkg', 'quiet', 'regex', 'replacement', 'summary'];
 const args =        process.argv.slice(2);
 const flags =       args.filter(arg => /^--/.test(arg));
 const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
@@ -66,12 +67,15 @@ if (error)
 const sourceFile =   path.join(flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
+const pattern =      flagMap.regex?.replace(/(^\/)|(\/[a-z]*$)/g, '');        //remove enclosing slashes
+const patternCodes = flagMap.regex?.replace(/(.*\/[^a-z]*)|(^[^//].*)/, '');  //regex options
 const options = {
    cd:          flagMap.cd ?? null,
    concat:      flagMap.concat ?? null,
    extensions:  flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
    find:        flagMap.find ?? null,
+   regex:       flagMap.regex ? new RegExp(pattern, patternCodes) : null,
    replacement: flagMap.replacement ?? null,
    pkg:         flagOn.pkg,
    };

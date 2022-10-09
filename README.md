@@ -1,7 +1,7 @@
 # files-replace
 <img src=https://centerkey.com/graphics/center-key-logo.svg align=right width=200 alt=logo>
 
-_Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)_
+_Find and replace strings, regex patterns, or template outputs in text files (CLI tool designed for use in npm scripts)_
 
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/files-replace/blob/main/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/files-replace.svg)](https://www.npmjs.com/package/files-replace)
@@ -53,6 +53,7 @@ Command-line flags:
 | `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--quiet`       | Suppress informational messages.                      | N/A        |
+| `--regex`       | Pattern to search for in the source input files.      | **string** |
 | `--replacement` | Text to insert into the target output files.          | **string** |
 | `--summary`     | Only print out the single line summary message.       | N/A        |
 
@@ -60,6 +61,7 @@ Examples:
    - `files-replace src build --pkg`           &nbsp; Recursively copy all the files in the src folder to the build folder using the data in **package.json** to update the template outputs.
    - `files-replace src --ext=.js build --pkg --concat=bundle.js` &nbsp; Merge all JS files into **build/bundle.js**.
    - `files-replace src build --pkg --summary` &nbsp; Displays the summary but not the individual files copied.
+   - `files-replace src build --regex=/^--/gm replacement=;;;` &nbsp; Replace double dashes at the start of a line with 3 semicolons.
    - `files-replace --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.` &nbsp; Transforms [mock1.html](spec/fixtures/source/mock1.html) into [mock1.html](spec/fixtures/target/mock1.html).
 
 ## C) Application Code
