@@ -82,8 +82,8 @@ const filesReplace = {
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
-      engine.registerFilter('version-minor', versionFormatter(2));
-      engine.registerFilter('version-major', versionFormatter(1));
+      engine.registerFilter('minor-version', versionFormatter(2));
+      engine.registerFilter('major-version', versionFormatter(1));
       const pkg = settings.pkg ? util.readPackageJson() : null;
       const processFile = (file: ResultsFile, index: number) => {
          const content = fs.readFileSync(file.origin, 'utf-8');
