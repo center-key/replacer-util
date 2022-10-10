@@ -1,13 +1,13 @@
 #!/bin/bash
 #################
 # Task Runner   #
-# files-replace #
+# replacer-util #
 #################
 
 # To make this file runnable:
 #     $ chmod +x *.sh.command
 
-banner="files-replace"
+banner="replacer-util"
 projectHome=$(cd $(dirname $0); pwd)
 
 setupTools() {

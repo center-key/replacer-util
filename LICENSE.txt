@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2022 Individual contributors to files-replace
+Copyright (c) 2022 Individual contributors to replacer-util
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

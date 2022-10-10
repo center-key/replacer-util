@@ -1,4 +1,4 @@
-// files-replace ~~ MIT License
+// replacer-util ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -28,7 +28,7 @@ export type Results = {
    };
 export type ResultsFile = Results['files'][0];
 
-const util = {
+const task = {
    normalizeFolder(folderPath: string): string {
       return !folderPath ? '' : slash(path.normalize(folderPath)).replace(/\/$/, '');
       },
@@ -40,7 +40,7 @@ const util = {
       },
    };
 
-const filesReplace = {
+const replacer = {
    transform(sourceFolder: string, targetFolder: string, options?: Options): Results {
       const defaults = {
          cd:          null,
@@ -53,9 +53,9 @@ const filesReplace = {
          };
       const settings = { ...defaults, ...options };
       const startTime = Date.now();
-      const startFolder = settings.cd ? util.normalizeFolder(settings.cd) + '/' : '';
-      const source =      util.normalizeFolder(startFolder + sourceFolder);
-      const target =      util.normalizeFolder(startFolder + targetFolder);
+      const startFolder = settings.cd ? task.normalizeFolder(settings.cd) + '/' : '';
+      const source =      task.normalizeFolder(startFolder + sourceFolder);
+      const target =      task.normalizeFolder(startFolder + targetFolder);
       const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
       const renameFile =  settings.rename ? path.join(target, settings.rename) : null;
       const missingFind = !settings.find && !settings.regex && !!settings.replacement;
@@ -71,7 +71,7 @@ const filesReplace = {
          missingFind ?                        'Must specify search text with --find or --regex' :
          null;
       if (errorMessage)
-         throw Error('[files-replace] ' + errorMessage);
+         throw Error('[replacer-util] ' + errorMessage);
       const resultsFile = (file: string) =>({
          origin: file,
          dest:   concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
@@ -79,14 +79,14 @@ const filesReplace = {
       const exts =      settings.extensions.length ? settings.extensions : [''];
       const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
       const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
-      const files =     filesRaw.filter(util.isTextFile).map(file => slash(file)).map(resultsFile);
+      const files =     filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
       const engine = new Liquid();
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
       engine.registerFilter('minor-version', versionFormatter(2));
       engine.registerFilter('major-version', versionFormatter(1));
-      const pkg = settings.pkg ? util.readPackageJson() : null;
+      const pkg = settings.pkg ? task.readPackageJson() : null;
       const processFile = (file: ResultsFile, index: number) => {
          const content = fs.readFileSync(file.origin, 'utf-8');
          const newStr =  settings.replacement ?? '';
@@ -114,4 +114,4 @@ const filesReplace = {
       },
    };
 
-export { filesReplace };
+export { replacer };

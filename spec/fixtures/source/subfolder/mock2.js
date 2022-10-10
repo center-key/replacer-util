@@ -1,4 +1,4 @@
-//! files-replace ~~ MIT License
+//! replacer-util ~~ MIT License
 // File: mock2.js
 
 let π = 3.14;

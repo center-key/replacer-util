@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 ///////////////////
-// files-replace //
+// replacer-util //
 // MIT License   //
 ///////////////////
 
 // Usage in package.json:
 //    "scripts": {
-//       "build-web": "files-replace src/web --ext=.html dist/website --pkg",
-//       "poetry": "files-replace poems dystopian-poems --find=humans --replacement=robots"
+//       "build-web": "replacer-util src/web --ext=.html dist/website --pkg",
+//       "poetry": "replacer-util poems dystopian-poems --find=humans --replacement=robots"
 //    },
 //
 // Usage from command line:
-//    $ npm install --global files-replace
-//    $ files-replace src/web --ext=.html docs --pkg --quiet
-//    $ files-replace src --ext=.js build --regex=/^let/gm --replacement=const
+//    $ npm install --global replacer-util
+//    $ replacer-util src/web --ext=.html docs --pkg --quiet
+//    $ replacer-util src --ext=.js build --regex=/^let/gm --replacement=const
 //
 // Contributors to this project:
-//    $ cd files-replace
+//    $ cd replacer-util
 //    $ npm install
 //    $ npm test
 //    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.
 
 // Imports
-import { filesReplace } from '../dist/files-replace.js';
+import { replacer } from '../dist/replacer.js';
 import chalk from 'chalk';
 import fs    from 'fs';
 import log   from 'fancy-log';
@@ -43,7 +43,7 @@ const target = params[1];  //destination folder
 
 // Reporting
 const printReport = (results) => {
-   const name =      chalk.gray('files-replace');
+   const name =      chalk.gray('replacer-util');
    const source =    chalk.blue.bold(results.source);
    const target =    chalk.magenta(results.target);
    const arrow =     { big: chalk.gray.bold('➤➤➤'), little: chalk.gray.bold(' ⟹  ') };  //extra space for alignment
@@ -63,7 +63,7 @@ const error =
    params.length > 2 ? 'Extraneous parameter: ' + params[2] :
    null;
 if (error)
-   throw Error('[files-replace] ' + error);
+   throw Error('[replacer-util] ' + error);
 const sourceFile =   path.join(flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
@@ -80,6 +80,6 @@ const options = {
    replacement: flagMap.replacement ?? null,
    pkg:         flagOn.pkg,
    };
-const results = filesReplace.transform(sourceFolder, target, options);
+const results = replacer.transform(sourceFolder, target, options);
 if (!flagOn.quiet)
    printReport(results);
