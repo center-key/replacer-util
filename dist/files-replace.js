@@ -1,4 +1,4 @@
-//! files-replace v0.1.2 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.3 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -34,6 +34,7 @@ const filesReplace = {
         const source = util.normalizeFolder(startFolder + sourceFolder);
         const target = util.normalizeFolder(startFolder + targetFolder);
         const concatFile = settings.concat ? path.join(target, settings.concat) : null;
+        const renameFile = settings.rename ? path.join(target, settings.rename) : null;
         const missingFind = !settings.find && !settings.regex && !!settings.replacement;
         if (targetFolder)
             fs.mkdirSync(target, { recursive: true });
@@ -49,7 +50,7 @@ const filesReplace = {
             throw Error('[files-replace] ' + errorMessage);
         const resultsFile = (file) => ({
             origin: file,
-            dest: concatFile ?? target + '/' + file.substring(source.length + 1),
+            dest: concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
         });
         const exts = settings.extensions.length ? settings.extensions : [''];
         const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();

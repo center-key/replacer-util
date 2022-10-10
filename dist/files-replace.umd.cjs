@@ -1,4 +1,4 @@
-//! files-replace v0.1.2 ~~ https://github.com/center-key/files-replace ~~ MIT License
+//! files-replace v0.1.3 ~~ https://github.com/center-key/files-replace ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -49,6 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const source = util.normalizeFolder(startFolder + sourceFolder);
             const target = util.normalizeFolder(startFolder + targetFolder);
             const concatFile = settings.concat ? path_1.default.join(target, settings.concat) : null;
+            const renameFile = settings.rename ? path_1.default.join(target, settings.rename) : null;
             const missingFind = !settings.find && !settings.regex && !!settings.replacement;
             if (targetFolder)
                 fs_1.default.mkdirSync(target, { recursive: true });
@@ -64,7 +65,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 throw Error('[files-replace] ' + errorMessage);
             const resultsFile = (file) => ({
                 origin: file,
-                dest: concatFile ?? target + '/' + file.substring(source.length + 1),
+                dest: concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
             });
             const exts = settings.extensions.length ? settings.extensions : [''];
             const globFiles = () => exts.map(ext => glob_1.default.sync(source + '/**/*' + ext)).flat().sort();
