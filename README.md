@@ -8,7 +8,9 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 [![Vulnerabilities](https://snyk.io/test/github/center-key/files-replace/badge.svg)](https://snyk.io/test/github/center-key/files-replace)
 [![Build](https://github.com/center-key/files-replace/workflows/build/badge.svg)](https://github.com/center-key/files-replace/actions/workflows/run-spec-on-push.yaml)
 
-**files-replace** searches for text to substitute with replacement text or values from your project's **package.json** file, such the project version number.  The command's console output includes a timestamp and formatting helpful in build systems.
+**files-replace** searches for text to substitute with replacement text or values from your project's **package.json** file, such as the project version number.&nbsp;
+**LiquidJS** powers the templates outputs and enables **files-replace** to act as a static site generator with `render` tags and filter formatters.&nbsp;
+The command's console output includes a timestamp and formatting helpful in build systems.
 
 <img src=https://raw.githubusercontent.com/center-key/files-replace/main/screenshot.png
 width=800 alt=screenshot>
