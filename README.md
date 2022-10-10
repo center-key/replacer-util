@@ -23,8 +23,9 @@ $ npm install --save-dev files-replace
 ### 1. npm scripts
 Run `files-replace` from the `"scripts"` section of your **package.json** file.
 
-The **first** parameter is the *source* folder or file.
-The **second** parameter is the *target* folder.
+Parameters:
+* The **first** parameter is the *source* folder or file.
+* The **second** parameter is the *target* folder.
 
 Example **package.json** scripts:
 ```json
@@ -54,6 +55,7 @@ Command-line flags:
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--quiet`       | Suppress informational messages.                      | N/A        |
 | `--regex`       | Pattern to search for in the source input files.      | **string** |
+| `--rename`      | New output filename if there's only one source file.  | **string** |
 | `--replacement` | Text to insert into the target output files.          | **string** |
 | `--summary`     | Only print out the single line summary message.       | N/A        |
 

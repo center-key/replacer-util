@@ -14,6 +14,7 @@ export type Settings = {
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
    regex:       RegExp | null,  //pattern to search for in the source input files
+   rename:      string | null,  //new output filename if there's only one source file.
    replacement: string | null,  //text to insert into the target output files
    pkg:         false,          //load package.json and make it available as "pkg"
    };
@@ -56,6 +57,7 @@ const filesReplace = {
       const source =      util.normalizeFolder(startFolder + sourceFolder);
       const target =      util.normalizeFolder(startFolder + targetFolder);
       const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
+      const renameFile =  settings.rename ? path.join(target, settings.rename) : null;
       const missingFind = !settings.find && !settings.regex && !!settings.replacement;
       if (targetFolder)
          fs.mkdirSync(target, { recursive: true });
@@ -72,7 +74,7 @@ const filesReplace = {
          throw Error('[files-replace] ' + errorMessage);
       const resultsFile = (file: string) =>({
          origin: file,
-         dest:   concatFile ?? target + '/' + file.substring(source.length + 1),
+         dest:   concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
          });
       const exts =      settings.extensions.length ? settings.extensions : [''];
       const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
