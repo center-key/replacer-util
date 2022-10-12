@@ -6,14 +6,14 @@
 
 // Usage in package.json:
 //    "scripts": {
-//       "build-web": "replacer-util src/web --ext=.html dist/website --pkg",
-//       "poetry": "replacer-util poems dystopian-poems --find=humans --replacement=robots"
+//       "build-web": "replacer src/web --ext=.html dist/website --pkg",
+//       "poetry": "replacer poems dystopian-poems --find=humans --replacement=robots"
 //    },
 //
 // Usage from command line:
 //    $ npm install --global replacer-util
-//    $ replacer-util src/web --ext=.html docs --pkg --quiet
-//    $ replacer-util src --ext=.js build --regex=/^let/gm --replacement=const
+//    $ replacer src/web --ext=.html docs --pkg --quiet
+//    $ replacer src --ext=.js build --regex=/^let/gm --replacement=const
 //
 // Contributors to this project:
 //    $ cd replacer-util
@@ -29,7 +29,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters
-const validFlags =  ['cd', 'concat', 'find', 'ext', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const validFlags =  ['cd', 'concat', 'ext', 'find', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const args =        process.argv.slice(2);
 const flags =       args.filter(arg => /^--/.test(arg));
 const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
@@ -43,7 +43,7 @@ const target = params[1];  //destination folder
 
 // Reporting
 const printReport = (results) => {
-   const name =      chalk.gray('replacer-util');
+   const name =      chalk.gray('replacer');
    const source =    chalk.blue.bold(results.source);
    const target =    chalk.magenta(results.target);
    const arrow =     { big: chalk.gray.bold('➤➤➤'), little: chalk.gray.bold(' ⟹  ') };  //extra space for alignment

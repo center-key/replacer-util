@@ -9,7 +9,7 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 [![Build](https://github.com/center-key/replacer-util/workflows/build/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
 
 **replacer-util** searches for text to substitute with a replacement string or with values from your project's **package.json** file, such as the project version number.&nbsp;
-**LiquidJS** powers the templates outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for partials.&nbsp;
+**LiquidJS** powers the templates outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for including partials.&nbsp;
 
 <img src=https://raw.githubusercontent.com/center-key/replacer-util/main/screenshot.png
 width=800 alt=screenshot>
@@ -32,7 +32,7 @@ Example **package.json** scripts:
 ```json
    "scripts": {
       "build-web": "replacer src/web --ext=.html dist/website --pkg",
-      "poetry": "replacer poems dystopian-poems --find=humans --replacement=robots"
+      "poetry": "replacer poems dystopian-poems --find=human --replacement=robot"
    },
 ```
 
@@ -76,8 +76,7 @@ Examples:
    Removes all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
 
 ### 5. Template Outputs and Filter Formatters
-When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).
-
+When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
 Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).
 
 For example, a TypeScript file with the line:
