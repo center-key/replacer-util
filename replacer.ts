@@ -87,12 +87,15 @@ const replacer = {
       engine.registerFilter('minor-version', versionFormatter(2));
       engine.registerFilter('major-version', versionFormatter(1));
       const pkg = settings.pkg ? task.readPackageJson() : null;
+      const normalizeEol = /\r/g;
+      const normalizeEof = /\s*$(?!\n)/;
       const processFile = (file: ResultsFile, index: number) => {
          const content = fs.readFileSync(file.origin, 'utf-8');
          const newStr =  settings.replacement ?? '';
-         const out1 =    settings.find ?  content.replaceAll(settings.find, newStr) : content;
-         const out2 =    settings.regex ? out1.replace(settings.regex, newStr) : out1;
-         const final =   settings.pkg ?   engine.parseAndRenderSync(out2, { pkg }) : out2;
+         const out1 =    content.replace(normalizeEol, '').replace(normalizeEof, '\n');
+         const out2 =    settings.find ?  out1.replaceAll(settings.find, newStr) : out1;
+         const out3 =    settings.regex ? out2.replace(settings.regex, newStr) : out2;
+         const final =   settings.pkg ?   engine.parseAndRenderSync(out3, { pkg }) : out3;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          if (settings.concat && index > 0)
             fs.appendFileSync(file.dest, final);
