@@ -67,13 +67,13 @@ Examples:
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
    - `replacer src build --pkg --summary`<br>
-   Displays the summary but not the individual files copied.
+   Display the summary but not the individual files copied.
    - `replacer src build --regex=/^--/gm replacement=;;;`<br>
    Replace double dashes at the start of lines with 3 semicolons.
    - `replacer build/my-app.js build --rename=my-app.browser.js`<br>
-   Copies **my-app.js** to **my-app.browser.js** without making and changes.
+   Copy **my-app.js** to **my-app.browser.js** without making and changes.
    - `replacer --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.`<br>
-   Removes all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
+   Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
 
 ### 5. Template Outputs and Filter Formatters
 When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
