@@ -90,7 +90,7 @@
    "devDependencies": {
       "@types/fancy-log": "~2.0",
       "@types/glob": "~8.0",
-      "@types/node": "~18.8",
+      "@types/node": "~18.11",
       "@typescript-eslint/eslint-plugin": "~5.40",
       "@typescript-eslint/parser": "~5.40",
       "add-dist-header": "~0.3",
@@ -99,12 +99,12 @@
       "eslint": "~8.25",
       "fetch-json": "~2.7",
       "jshint": "~2.13",
-      "mocha": "~10.0",
+      "mocha": "~10.1",
       "npm-run-all2": "~6.0",
       "pretty-print-json": "~1.3",
       "rev-web-assets": "~0.1",
       "rimraf": "~3.0",
       "typescript": "~4.8",
-      "w3c-html-validator": "~1.1"
+      "w3c-html-validator": "~1.2"
    }
 }
