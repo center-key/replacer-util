@@ -80,22 +80,22 @@ const replacer = {
       const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
       const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
       const files =     filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
-      const engine = new Liquid();
+      const pkg = settings.pkg ? task.readPackageJson() : null;
+      const engine = new Liquid({ globals: { pkg } });
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
       engine.registerFilter('minor-version', versionFormatter(2));
       engine.registerFilter('major-version', versionFormatter(1));
-      const pkg = settings.pkg ? task.readPackageJson() : null;
       const normalizeEol = /\r/g;
       const normalizeEof = /\s*$(?!\n)/;
+      const newStr =  settings.replacement ?? '';
       const processFile = (file: ResultsFile, index: number) => {
          const content = fs.readFileSync(file.origin, 'utf-8');
-         const newStr =  settings.replacement ?? '';
-         const out1 =    content.replace(normalizeEol, '').replace(normalizeEof, '\n');
-         const out2 =    settings.find ?  out1.replaceAll(settings.find, newStr) : out1;
-         const out3 =    settings.regex ? out2.replace(settings.regex, newStr) : out2;
-         const final =   settings.pkg ?   engine.parseAndRenderSync(out3, { pkg }) : out3;
+         const out1 =    settings.pkg ? engine.parseAndRenderSync(content) : content;
+         const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
+         const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
+         const final =   settings.regex ? out3.replace(settings.regex, newStr) : out3;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          if (settings.concat && index > 0)
             fs.appendFileSync(file.dest, final);
