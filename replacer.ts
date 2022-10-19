@@ -13,6 +13,7 @@ export type Settings = {
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
+   header:      string | null,  //predend a line of text to each file
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename if there's only one source file.
    replacement: string | null,  //text to insert into the target output files
@@ -89,15 +90,18 @@ const replacer = {
       engine.registerFilter('major-version', versionFormatter(1));
       const normalizeEol = /\r/g;
       const normalizeEof = /\s*$(?!\n)/;
-      const newStr =  settings.replacement ?? '';
+      const header =       settings.header ? settings.header + '\n' : '';
+      const newStr =       settings.replacement ?? '';
       const processFile = (file: ResultsFile, index: number) => {
-         const content = fs.readFileSync(file.origin, 'utf-8');
+         const append =  settings.concat && index > 0;
+         const content = header + fs.readFileSync(file.origin, 'utf-8');
          const out1 =    settings.pkg ? engine.parseAndRenderSync(content) : content;
          const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
          const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-         const final =   settings.regex ? out3.replace(settings.regex, newStr) : out3;
+         const out4 =    settings.regex ? out3.replace(settings.regex, newStr) : out3;
+         const final =   append && settings.header ? '\n' + out4 : out4;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
-         if (settings.concat && index > 0)
+         if (append)
             fs.appendFileSync(file.dest, final);
          else
             fs.writeFileSync(file.dest, final);

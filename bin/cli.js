@@ -20,6 +20,7 @@
 //    $ npm install
 //    $ npm test
 //    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header='//! JavaScript' --concat=bundle.js
 
 // Imports
 import { replacer } from '../dist/replacer.js';
@@ -29,7 +30,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters
-const validFlags =  ['cd', 'concat', 'ext', 'find', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const validFlags =  ['cd', 'concat', 'ext', 'find', 'header', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const args =        process.argv.slice(2);
 const flags =       args.filter(arg => /^--/.test(arg));
 const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
@@ -75,6 +76,7 @@ const options = {
    extensions:  flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
    find:        flagMap.find ?? null,
+   header:      flagMap.header ?? null,
    regex:       flagMap.regex ? new RegExp(pattern, patternCodes) : null,
    rename:      flagMap.rename ?? null,
    replacement: flagMap.replacement ?? null,

@@ -3,6 +3,7 @@
 
 // Imports
 import { assertDeepStrictEqual } from 'assert-deep-strict-equal';
+import { execSync } from 'node:child_process';
 import { revWebAssets } from 'rev-web-assets';
 import assert from 'assert';
 import fs from     'fs';
@@ -80,6 +81,19 @@ describe('Correct error is thrown', () => {
       const makeBogusCall = () => replacer.transform('/source-folder');
       const exception =     { message: '[replacer-util] Must specify the target folder path.' };
       assert.throws(makeBogusCall, exception);
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('Executing the CLI', () => {
+
+   it('with --header and --concat flags creates the expected bundle file', () => {
+      const cmd = 'node bin/cli.js --cd=spec/fixtures source --ext=.js target --header="//! JavaScript" --concat=bundle.js';
+      execSync(cmd);
+      const actual =   { bundle: fs.readdirSync('spec/fixtures/target')?.[0] };
+      const expected = { bundle: 'bundle.js' };
+      assertDeepStrictEqual(actual, expected);
       });
 
    });

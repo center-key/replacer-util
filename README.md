@@ -53,6 +53,7 @@ Command-line flags:
 | `--concat`      | Merge all files into one file in the target folder.   | **string** |
 | `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`        | Text to search for in the source input files.         | **string** |
+| `--header`      | Predend a line of text to each file.                  | **string** |
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--quiet`       | Suppress informational messages.                      | N/A        |
 | `--regex`       | Pattern to search for in the source input files.      | **string** |
