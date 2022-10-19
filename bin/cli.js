@@ -20,7 +20,7 @@
 //    $ npm install
 //    $ npm test
 //    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.
-//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header='//! JavaScript' --concat=bundle.js
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header="//! JavaScript" --pkg --concat=bundle.js
 
 // Imports
 import { replacer } from '../dist/replacer.js';

@@ -1,4 +1,4 @@
-//! replacer-util v0.2.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.2.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export declare type Settings = {
     cd: string;
@@ -6,6 +6,7 @@ export declare type Settings = {
     extensions: string[];
     filename: string | null;
     find: string | null;
+    header: string | null;
     regex: RegExp | null;
     rename: string | null;
     replacement: string | null;

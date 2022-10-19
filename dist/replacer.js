@@ -1,4 +1,4 @@
-//! replacer-util v0.2.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.2.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -64,15 +64,18 @@ const replacer = {
         engine.registerFilter('major-version', versionFormatter(1));
         const normalizeEol = /\r/g;
         const normalizeEof = /\s*$(?!\n)/;
+        const header = settings.header ? settings.header + '\n' : '';
         const newStr = settings.replacement ?? '';
         const processFile = (file, index) => {
-            const content = fs.readFileSync(file.origin, 'utf-8');
+            const append = settings.concat && index > 0;
+            const content = header + fs.readFileSync(file.origin, 'utf-8');
             const out1 = settings.pkg ? engine.parseAndRenderSync(content) : content;
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
             const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-            const final = settings.regex ? out3.replace(settings.regex, newStr) : out3;
+            const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
+            const final = append && settings.header ? '\n' + out4 : out4;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
-            if (settings.concat && index > 0)
+            if (append)
                 fs.appendFileSync(file.dest, final);
             else
                 fs.writeFileSync(file.dest, final);
