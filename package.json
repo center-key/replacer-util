@@ -1,6 +1,6 @@
 {
    "name": "replacer-util",
-   "version": "0.2.2",
+   "version": "0.2.3",
    "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)",
    "license": "MIT",
    "type": "module",
