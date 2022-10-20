@@ -1,4 +1,4 @@
-//! replacer-util v0.2.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.2.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -82,9 +82,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             const header = settings.header ? settings.header + '\n' : '';
             const newStr = settings.replacement ?? '';
             const processFile = (file, index) => {
+                const fileInfo = { file: path_1.default.parse(file.origin) };
                 const append = settings.concat && index > 0;
                 const content = header + fs_1.default.readFileSync(file.origin, 'utf-8');
-                const out1 = settings.pkg ? engine.parseAndRenderSync(content) : content;
+                const out1 = settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
                 const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
                 const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
                 const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
