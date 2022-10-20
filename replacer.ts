@@ -8,7 +8,7 @@ import path  from 'path';
 import slash from 'slash';
 
 export type Settings = {
-   cd:          string,         //change working directory before starting search
+   cd:          string | null,  //change working directory before starting search
    concat:      string | null,  //merge all files into one file in the target folder
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
@@ -17,7 +17,7 @@ export type Settings = {
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename if there's only one source file.
    replacement: string | null,  //text to insert into the target output files
-   pkg:         false,          //load package.json and make it available as "pkg"
+   pkg:         boolean,        //load package.json and make it available as "pkg"
    };
 export type Options = Partial<Settings>;
 export type Results = {
