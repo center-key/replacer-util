@@ -93,13 +93,14 @@ const replacer = {
       const header =       settings.header ? settings.header + '\n' : '';
       const newStr =       settings.replacement ?? '';
       const processFile = (file: ResultsFile, index: number) => {
-         const append =  settings.concat && index > 0;
-         const content = header + fs.readFileSync(file.origin, 'utf-8');
-         const out1 =    settings.pkg ? engine.parseAndRenderSync(content) : content;
-         const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
-         const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-         const out4 =    settings.regex ? out3.replace(settings.regex, newStr) : out3;
-         const final =   append && settings.header ? '\n' + out4 : out4;
+         const fileInfo = { file: path.parse(file.origin) };
+         const append =   settings.concat && index > 0;
+         const content =  header + fs.readFileSync(file.origin, 'utf-8');
+         const out1 =     settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
+         const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
+         const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
+         const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;
+         const final =    append && settings.header ? '\n' + out4 : out4;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          if (append)
             fs.appendFileSync(file.dest, final);

@@ -78,15 +78,18 @@ Examples:
 
 ### 5. Template Outputs and Filter Formatters
 When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
-Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).
+Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
+[Path information](https://nodejs.org/api/path.html#pathparsepath) is also available in the `file` object.
 
-For example, a TypeScript file with the line:
+For example, a TypeScript file with the lines:
 ```typescript
-const msg: string = 'The current release of {{pkg.name | upcase}} is v{{pkg.version}}.';
+const msg1: string = 'The current release of {{pkg.name | upcase}} is v{{pkg.version}}.';
+const msg2: string = 'This file is: {{file.base}}';
 ```
 will be transformed into something like:
 ```typescript
-const msg: string = 'The current release of MY-COOL-NPM-PACKAGE is v1.2.3.';
+const msg1: string = 'The current release of MY-COOL-NPM-PACKAGE is v1.2.3.';
+const msg2: string = 'This file is: my-app.ts';
 ```
 
 Three additional filter formatters are available to support Semantic Versioning (SemVer):
