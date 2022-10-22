@@ -91,11 +91,12 @@ const replacer = {
       const normalizeEol = /\r/g;
       const normalizeEof = /\s*$(?!\n)/;
       const header =       settings.header ? settings.header + '\n' : '';
-      const newStr =       settings.replacement ?? '';
+      const rep =          settings.replacement ?? '';
       const processFile = (file: ResultsFile, index: number) => {
          const fileInfo = { file: path.parse(file.origin) };
          const append =   settings.concat && index > 0;
          const content =  header + fs.readFileSync(file.origin, 'utf-8');
+         const newStr =   settings.pkg ? engine.parseAndRenderSync(rep, fileInfo) : rep;
          const out1 =     settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
          const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
          const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;

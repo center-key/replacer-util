@@ -7,8 +7,8 @@ let τ1 = 2 * π1;
 const info1 = {
    banner:      '🔍🔍🔍 replacer-util v0.2.5 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)',
-   list1:       'A.I., A.I., A.I.',
-   list2:       'A.I., iNsEcT, INSECT, A.I.',
+   list1:       'A.I. module, A.I. module, A.I. module',
+   list2:       'A.I. module, iNsEcT, INSECT, A.I. module',
    math:        { π1, τ1 },
    };
 

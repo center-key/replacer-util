@@ -51,7 +51,7 @@ describe('Calling replacer.transform()', () => {
          cd:          'spec/fixtures',
          pkg:         true,
          find:        'insect',
-         replacement: 'A.I.',
+         replacement: 'A.I. {{pkg.type}}',  //'A.I. module'
          };
       replacer.transform('source', 'target', options);
       const actual = revWebAssets.readFolderRecursive('spec/fixtures/target');
