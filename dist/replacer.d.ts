@@ -1,7 +1,7 @@
-//! replacer-util v0.2.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.2.6 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export declare type Settings = {
-    cd: string;
+    cd: string | null;
     concat: string | null;
     extensions: string[];
     filename: string | null;
@@ -10,7 +10,7 @@ export declare type Settings = {
     regex: RegExp | null;
     rename: string | null;
     replacement: string | null;
-    pkg: false;
+    pkg: boolean;
 };
 export declare type Options = Partial<Settings>;
 export declare type Results = {
