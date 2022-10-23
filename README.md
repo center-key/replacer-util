@@ -55,6 +55,7 @@ Command-line flags:
 | `--find`        | Text to search for in the source input files.         | **string** |
 | `--header`      | Predend a line of text to each file.                  | **string** |
 | `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
+| `--note`        | Place to add a comment only for humans.               | **string** |
 | `--quiet`       | Suppress informational messages.                      | N/A        |
 | `--regex`       | Pattern to search for in the source input files.      | **string** |
 | `--rename`      | New output filename if there's only one source file.  | **string** |
@@ -64,12 +65,14 @@ Command-line flags:
 ### 4. Example CLI Usage
 Examples:
    - `replacer src build --pkg`<br>
-   Recursively copy all the files in the src folder to the build folder using the data in **package.json** to update the template outputs.
+   Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
+   - `replacer bad --ext=.md good '--find=HTTP Referer' --replacement=HTTP\ Referrer`<br>
+   Fix typo in markdown files using two different ways to include a space character.
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
    - `replacer src build --pkg --summary`<br>
    Display the summary but not the individual files copied.
-   - `replacer src build --regex=/^--/gm replacement=;;;`<br>
+   - `replacer src build --regex=/^--/gm --replacement=;;;`<br>
    Replace double dashes at the start of lines with 3 semicolons.
    - `replacer build/my-app.js build --rename=my-app.browser.js`<br>
    Copy **my-app.js** to **my-app.browser.js** without making and changes.

@@ -19,8 +19,8 @@
 //    $ cd replacer-util
 //    $ npm install
 //    $ npm test
-//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.
-//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header="//! JavaScript" --pkg --concat=bundle.js
+//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.\ {{pkg.type}} --note=space
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target '--header=//! JavaScript: {{file.base}}' --pkg --concat=bundle.js
 
 // Imports
 import { replacer } from '../dist/replacer.js';
@@ -30,7 +30,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters
-const validFlags =  ['cd', 'concat', 'ext', 'find', 'header', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const validFlags =  ['cd', 'concat', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const args =        process.argv.slice(2);
 const flags =       args.filter(arg => /^--/.test(arg));
 const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
