@@ -62,12 +62,17 @@ Command-line flags:
 | `--replacement` | Text to insert into the target output files.          | **string** |
 | `--summary`     | Only print out the single line summary message.       | N/A        |
 
+The bang (`!`), pipe (`|`), and space (` `) characters can be _"escaped"_ in the commands by
+using the strings `{{bang}}`, `{{pipe}}`, and `{{space}}`, respectively.
+
 ### 4. Example CLI Usage
 Examples:
    - `replacer src build --pkg`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
-   - `replacer bad --ext=.md good '--find=HTTP Referer' --replacement=HTTP\ Referrer`<br>
-   Fix typo in markdown files using two different ways to include a space character.
+   - `replacer src/docs --ext=.md fixed --find=Referer --replacement=Referrer`<br>
+   Fix spelling error in markdown files.
+   - `replacer web target '--find=cat dog' --replacement=\ cat{{pipe}}dog{{space}}`<br>
+   Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
    - `replacer src build --pkg --summary`<br>

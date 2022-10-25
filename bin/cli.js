@@ -19,8 +19,8 @@
 //    $ cd replacer-util
 //    $ npm install
 //    $ npm test
-//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.\ {{pkg.type}} --note=space
-//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target '--header=//! JavaScript: {{file.base}}' --pkg --concat=bundle.js
+//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.{{space}}{{pkg.type}} --note=space
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ JavaScript:\ {{file.base}} --pkg --concat=bundle.js
 
 // Imports
 import { replacer } from '../dist/replacer.js';
@@ -70,16 +70,18 @@ const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile
 const sourceFolder = isFile ? path.dirname(source) : source;
 const pattern =      flagMap.regex?.replace(/(^\/)|(\/[a-z]*$)/g, '');        //remove enclosing slashes
 const patternCodes = flagMap.regex?.replace(/(.*\/[^a-z]*)|(^[^//].*)/, '');  //regex options
+const escape = (param) =>
+   param?.replace(/{{bang}}/g, '!').replace(/{{pipe}}/g, '|').replace(/{{space}}/g, ' ') ?? null;
 const options = {
    cd:          flagMap.cd ?? null,
    concat:      flagMap.concat ?? null,
    extensions:  flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
-   find:        flagMap.find ?? null,
-   header:      flagMap.header ?? null,
-   regex:       flagMap.regex ? new RegExp(pattern, patternCodes) : null,
+   find:        escape(flagMap.find),
+   header:      escape(flagMap.header),
+   regex:       flagMap.regex ? new RegExp(escape(pattern), patternCodes) : null,
    rename:      flagMap.rename ?? null,
-   replacement: flagMap.replacement ?? null,
+   replacement: escape(flagMap.replacement),
    pkg:         flagOn.pkg,
    };
 const results = replacer.transform(sourceFolder, target, options);
