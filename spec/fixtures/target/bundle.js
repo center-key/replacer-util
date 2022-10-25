@@ -1,4 +1,4 @@
-//! JavaScript: mock1.js
+//! 👾: mock1.js
 //! replacer-util ~~ MIT License
 // File: mock1.js
 
@@ -15,7 +15,7 @@ const info1 = {
 
 export { info1 };
 
-//! JavaScript: mock2.js
+//! 👾: mock2.js
 //! replacer-util ~~ MIT License
 // File: mock2.js
 

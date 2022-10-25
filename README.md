@@ -77,8 +77,9 @@ Examples:
    Merge all JS files into **build/bundle.js**.
    - `replacer src build --pkg --summary`<br>
    Display the summary but not the individual files copied.
-   - `replacer src build --regex=/^--/gm --replacement=;;;`<br>
-   Replace double dashes at the start of lines with 3 semicolons.
+   - `replacer src build --regex=/^--/gm --replacement=🥕🥕🥕`<br>
+   Find double dashes at the start of lines and replace them with 3 carrots.&nbsp;
+   Note the `gm` (regex options)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags].
    - `replacer build/my-app.js build --rename=my-app.browser.js`<br>
    Copy **my-app.js** to **my-app.browser.js** without making and changes.
    - `replacer --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.`<br>

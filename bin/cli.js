@@ -20,7 +20,7 @@
 //    $ npm install
 //    $ npm test
 //    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.{{space}}{{pkg.type}} --note=space
-//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ JavaScript:\ {{file.base}} --pkg --concat=bundle.js
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --pkg --concat=bundle.js
 
 // Imports
 import { replacer } from '../dist/replacer.js';
@@ -57,10 +57,12 @@ const printReport = (results) => {
    };
 
 // Transform Files
+const badRegex = flagOn.regex && !/^\/.*\/[a-z]*$/.test(flagMap.regex);
 const error =
    invalidFlag ?       'Invalid flag: ' + invalidFlag :
    !source ?           'Missing source folder.' :
    !target ?           'Missing target folder.' :
+   badRegex ?          'Regex must be enclosed in slashes.' :
    params.length > 2 ? 'Extraneous parameter: ' + params[2] :
    null;
 if (error)
@@ -68,8 +70,8 @@ if (error)
 const sourceFile =   path.join(flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
-const pattern =      flagMap.regex?.replace(/(^\/)|(\/[a-z]*$)/g, '');        //remove enclosing slashes
-const patternCodes = flagMap.regex?.replace(/(.*\/[^a-z]*)|(^[^//].*)/, '');  //regex options
+const pattern =      flagMap.regex?.substring(1, flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
+const patternCodes = flagMap.regex?.replace(/.*\//, '');                           //regex options
 const escape = (param) =>
    param?.replace(/{{bang}}/g, '!').replace(/{{pipe}}/g, '|').replace(/{{space}}/g, ' ') ?? null;
 const options = {
