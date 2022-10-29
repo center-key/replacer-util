@@ -10,6 +10,7 @@ import slash from 'slash';
 export type Settings = {
    cd:          string | null,  //change working directory before starting search
    concat:      string | null,  //merge all files into one file in the target folder
+   content:     string | null,  //string to be used instead of the input file contents
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
@@ -95,7 +96,7 @@ const replacer = {
       const processFile = (file: ResultsFile, index: number) => {
          const fileInfo = { file: path.parse(file.origin) };
          const append =   settings.concat && index > 0;
-         const content =  header + fs.readFileSync(file.origin, 'utf-8');
+         const content =  header + (settings.content ?? fs.readFileSync(file.origin, 'utf-8'));
          const newStr =   settings.pkg ? engine.parseAndRenderSync(rep, fileInfo) : rep;
          const out1 =     settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
          const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');

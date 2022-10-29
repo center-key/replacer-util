@@ -51,6 +51,7 @@ Command-line flags:
 | --------------- | ----------------------------------------------------- | ---------- |
 | `--cd`          | Change working directory before starting search.      | **string** |
 | `--concat`      | Merge all files into one file in the target folder.   | **string** |
+| `--content`     | String to be used instead of the input file contents. | **string** |
 | `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`        | Text to search for in the source input files.         | **string** |
 | `--header`      | Predend a line of text to each file.                  | **string** |
@@ -75,6 +76,8 @@ Examples:
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
+   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}\"{{file.dir}}/{{file.base}}\"\; --concat=widgets.less`<br>
+   Create a single LESS file that imports the LESS files of every widget component.
    - `replacer src build --pkg --summary`<br>
    Display the summary but not the individual files copied.
    - `replacer src build --regex=/^--/gm --replacement=🥕🥕🥕`<br>

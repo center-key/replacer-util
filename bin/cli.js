@@ -30,7 +30,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters
-const validFlags =  ['cd', 'concat', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const validFlags =  ['cd', 'concat', 'content', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const args =        process.argv.slice(2);
 const flags =       args.filter(arg => /^--/.test(arg));
 const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
@@ -77,6 +77,7 @@ const escape = (param) =>
 const options = {
    cd:          flagMap.cd ?? null,
    concat:      flagMap.concat ?? null,
+   content:     escape(flagMap.content),
    extensions:  flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
    find:        escape(flagMap.find),
