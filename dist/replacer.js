@@ -1,4 +1,4 @@
-//! replacer-util v0.2.8 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.2.9 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -69,7 +69,7 @@ const replacer = {
         const processFile = (file, index) => {
             const fileInfo = { file: path.parse(file.origin) };
             const append = settings.concat && index > 0;
-            const content = header + fs.readFileSync(file.origin, 'utf-8');
+            const content = header + (settings.content ?? fs.readFileSync(file.origin, 'utf-8'));
             const newStr = settings.pkg ? engine.parseAndRenderSync(rep, fileInfo) : rep;
             const out1 = settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
