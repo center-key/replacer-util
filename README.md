@@ -84,7 +84,7 @@ Examples:
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
-   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.base}}{{quote}}{{semi}} --concat=widgets.less`<br>
+   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less`<br>
    Create a single LESS file that imports the LESS files of every widget component.
    - `replacer src build --pkg --summary`<br>
    Display the summary but not the individual files copied.
@@ -99,7 +99,7 @@ Examples:
 ### 5. Template Outputs and Filter Formatters
 When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
 Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
-[Path information](https://nodejs.org/api/path.html#pathparsepath) is also available in the `file` object.
+[Path information](https://nodejs.org/api/path.html#pathparsepath) is also available in the `file` object (which also includes the supplemental `path` field).
 
 For example, a TypeScript file with the lines:
 ```typescript
