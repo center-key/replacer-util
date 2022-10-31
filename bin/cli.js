@@ -56,6 +56,15 @@ const printReport = (results) => {
       results.files.forEach(logFile);
    };
 
+// Escapers
+const escapers = [
+   [/{{bang}}/g,  '!'],
+   [/{{pipe}}/g,  '|'],
+   [/{{quote}}/g, '"'],
+   [/{{semi}}/g,  ';'],
+   [/{{space}}/g, ' '],
+   ];
+
 // Transform Files
 const badRegex = flagOn.regex && !/^\/.*\/[a-z]*$/.test(flagMap.regex);
 const error =
@@ -72,8 +81,8 @@ const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile
 const sourceFolder = isFile ? path.dirname(source) : source;
 const pattern =      flagMap.regex?.substring(1, flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
 const patternCodes = flagMap.regex?.replace(/.*\//, '');                           //regex options
-const escape = (param) =>
-   param?.replace(/{{bang}}/g, '!').replace(/{{pipe}}/g, '|').replace(/{{space}}/g, ' ') ?? null;
+const escapeChar =   (param, escaper) => param.replace(escaper[0], escaper[1]);
+const escape =       (param) => !param ? null : escapers.reduce(escapeChar, param);
 const options = {
    cd:          flagMap.cd ?? null,
    concat:      flagMap.concat ?? null,

@@ -63,8 +63,16 @@ Command-line flags:
 | `--replacement` | Text to insert into the target output files.          | **string** |
 | `--summary`     | Only print out the single line summary message.       | N/A        |
 
-The bang (`!`), pipe (`|`), and space (` `) characters can be _"escaped"_ in the commands by
-using the strings `{{bang}}`, `{{pipe}}`, and `{{space}}`, respectively.
+To avoid issues on the command line, problematic characters can be _"escaped"_ with safe strings as listed below.
+
+Escape characters:
+| Character | Safe stand-in string |
+| --------- | -------------------- |
+| `!`       | `{{bang}}`           |
+| `|`       | `{{pipe}}`           |
+| `"`       | `{{quote}}`          |
+| `;`       | `{{semi}}`           |
+| ` `       | `{{space}}`          |
 
 ### 4. Example CLI Usage
 Examples:
@@ -76,7 +84,7 @@ Examples:
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
    - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
    Merge all JS files into **build/bundle.js**.
-   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}\"{{file.dir}}/{{file.base}}\"\; --concat=widgets.less`<br>
+   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.base}}{{quote}}{{semi}} --concat=widgets.less`<br>
    Create a single LESS file that imports the LESS files of every widget component.
    - `replacer src build --pkg --summary`<br>
    Display the summary but not the individual files copied.
