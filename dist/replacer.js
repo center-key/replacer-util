@@ -1,4 +1,4 @@
-//! replacer-util v0.2.9 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.3.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -66,21 +66,26 @@ const replacer = {
         const normalizeEof = /\s*$(?!\n)/;
         const header = settings.header ? settings.header + '\n' : '';
         const rep = settings.replacement ?? '';
+        const getFileInfo = (origin) => {
+            const parsedPath = path.parse(origin);
+            const dir = slash(parsedPath.dir);
+            const filePath = dir + '/' + slash(parsedPath.base);
+            return { file: { ...parsedPath, dir: dir, path: filePath } };
+        };
         const processFile = (file, index) => {
-            const fileInfo = { file: path.parse(file.origin) };
+            const fileInfo = getFileInfo(file.origin);
+            const render = (text) => engine.parseAndRenderSync(text, fileInfo);
             const append = settings.concat && index > 0;
-            const content = header + (settings.content ?? fs.readFileSync(file.origin, 'utf-8'));
-            const newStr = settings.pkg ? engine.parseAndRenderSync(rep, fileInfo) : rep;
-            const out1 = settings.pkg ? engine.parseAndRenderSync(content, fileInfo) : content;
+            const altText = settings.content ? render(settings.content) : null;
+            const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
+            const newStr = settings.pkg ? render(rep) : rep;
+            const out1 = settings.pkg ? render(content) : content;
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
             const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
             const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
             const final = append && settings.header ? '\n' + out4 : out4;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
-            if (append)
-                fs.appendFileSync(file.dest, final);
-            else
-                fs.writeFileSync(file.dest, final);
+            return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
         };
         files.map(processFile);
         const relativePaths = (file) => ({
