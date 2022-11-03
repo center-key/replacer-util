@@ -89,7 +89,8 @@ describe('Correct error is thrown', () => {
 describe('Executing the CLI', () => {
 
    it('with --header and --concat flags creates the expected bundle file', () => {
-      const cmd = 'node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js';
+      const posix = 'node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js';
+      const cmd = process.platform === 'win32' ? posix.replaceAll('\\ ', '" "') : posix;
       execSync(cmd);
       const actual =   { bundle: fs.readdirSync('spec/fixtures/target')?.[0] };
       const expected = { bundle: 'bundle.js' };
