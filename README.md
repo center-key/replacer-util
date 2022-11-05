@@ -69,6 +69,8 @@ Escape characters:
 | Character | Safe stand-in string |
 | --------- | -------------------- |
 | `!`       | `{{bang}}`           |
+| `}`       | `{{close-curly}}`    |
+| `{`       | `{{open-curly}}`     |
 | `|`       | `{{pipe}}`           |
 | `"`       | `{{quote}}`          |
 | `;`       | `{{semi}}`           |

@@ -58,11 +58,13 @@ const printReport = (results) => {
 
 // Escapers
 const escapers = [
-   [/{{bang}}/g,  '!'],
-   [/{{pipe}}/g,  '|'],
-   [/{{quote}}/g, '"'],
-   [/{{semi}}/g,  ';'],
-   [/{{space}}/g, ' '],
+   [/{{bang}}/g,        '!'],
+   [/{{close-curly}}/g, '}'],
+   [/{{open-curly}}/g,  '{'],
+   [/{{pipe}}/g,        '|'],
+   [/{{quote}}/g,       '"'],
+   [/{{semi}}/g,        ';'],
+   [/{{space}}/g,       ' '],
    ];
 
 // Transform Files
