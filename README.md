@@ -31,8 +31,8 @@ Parameters:
 Example **package.json** scripts:
 ```json
    "scripts": {
-      "build-web": "replacer src/web --ext=.html dist/website --pkg",
-      "poetry": "replacer poems dystopian-poems --find=human --replacement=robot"
+      "build-web": "replacer src/web --ext=.html --pkg dist/website",
+      "poetry": "replacer poems --find=human --replacement=robot dystopian-poems"
    },
 ```
 
@@ -78,24 +78,24 @@ Escape characters:
 
 ### 4. Example CLI Usage
 Examples:
-   - `replacer src build --pkg`<br>
+   - `replacer src --pkg build`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
-   - `replacer src/docs --ext=.md fixed --find=Referer --replacement=Referrer`<br>
+   - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer fixed`<br>
    Fix spelling error in markdown files.
-   - `replacer web target '--find=cat dog' --replacement=\ cat{{pipe}}dog{{space}}`<br>
+   - `replacer web '--find=cat dog' --replacement=\ cat{{pipe}}dog{{space}} target`<br>
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
-   - `replacer src --ext=.js build --pkg --concat=bundle.js`<br>
+   - `replacer src --ext=.js --pkg --concat=bundle.js build`<br>
    Merge all JS files into **build/bundle.js**.
-   - `replacer app/widgets --ext=.less app/style --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less`<br>
+   - `replacer app/widgets --ext=.less --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
    Create a single LESS file that imports the LESS files of every widget component.
-   - `replacer src build --pkg --summary`<br>
+   - `replacer src --pkg --summary build`<br>
    Display the summary but not the individual files copied.
-   - `replacer src build --regex=/^--/gm --replacement=🥕🥕🥕`<br>
+   - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
    Find double dashes at the start of lines and replace them with 3 carrots.&nbsp;
-   Note the `gm` (regex options)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags].
-   - `replacer build/my-app.js build --rename=my-app.browser.js`<br>
+   Note the `gm` [regex options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags).
+   - `replacer build/my-app.js --rename=my-app.browser.js build`<br>
    Copy **my-app.js** to **my-app.browser.js** without making and changes.
-   - `replacer --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.`<br>
+   - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. --pkg target`<br>
    Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
 
 ### 5. Template Outputs and Filter Formatters
@@ -125,7 +125,7 @@ For example, if your project declares a dependency of `^2.7.1` for **fetch-json*
 ```
 will be transformed into:
 ```html
-<script src=https://cdn.jsdelivr.net/npm/fetch-json@2.7/dist/fetch-json.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.0/dist/fetch-json.min.js></script>
 ```
 
 ## C) Application Code
