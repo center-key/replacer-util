@@ -23,24 +23,18 @@
 //    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --pkg --concat=bundle.js
 
 // Imports
+import { cliArgvUtil } from 'cli-argv-util';
 import { replacer } from '../dist/replacer.js';
 import chalk from 'chalk';
 import fs    from 'fs';
 import log   from 'fancy-log';
 import path  from 'path';
 
-// Parameters
-const validFlags =  ['cd', 'concat', 'content', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
-const args =        process.argv.slice(2);
-const flags =       args.filter(arg => /^--/.test(arg));
-const flagMap =     Object.fromEntries(flags.map(flag => flag.replace(/^--/, '').split('=')));
-const flagOn =      Object.fromEntries(validFlags.map(flag => [flag, flag in flagMap]));
-const invalidFlag = Object.keys(flagMap).find(key => !validFlags.includes(key));
-const params =      args.filter(arg => !/^--/.test(arg));
-
-// Data
-const source = params[0];  //origin file or folder
-const target = params[1];  //destination folder
+// Parameters and flags
+const validFlags = ['cd', 'concat', 'content', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const cli =        cliArgvUtil.parse(validFlags);
+const source =     cli.params[0];  //origin file or folder
+const target =     cli.params[1];  //destination folder
 
 // Reporting
 const printReport = (results) => {
@@ -52,7 +46,7 @@ const printReport = (results) => {
    const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
    const logFile =   (file) => log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
    log(name, source, arrow.big, target, info);
-   if (!flagOn.summary)
+   if (!cli.flagOn.summary)
       results.files.forEach(logFile);
    };
 
@@ -68,36 +62,36 @@ const escapers = [
    ];
 
 // Transform Files
-const badRegex = flagOn.regex && !/^\/.*\/[a-z]*$/.test(flagMap.regex);
+const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex);
 const error =
-   invalidFlag ?       'Invalid flag: ' + invalidFlag :
-   !source ?           'Missing source folder.' :
-   !target ?           'Missing target folder.' :
-   badRegex ?          'Regex must be enclosed in slashes.' :
-   params.length > 2 ? 'Extraneous parameter: ' + params[2] :
+   cli.invalidFlag ?     cli.invalidFlagMsg :
+   !source ?             'Missing source folder.' :
+   !target ?             'Missing target folder.' :
+   badRegex ?            'Regex must be enclosed in slashes.' :
+   cli.paramsCount > 2 ? 'Extraneous parameter: ' + cli.params[2] :
    null;
 if (error)
    throw Error('[replacer-util] ' + error);
-const sourceFile =   path.join(flagMap.cd ?? '', source);
+const sourceFile =   path.join(cli.flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
-const pattern =      flagMap.regex?.substring(1, flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
-const patternCodes = flagMap.regex?.replace(/.*\//, '');                           //regex options
+const pattern =      cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
+const patternCodes = cli.flagMap.regex?.replace(/.*\//, '');                           //regex options
 const escapeChar =   (param, escaper) => param.replace(escaper[0], escaper[1]);
 const escape =       (param) => !param ? null : escapers.reduce(escapeChar, param);
 const options = {
-   cd:          flagMap.cd ?? null,
-   concat:      flagMap.concat ?? null,
-   content:     escape(flagMap.content),
-   extensions:  flagMap.ext?.split(',') ?? [],
+   cd:          cli.flagMap.cd ?? null,
+   concat:      cli.flagMap.concat ?? null,
+   content:     escape(cli.flagMap.content),
+   extensions:  cli.flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
-   find:        escape(flagMap.find),
-   header:      escape(flagMap.header),
-   regex:       flagMap.regex ? new RegExp(escape(pattern), patternCodes) : null,
-   rename:      flagMap.rename ?? null,
-   replacement: escape(flagMap.replacement),
-   pkg:         flagOn.pkg,
+   find:        escape(cli.flagMap.find),
+   header:      escape(cli.flagMap.header),
+   regex:       cli.flagMap.regex ? new RegExp(escape(pattern), patternCodes) : null,
+   rename:      cli.flagMap.rename ?? null,
+   replacement: escape(cli.flagMap.replacement),
+   pkg:         cli.flagOn.pkg,
    };
 const results = replacer.transform(sourceFolder, target, options);
-if (!flagOn.quiet)
+if (!cli.flagOn.quiet)
    printReport(results);
