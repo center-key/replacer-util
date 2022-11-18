@@ -1,6 +1,6 @@
-//! replacer-util v0.3.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.3.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
-export declare type Settings = {
+export type Settings = {
     cd: string | null;
     concat: string | null;
     content: string | null;
@@ -8,13 +8,14 @@ export declare type Settings = {
     filename: string | null;
     find: string | null;
     header: string | null;
+    noSourceMap: boolean;
     regex: RegExp | null;
     rename: string | null;
     replacement: string | null;
     pkg: boolean;
 };
-export declare type Options = Partial<Settings>;
-export declare type Results = {
+export type Options = Partial<Settings>;
+export type Results = {
     source: string;
     target: string;
     count: number;
@@ -24,7 +25,7 @@ export declare type Results = {
         dest: string;
     }[];
 };
-export declare type ResultsFile = Results['files'][0];
+export type ResultsFile = Results['files'][0];
 declare const replacer: {
     transform(sourceFolder: string, targetFolder: string, options?: Options): Results;
 };

@@ -1,4 +1,4 @@
-//! replacer-util v0.3.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.3.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 concat: null,
                 extensions: [],
                 find: null,
+                noSourceMap: false,
                 regex: null,
                 replacement: null,
                 pkg: false,
@@ -79,6 +80,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             engine.registerFilter('major-version', versionFormatter(1));
             const normalizeEol = /\r/g;
             const normalizeEof = /\s*$(?!\n)/;
+            const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
             const header = settings.header ? settings.header + '\n' : '';
             const rep = settings.replacement ?? '';
             const getFileInfo = (origin) => {
@@ -98,7 +100,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
                 const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
                 const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
-                const final = append && settings.header ? '\n' + out4 : out4;
+                const out5 = settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
+                const final = append && settings.header ? '\n' + out5 : out5;
                 fs_1.default.mkdirSync(path_1.default.dirname(file.dest), { recursive: true });
                 return append ? fs_1.default.appendFileSync(file.dest, final) : fs_1.default.writeFileSync(file.dest, final);
             };
