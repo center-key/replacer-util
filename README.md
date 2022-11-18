@@ -47,21 +47,22 @@ $ replacer src/web ext=.html docs/api-manual
 
 ### 3. CLI Flags
 Command-line flags:
-| Flag            | Description                                           | Value      |
-| --------------- | ----------------------------------------------------- | ---------- |
-| `--cd`          | Change working directory before starting search.      | **string** |
-| `--concat`      | Merge all files into one file in the target folder.   | **string** |
-| `--content`     | String to be used instead of the input file contents. | **string** |
-| `--ext`         | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
-| `--find`        | Text to search for in the source input files.         | **string** |
-| `--header`      | Predend a line of text to each file.                  | **string** |
-| `--pkg`         | Load **package.json** and make it available as `pkg`. | N/A        |
-| `--note`        | Place to add a comment only for humans.               | **string** |
-| `--quiet`       | Suppress informational messages.                      | N/A        |
-| `--regex`       | Pattern to search for in the source input files.      | **string** |
-| `--rename`      | New output filename if there's only one source file.  | **string** |
-| `--replacement` | Text to insert into the target output files.          | **string** |
-| `--summary`     | Only print out the single line summary message.       | N/A        |
+| Flag              | Description                                           | Value      |
+| ----------------- | ----------------------------------------------------- | ---------- |
+| `--cd`            | Change working directory before starting search.      | **string** |
+| `--concat`        | Merge all files into one file in the target folder.   | **string** |
+| `--content`       | String to be used instead of the input file contents. | **string** |
+| `--ext`           | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
+| `--find`          | Text to search for in the source input files.         | **string** |
+| `--header`        | Predend a line of text to each file.                  | **string** |
+| `--pkg`           | Load **package.json** and make it available as `pkg`. | N/A        |
+| `--no-source-map` | Remove any `sourceMappingURL` comment directives.     | N/A        |
+| `--note`          | Place to add a comment only for humans.               | **string** |
+| `--quiet`         | Suppress informational messages.                      | N/A        |
+| `--regex`         | Pattern to search for in the source input files.      | **string** |
+| `--rename`        | New output filename if there's only one source file.  | **string** |
+| `--replacement`   | Text to insert into the target output files.          | **string** |
+| `--summary`       | Only print out the single line summary message.       | N/A        |
 
 To avoid issues on the command line, problematic characters can be _"escaped"_ with safe strings as listed below.
 
@@ -97,6 +98,8 @@ Examples:
    Copy **my-app.js** to **my-app.browser.js** without making and changes.
    - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. --pkg target`<br>
    Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
+   - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
+   Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 
 ### 5. Template Outputs and Filter Formatters
 When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;

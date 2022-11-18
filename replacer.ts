@@ -15,6 +15,7 @@ export type Settings = {
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
    header:      string | null,  //predend a line of text to each file
+   noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives.
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename if there's only one source file.
    replacement: string | null,  //text to insert into the target output files
@@ -49,12 +50,13 @@ const replacer = {
          concat:      null,
          extensions:  [],
          find:        null,
+         noSourceMap: false,
          regex:       null,
          replacement: null,
          pkg:         false,
          };
-      const settings = { ...defaults, ...options };
-      const startTime = Date.now();
+      const settings =    { ...defaults, ...options };
+      const startTime =   Date.now();
       const startFolder = settings.cd ? task.normalizeFolder(settings.cd) + '/' : '';
       const source =      task.normalizeFolder(startFolder + sourceFolder);
       const target =      task.normalizeFolder(startFolder + targetFolder);
@@ -89,8 +91,9 @@ const replacer = {
       engine.registerFilter('version',       versionFormatter(3));
       engine.registerFilter('minor-version', versionFormatter(2));
       engine.registerFilter('major-version', versionFormatter(1));
-      const normalizeEol = /\r/g;
-      const normalizeEof = /\s*$(?!\n)/;
+      const normalizeEol =  /\r/g;
+      const normalizeEof =  /\s*$(?!\n)/;
+      const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
       const header =       settings.header ? settings.header + '\n' : '';
       const rep =          settings.replacement ?? '';
       const getFileInfo = (origin: string) => {
@@ -110,7 +113,8 @@ const replacer = {
          const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
          const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
          const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;
-         const final =    append && settings.header ? '\n' + out4 : out4;
+         const out5 =     settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
+         const final =    append && settings.header ? '\n' + out5 : out5;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };

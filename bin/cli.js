@@ -19,7 +19,7 @@
 //    $ cd replacer-util
 //    $ npm install
 //    $ npm test
-//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.{{space}}{{pkg.type}} --note=space
+//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.{{space}}{{pkg.type}} --no-source-map --note=space
 //    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --pkg --concat=bundle.js
 
 // Imports
@@ -31,7 +31,8 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters and flags
-const validFlags = ['cd', 'concat', 'content', 'ext', 'find', 'header', 'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const validFlags = ['cd', 'concat', 'content', 'ext', 'find', 'header', 'no-source-map',
+   'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const cli =        cliArgvUtil.parse(validFlags);
 const source =     cli.params[0];  //origin file or folder
 const target =     cli.params[1];  //destination folder
@@ -75,8 +76,8 @@ if (error)
 const sourceFile =   path.join(cli.flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
-const pattern =      cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
-const patternCodes = cli.flagMap.regex?.replace(/.*\//, '');                           //regex options
+const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
+const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
 const escapeChar =   (param, escaper) => param.replace(escaper[0], escaper[1]);
 const escape =       (param) => !param ? null : escapers.reduce(escapeChar, param);
 const options = {
@@ -87,7 +88,8 @@ const options = {
    filename:    isFile ? path.basename(source) : null,
    find:        escape(cli.flagMap.find),
    header:      escape(cli.flagMap.header),
-   regex:       cli.flagMap.regex ? new RegExp(escape(pattern), patternCodes) : null,
+   noSourceMap: cli.flagOn.noSourceMap,
+   regex:       cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
    rename:      cli.flagMap.rename ?? null,
    replacement: escape(cli.flagMap.replacement),
    pkg:         cli.flagOn.pkg,

@@ -31,3 +31,4 @@ const info2 = {
    };
 
 export { info2 };
+//# sourceMappingURL=mock2.js.map
