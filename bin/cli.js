@@ -42,7 +42,7 @@ const printReport = (results) => {
    const name =      chalk.gray('replacer');
    const source =    chalk.blue.bold(results.source);
    const target =    chalk.magenta(results.target);
-   const arrow =     { big: chalk.gray.bold('➤➤➤'), little: chalk.gray.bold(' ⟹  ') };  //extra space for alignment
+   const arrow =     { big: chalk.gray.bold(' ⟹  '), little: chalk.gray.bold('→') };
    const infoColor = results.count ? chalk.white : chalk.red.bold;
    const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
    const logFile =   (file) => log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
