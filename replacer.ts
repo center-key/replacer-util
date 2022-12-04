@@ -14,7 +14,7 @@ export type Settings = {
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
-   header:      string | null,  //predend a line of text to each file
+   header:      string | null,  //prepend a line of text to each file
    noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives.
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename if there's only one source file.
@@ -27,7 +27,7 @@ export type Results = {
    target:   string,  //path of destination folder
    count:    number,  //number of files copied
    duration: number,  //execution time in milliseconds
-   files:    { origin: string, dest: string }[],
+   files:    { origin: string, dest: string }[],  //list of processed files
    };
 export type ResultsFile = Results['files'][0];
 

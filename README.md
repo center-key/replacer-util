@@ -45,7 +45,7 @@ $ npm install --global replacer-util
 $ replacer src/web ext=.html docs/api-manual
 ```
 
-### 3. CLI Flags
+### 3. CLI flags
 Command-line flags:
 | Flag              | Description                                           | Value      |
 | ----------------- | ----------------------------------------------------- | ---------- |
@@ -54,7 +54,7 @@ Command-line flags:
 | `--content`       | String to be used instead of the input file contents. | **string** |
 | `--ext`           | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`          | Text to search for in the source input files.         | **string** |
-| `--header`        | Predend a line of text to each file.                  | **string** |
+| `--header`        | Prepend a line of text to each file.                  | **string** |
 | `--pkg`           | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--no-source-map` | Remove any `sourceMappingURL` comment directives.     | N/A        |
 | `--note`          | Place to add a comment only for humans.               | **string** |
@@ -77,7 +77,7 @@ Escape characters:
 | `;`       | `{{semi}}`           |
 | ` `       | `{{space}}`          |
 
-### 4. Example CLI Usage
+### 4. Example CLI usage
 Examples:
    - `replacer src --pkg build`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
@@ -101,7 +101,7 @@ Examples:
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 
-### 5. Template Outputs and Filter Formatters
+### 5. Template outputs and filter formatters
 When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
 Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
 [Path information](https://nodejs.org/api/path.html#pathparsepath) is also available in the `file` object (which also includes the supplemental `path` field).

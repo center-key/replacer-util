@@ -1,4 +1,4 @@
-//! replacer-util v0.3.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v0.3.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
