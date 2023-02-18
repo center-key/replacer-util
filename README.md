@@ -81,23 +81,32 @@ Escape characters:
 Examples:
    - `replacer src --pkg build`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
+
    - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer fixed`<br>
    Fix spelling error in markdown files.
+
    - `replacer web '--find=cat dog' --replacement=\ cat{{pipe}}dog{{space}} target`<br>
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
+
    - `replacer src --ext=.js --pkg --concat=bundle.js build`<br>
    Merge all JS files into **build/bundle.js**.
+
    - `replacer app/widgets --ext=.less --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
    Create a single LESS file that imports the LESS files of every widget component.
+
    - `replacer src --pkg --summary build`<br>
    Display the summary but not the individual files copied.
+
    - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
    Find double dashes at the start of lines and replace them with 3 carrots.&nbsp;
    Note the `gm` [regex options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags).
+
    - `replacer build/my-app.js --rename=my-app.browser.js build`<br>
    Copy **my-app.js** to **my-app.browser.js** without making and changes.
+
    - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. --pkg target`<br>
    Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
+
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 

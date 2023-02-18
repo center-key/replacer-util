@@ -1,4 +1,4 @@
-//! replacer-util v0.3.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.0.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
