@@ -1,6 +1,6 @@
 {
    "name": "replacer-util",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)",
    "license": "MIT",
    "type": "module",
@@ -69,7 +69,7 @@
    },
    "runScriptsConfig": {
       "build": [
-         "rimraf build dist spec/fixtures/target **/.DS_Store",
+         "rimraf build dist spec/fixtures/target",
          "jshint . --exclude-path .gitignore",
          "eslint --max-warnings 0 . --ext .ts",
          "tsc",
@@ -87,7 +87,7 @@
       "chalk": "~5.2",
       "cli-argv-util": "~1.0",
       "fancy-log": "~2.0",
-      "glob": "~9.1",
+      "glob": "~9.2",
       "istextorbinary": "~6.0",
       "liquidjs": "~10.6",
       "slash": "~5.0"
@@ -107,7 +107,7 @@
       "mocha": "~10.2",
       "pretty-print-json": "~1.4",
       "rev-web-assets": "~1.0",
-      "rimraf": "3",
+      "rimraf": "~4.3",
       "run-scripts-util": "~1.0",
       "typescript": "~4.9",
       "w3c-html-validator": "~1.3"

@@ -1,9 +1,9 @@
-//! replacer-util v1.0.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.0.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
+import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
 import fs from 'fs';
-import glob from 'glob';
 import path from 'path';
 import slash from 'slash';
 const task = {
@@ -54,7 +54,7 @@ const replacer = {
             dest: concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
         });
         const exts = settings.extensions.length ? settings.extensions : [''];
-        const globFiles = () => exts.map(ext => glob.sync(source + '/**/*' + ext)).flat().sort();
+        const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
         const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
         const files = filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
         const pkg = settings.pkg ? task.readPackageJson() : null;

@@ -1,4 +1,4 @@
-//! replacer-util v1.0.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.0.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -9,16 +9,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "istextorbinary", "liquidjs", "fs", "glob", "path", "slash"], factory);
+        define(["require", "exports", "glob", "istextorbinary", "liquidjs", "fs", "path", "slash"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.replacer = void 0;
+    const glob_1 = require("glob");
     const istextorbinary_1 = require("istextorbinary");
     const liquidjs_1 = require("liquidjs");
     const fs_1 = __importDefault(require("fs"));
-    const glob_1 = __importDefault(require("glob"));
     const path_1 = __importDefault(require("path"));
     const slash_1 = __importDefault(require("slash"));
     const task = {
@@ -69,7 +69,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 dest: concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
             });
             const exts = settings.extensions.length ? settings.extensions : [''];
-            const globFiles = () => exts.map(ext => glob_1.default.sync(source + '/**/*' + ext)).flat().sort();
+            const globFiles = () => exts.map(ext => (0, glob_1.globSync)(source + '/**/*' + ext)).flat().sort();
             const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
             const files = filesRaw.filter(task.isTextFile).map(file => (0, slash_1.default)(file)).map(resultsFile);
             const pkg = settings.pkg ? task.readPackageJson() : null;
