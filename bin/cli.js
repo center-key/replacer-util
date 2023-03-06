@@ -53,8 +53,11 @@ const printReport = (results) => {
 
 // Escapers
 const escapers = [
+   [/{{apos}}/g,        "'"],
    [/{{bang}}/g,        '!'],
    [/{{close-curly}}/g, '}'],
+   [/{{gt}}/g,          '>'],
+   [/{{lt}}/g,          '<'],
    [/{{open-curly}}/g,  '{'],
    [/{{pipe}}/g,        '|'],
    [/{{quote}}/g,       '"'],

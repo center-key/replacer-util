@@ -69,10 +69,13 @@ To avoid issues on the command line, problematic characters can be _"escaped"_ w
 Escape characters:
 | Character | Safe stand-in string |
 | --------- | -------------------- |
+| `'`       | `{{apos}}`           |
 | `!`       | `{{bang}}`           |
 | `}`       | `{{close-curly}}`    |
+| `>`       | `{{gt}}`             |
+| `<`       | `{{lt}}`             |
 | `{`       | `{{open-curly}}`     |
-| `|`       | `{{pipe}}`           |
+| `\|`      | `{{pipe}}`           |
 | `"`       | `{{quote}}`          |
 | `;`       | `{{semi}}`           |
 | ` `       | `{{space}}`          |
@@ -85,7 +88,9 @@ Examples:
    - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer fixed`<br>
    Fix spelling error in markdown files.
 
-   - `replacer web '--find=cat dog' --replacement=\ cat{{pipe}}dog{{space}} target`<br>
+   - `replacer web '--find=cat dog' '--replacement= cat{{pipe}}dog ' target`
+   - `replacer web --find=cat\ dog --replacement=\ cat{{pipe}}dog\  target`
+   - `replacer web --find=cat{{space}}dog --replacement={{space}}cat{{pipe}}dog{{space}} target`<br>
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
 
    - `replacer src --ext=.js --pkg --concat=bundle.js build`<br>
