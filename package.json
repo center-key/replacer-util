@@ -87,7 +87,7 @@
       "chalk": "~5.2",
       "cli-argv-util": "~1.0",
       "fancy-log": "~2.0",
-      "glob": "~9.2",
+      "glob": "~9.3",
       "istextorbinary": "~6.0",
       "liquidjs": "~10.6",
       "slash": "~5.0"
@@ -95,21 +95,21 @@
    "devDependencies": {
       "@types/fancy-log": "~2.0",
       "@types/glob": "~8.1",
-      "@types/node": "~18.14",
-      "@typescript-eslint/eslint-plugin": "~5.54",
-      "@typescript-eslint/parser": "~5.54",
+      "@types/node": "~18.15",
+      "@typescript-eslint/eslint-plugin": "~5.55",
+      "@typescript-eslint/parser": "~5.55",
       "add-dist-header": "~1.0",
       "assert-deep-strict-equal": "~1.0",
       "copy-file-util": "~1.0",
-      "eslint": "~8.35",
-      "fetch-json": "~3.0",
+      "eslint": "~8.36",
+      "fetch-json": "~3.1",
       "jshint": "~2.13",
       "mocha": "~10.2",
       "pretty-print-json": "~1.4",
       "rev-web-assets": "~1.0",
-      "rimraf": "~4.3",
+      "rimraf": "~4.4",
       "run-scripts-util": "~1.0",
-      "typescript": "~4.9",
+      "typescript": "~5.0",
       "w3c-html-validator": "~1.3"
    }
 }

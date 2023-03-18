@@ -142,7 +142,7 @@ For example, if your project declares a dependency of `^2.7.1` for **fetch-json*
 ```
 will be transformed into:
 ```html
-<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.0/dist/fetch-json.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
 ```
 
 ## C) Application Code
