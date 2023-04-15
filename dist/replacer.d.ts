@@ -1,4 +1,4 @@
-//! replacer-util v1.0.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.0.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
