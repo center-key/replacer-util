@@ -151,6 +151,7 @@ Even though **replacer-util** is primarily intended for build scripts, the packa
 Example:
 ``` typescript
 import { replacer } from 'replacer-util';
+
 const options = { extensions: ['.html', '.js'], pkg: true };
 const results = replacer.transform('src/web', 'docs/api-manual', options);
 console.log('Number of files copied:', results.count);
