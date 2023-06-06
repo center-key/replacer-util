@@ -72,6 +72,7 @@ Escape characters:
 | `'`       | `{{apos}}`           |
 | `!`       | `{{bang}}`           |
 | `}`       | `{{close-curly}}`    |
+| `=`       | `{{equals}}`         |
 | `>`       | `{{gt}}`             |
 | `<`       | `{{lt}}`             |
 | `{`       | `{{open-curly}}`     |

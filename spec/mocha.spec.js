@@ -88,13 +88,20 @@ describe('Correct error is thrown', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 describe('Executing the CLI', () => {
+   const cmd = (posix) => process.platform === 'win32' ? posix.replaceAll('\\ ', '" "') : posix;
+   const run = (posix) => execSync(cmd(posix), { stdio: 'inherit' });
+
+   it('with basic parameters creates the expected new menu file', () => {
+      run('node bin/cli.js spec/fixtures/menu.txt spec/fixtures/target --find=Meatloaf --replacement=Bulgogi');
+      const actual =   ['menu.txt', fs.readdirSync('spec/fixtures/target')?.includes('menu.txt')];
+      const expected = ['menu.txt', true];
+      assertDeepStrictEqual(actual, expected);
+      });
 
    it('with --header and --concat flags creates the expected bundle file', () => {
-      const posix = 'node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js';
-      const cmd = process.platform === 'win32' ? posix.replaceAll('\\ ', '" "') : posix;
-      execSync(cmd, { stdio: 'inherit' });
-      const actual =   { bundle: fs.readdirSync('spec/fixtures/target')?.[0] };
-      const expected = { bundle: 'bundle.js' };
+      run('node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js');
+      const actual =   ['bundle.js', fs.readdirSync('spec/fixtures/target')?.includes('bundle.js')];
+      const expected = ['bundle.js', true];
       assertDeepStrictEqual(actual, expected);
       });
 

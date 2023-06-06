@@ -1,0 +1,6 @@
+*** MENU ***
+Monday:    Bulgogi
+Tuesday:   Tacos
+Wednesday: Spaghetti
+Thursday:  Bulgogi
+Friday:    Teriyaki

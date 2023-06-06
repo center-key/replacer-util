@@ -56,6 +56,7 @@ const escapers = [
    [/{{apos}}/g,        "'"],
    [/{{bang}}/g,        '!'],
    [/{{close-curly}}/g, '}'],
+   [/{{equals}}/g,      '='],
    [/{{gt}}/g,          '>'],
    [/{{lt}}/g,          '<'],
    [/{{open-curly}}/g,  '{'],

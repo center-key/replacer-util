@@ -1,0 +1,6 @@
+*** MENU ***
+Monday:    Meatloaf
+Tuesday:   Tacos
+Wednesday: Spaghetti
+Thursday:  Meatloaf
+Friday:    Teriyaki
