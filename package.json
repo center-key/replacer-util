@@ -1,6 +1,6 @@
 {
    "name": "replacer-util",
-   "version": "1.0.2",
+   "version": "1.0.3",
    "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm scripts)",
    "license": "MIT",
    "type": "module",
@@ -89,21 +89,21 @@
       "chalk": "~5.2",
       "cli-argv-util": "~1.0",
       "fancy-log": "~2.0",
-      "glob": "10.2.3",
+      "glob": "~10.2",
       "istextorbinary": "~6.0",
-      "liquidjs": "~10.7",
+      "liquidjs": "~10.8",
       "slash": "~5.1"
    },
    "devDependencies": {
       "@types/fancy-log": "~2.0",
       "@types/glob": "~8.1",
-      "@types/node": "~20.1",
+      "@types/node": "~20.2",
       "@typescript-eslint/eslint-plugin": "~5.59",
       "@typescript-eslint/parser": "~5.59",
       "add-dist-header": "~1.0",
       "assert-deep-strict-equal": "~1.0",
       "copy-file-util": "~1.0",
-      "eslint": "~8.40",
+      "eslint": "~8.42",
       "fetch-json": "~3.1",
       "jshint": "~2.13",
       "mocha": "~10.2",
@@ -111,7 +111,7 @@
       "rev-web-assets": "~1.0",
       "rimraf": "~5.0",
       "run-scripts-util": "~1.1",
-      "typescript": "~5.0",
+      "typescript": "~5.1",
       "w3c-html-validator": "~1.3"
    }
 }
