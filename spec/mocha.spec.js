@@ -20,7 +20,6 @@ describe('The "dist" folder', () => {
       const expected = [
          'replacer.d.ts',
          'replacer.js',
-         'replacer.umd.cjs',
          ];
       assertDeepStrictEqual(actual, expected);
       });
@@ -92,7 +91,7 @@ describe('Executing the CLI', () => {
    const run = (posix) => {
       const name =    Object.keys(pkg.bin).sort()[0];
       const command = process.platform === 'win32' ? posix.replaceAll('\\ ', '" "') : posix;
-      execSync(command.replace(name, 'node bin/cli.js'), { stdio: 'inherit' });
+      return execSync(command.replace(name, 'node bin/cli.js'), { stdio: 'inherit' });
       };
 
    it('with basic parameters creates the expected new menu file', () => {
