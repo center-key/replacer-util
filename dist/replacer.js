@@ -1,4 +1,4 @@
-//! replacer-util v1.0.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.1.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
