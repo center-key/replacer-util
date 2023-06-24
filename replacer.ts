@@ -39,7 +39,20 @@ const task = {
       return fs.statSync(filename).isFile() && !isBinary(filename);
       },
    readPackageJson() {
-      return JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+      const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+      const fixHiddenKeys = (pkgObj: { [key: string]: string }) => {
+         const unhide = (key: string) => {
+            const newKey = key.replace(/[@./]/g, '-');
+            if (!pkgObj[newKey])
+               pkgObj[newKey] = pkgObj[key]!;
+            };
+         Object.keys(pkgObj).forEach(unhide);
+         };
+      if (pkg?.dependencies)
+         fixHiddenKeys(pkg.dependencies);
+      if (pkg?.devDependencies)
+         fixHiddenKeys(pkg.devDependencies);
+      return pkg;
       },
    };
 
@@ -84,8 +97,8 @@ const replacer = {
       const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
       const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
       const files =     filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
-      const pkg = settings.pkg ? task.readPackageJson() : null;
-      const engine = new Liquid({ globals: { pkg } });
+      const pkg =       settings.pkg ? task.readPackageJson() : null;
+      const engine =    new Liquid({ globals: { pkg } });
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
@@ -94,8 +107,8 @@ const replacer = {
       const normalizeEol =  /\r/g;
       const normalizeEof =  /\s*$(?!\n)/;
       const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
-      const header =       settings.header ? settings.header + '\n' : '';
-      const rep =          settings.replacement ?? '';
+      const header =        settings.header ? settings.header + '\n' : '';
+      const rep =           settings.replacement ?? '';
       const getFileInfo = (origin: string) => {
          const parsedPath = path.parse(origin);
          const dir =        slash(parsedPath.dir);

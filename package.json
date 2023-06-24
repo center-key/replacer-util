@@ -86,12 +86,13 @@
       "chalk": "~5.2",
       "cli-argv-util": "~1.1",
       "fancy-log": "~2.0",
-      "glob": "~10.2",
+      "glob": "~10.3",
       "istextorbinary": "~6.0",
       "liquidjs": "~10.8",
       "slash": "~5.1"
    },
    "devDependencies": {
+      "@fortawesome/fontawesome-free": "~6.4",
       "@types/fancy-log": "~2.0",
       "@types/glob": "~8.1",
       "@types/node": "~20.3",
@@ -102,12 +103,13 @@
       "copy-file-util": "~1.1",
       "eslint": "~8.43",
       "fetch-json": "~3.1",
+      "highlight.js": "~11.8",
       "jshint": "~2.13",
       "mocha": "~10.2",
       "pretty-print-json": "~2.0",
-      "rev-web-assets": "~1.1",
+      "rev-web-assets": "~1.2",
       "rimraf": "~5.0",
-      "run-scripts-util": "~1.1",
+      "run-scripts-util": "~1.2",
       "typescript": "~5.1",
       "w3c-html-validator": "~1.4"
    }

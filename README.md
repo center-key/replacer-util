@@ -132,18 +132,31 @@ const msg1: string = 'The current release of MY-COOL-NPM-PACKAGE is v1.2.3.';
 const msg2: string = 'This file is: my-app.ts';
 ```
 
-Three additional filter formatters are available to support Semantic Versioning (SemVer):
+### 6. SemVer
+Your project's dependancies declared in **package.json** can be used to automatically keep your
+CDN links up-to-date.
+
+Three special filter formatters are available to support Semantic Versioning (SemVer):
    * `version`
    * `major-version`
    * `minor-version`
 
-For example, if your project declares a dependency of `^2.7.1` for **fetch-json**, the line:
+For example, if your project declares a dependency of `^3.1.2` for **fetch-json**, the line:
 ```html
 <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.dependencies.fetch-json|minor-version}}/dist/fetch-json.min.js></script>
 ```
 will be transformed into:
 ```html
 <script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
+```
+_Note:_ Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
+characters are not supported for replacement.&nbsp;
+Use `-` in the package name instead.
+
+For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"highlight.js"` can be created with:
+```html
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{pkg.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
+<script src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{pkg.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
 ```
 
 ## C) Application Code
