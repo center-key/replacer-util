@@ -1,4 +1,4 @@
-//! replacer-util v1.1.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.1.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -14,7 +14,20 @@ const task = {
         return fs.statSync(filename).isFile() && !isBinary(filename);
     },
     readPackageJson() {
-        return JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+        const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+        const fixHiddenKeys = (pkgObj) => {
+            const unhide = (key) => {
+                const newKey = key.replace(/[@./]/g, '-');
+                if (!pkgObj[newKey])
+                    pkgObj[newKey] = pkgObj[key];
+            };
+            Object.keys(pkgObj).forEach(unhide);
+        };
+        if (pkg?.dependencies)
+            fixHiddenKeys(pkg.dependencies);
+        if (pkg?.devDependencies)
+            fixHiddenKeys(pkg.devDependencies);
+        return pkg;
     },
 };
 const replacer = {
