@@ -5,7 +5,6 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/replacer-util/blob/main/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/replacer-util.svg)](https://www.npmjs.com/package/replacer-util)
-[![Vulnerabilities](https://snyk.io/test/github/center-key/replacer-util/badge.svg)](https://snyk.io/test/github/center-key/replacer-util)
 [![Build](https://github.com/center-key/replacer-util/workflows/build/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
 
 **replacer-util** searches for text to substitute with a replacement string or with values from your project's **package.json** file, such as the project version number.&nbsp;
@@ -147,7 +146,7 @@ For example, if your project declares a dependency of `^3.1.2` for **fetch-json*
 ```
 will be transformed into:
 ```html
-<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.2/dist/fetch-json.min.js></script>
 ```
 _Note:_ Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
 characters are not supported for replacement.&nbsp;
