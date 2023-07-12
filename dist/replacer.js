@@ -1,4 +1,4 @@
-//! replacer-util v1.1.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.1.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -99,7 +99,8 @@ const replacer = {
             const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
             const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
             const out5 = settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
-            const final = append && settings.header ? '\n' + out5 : out5;
+            const out6 = out5.trimStart();
+            const final = append && settings.header ? '\n' + out6 : out6;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
         };
