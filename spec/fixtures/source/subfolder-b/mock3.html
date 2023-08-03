@@ -4,10 +4,8 @@
       <meta charset=utf-8>
       <title>🔍🔍🔍 {{pkg.name}} 🔍🔍🔍</title>
       <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json|version}}/dist/css/pretty-print-json.css>
-      <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{pkg.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
       <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@{{pkg.devDependencies.pretty-print-json|version}}/dist/pretty-print-json.min.js></script>
       <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.devDependencies.fetch-json|version}}/dist/fetch-json.min.js></script>
-      <script defer src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{pkg.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
    </head>
    <body>
       <h1>🔍🔍🔍 {{pkg.name}} 🔍🔍🔍</h1>
@@ -18,6 +16,5 @@
          <li>Minor:   v{{pkg.version | minor-version}}</li>
          <li>Major:   v{{pkg.version | major-version}}</li>
       </ul>
-      <pre><code class=language-js>{% render 'spec/fixtures/source/subfolder-a/mock2.js' %}</code></pre>
    </body>
 </html>

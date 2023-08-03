@@ -11,15 +11,16 @@ export type Settings = {
    cd:          string | null,  //change working directory before starting search
    concat:      string | null,  //merge all files into one file in the target folder
    content:     string | null,  //string to be used instead of the input file contents
+   exclude:     string | null,  //skip files containing the string in their path
    extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
    header:      string | null,  //prepend a line of text to each file
    noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives.
+   pkg:         boolean,        //load package.json and make it available as "pkg"
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename if there's only one source file.
    replacement: string | null,  //text to insert into the target output files
-   pkg:         boolean,        //load package.json and make it available as "pkg"
    };
 export type Options = Partial<Settings>;
 export type Results = {
@@ -61,12 +62,13 @@ const replacer = {
       const defaults = {
          cd:          null,
          concat:      null,
+         exclude:     null,
          extensions:  [],
          find:        null,
          noSourceMap: false,
+         pkg:         false,
          regex:       null,
          replacement: null,
-         pkg:         false,
          };
       const settings =    { ...defaults, ...options };
       const startTime =   Date.now();
@@ -89,14 +91,18 @@ const replacer = {
          null;
       if (errorMessage)
          throw Error('[replacer-util] ' + errorMessage);
-      const resultsFile = (file: string) =>({
+      const globFiles = () =>
+         exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
+      const keep = (filename: string) =>
+         !settings.exclude || !filename.includes(settings.exclude);
+      const resultsFile = (file: string) => ({
          origin: file,
          dest:   concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
          });
       const exts =      settings.extensions.length ? settings.extensions : [''];
-      const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
       const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
-      const files =     filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
+      const filtered =  filesRaw.filter(task.isTextFile).filter(keep);
+      const files =     filtered.map(file => slash(file)).map(resultsFile);
       const pkg =       settings.pkg ? task.readPackageJson() : null;
       const engine =    new Liquid({ globals: { pkg } });
       const versionFormatter = (numIds: number) =>

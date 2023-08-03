@@ -51,6 +51,7 @@ Command-line flags:
 | `--cd`            | Change working directory before starting search.      | **string** |
 | `--concat`        | Merge all files into one file in the target folder.   | **string** |
 | `--content`       | String to be used instead of the input file contents. | **string** |
+| `--exclude`       | Skip files containing the string in their path.       | **string** |
 | `--ext`           | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`          | Text to search for in the source input files.         | **string** |
 | `--header`        | Prepend a line of text to each file.                  | **string** |

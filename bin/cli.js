@@ -31,7 +31,7 @@ import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters and flags
-const validFlags = ['cd', 'concat', 'content', 'ext', 'find', 'header', 'no-source-map',
+const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-source-map',
    'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 const cli =        cliArgvUtil.parse(validFlags);
 const source =     cli.params[0];  //origin file or folder
@@ -88,6 +88,7 @@ const options = {
    cd:          cli.flagMap.cd ?? null,
    concat:      cli.flagMap.concat ?? null,
    content:     escape(cli.flagMap.content),
+   exclude:     cli.flagMap.exclude ?? null,
    extensions:  cli.flagMap.ext?.split(',') ?? [],
    filename:    isFile ? path.basename(source) : null,
    find:        escape(cli.flagMap.find),

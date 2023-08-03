@@ -4,7 +4,6 @@
 // Imports
 import { assertDeepStrictEqual } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
-import { revWebAssets } from 'rev-web-assets';
 import assert from 'assert';
 import fs from     'fs';
 
@@ -49,20 +48,22 @@ describe('Calling replacer.transform()', () => {
    it('creates the correct text files in the target folder', () => {
       const options = {
          cd:          'spec/fixtures',
-         pkg:         true,
+         exclude:     'subfolder-b',
          find:        'insect',
          noSourceMap: true,
+         pkg:         true,
          replacement: 'A.I. {{pkg.type}}',  //'A.I. module'
          };
       replacer.transform('source', 'target', options);
-      const actual = revWebAssets.readFolderRecursive('spec/fixtures/target');
+      const actual = fs.readdirSync('spec/fixtures/target', { recursive: true }).sort();
       const expected = [
-         'spec/fixtures/target/mock1.html',
-         'spec/fixtures/target/mock1.js',
-         'spec/fixtures/target/mock1.min.css',
-         'spec/fixtures/target/subfolder/mock2.html',
-         'spec/fixtures/target/subfolder/mock2.js',
-         'spec/fixtures/target/subfolder/mock2.min.css',
+         'mock1.html',
+         'mock1.js',
+         'mock1.min.css',
+         'subfolder-a',
+         'subfolder-a/mock2.html',
+         'subfolder-a/mock2.js',
+         'subfolder-a/mock2.min.css',
          ];
       assertDeepStrictEqual(actual, expected);
       });
