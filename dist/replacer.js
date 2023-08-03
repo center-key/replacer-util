@@ -1,4 +1,4 @@
-//! replacer-util v1.1.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -35,12 +35,13 @@ const replacer = {
         const defaults = {
             cd: null,
             concat: null,
+            exclude: null,
             extensions: [],
             find: null,
             noSourceMap: false,
+            pkg: false,
             regex: null,
             replacement: null,
-            pkg: false,
         };
         const settings = { ...defaults, ...options };
         const startTime = Date.now();
@@ -48,7 +49,6 @@ const replacer = {
         const source = task.normalizeFolder(startFolder + sourceFolder);
         const target = task.normalizeFolder(startFolder + targetFolder);
         const concatFile = settings.concat ? path.join(target, settings.concat) : null;
-        const renameFile = settings.rename ? path.join(target, settings.rename) : null;
         const missingFind = !settings.find && !settings.regex && !!settings.replacement;
         if (targetFolder)
             fs.mkdirSync(target, { recursive: true });
@@ -62,14 +62,18 @@ const replacer = {
                                     null;
         if (errorMessage)
             throw Error('[replacer-util] ' + errorMessage);
-        const resultsFile = (file) => ({
+        const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
+        const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
+        const relativeFolders = (file) => file.substring(source.length, file.length - path.basename(file).length);
+        const renameFile = (file) => settings.rename ? target + relativeFolders(file) + settings.rename : null;
+        const getFileRoute = (file) => ({
             origin: file,
-            dest: concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
+            dest: concatFile ?? renameFile(file) ?? target + '/' + file.substring(source.length + 1),
         });
         const exts = settings.extensions.length ? settings.extensions : [''];
-        const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
         const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
-        const files = filesRaw.filter(task.isTextFile).map(file => slash(file)).map(resultsFile);
+        const filtered = filesRaw.filter(task.isTextFile).filter(keep);
+        const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
         const pkg = settings.pkg ? task.readPackageJson() : null;
         const engine = new Liquid({ globals: { pkg } });
         const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
@@ -104,7 +108,7 @@ const replacer = {
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
         };
-        files.map(processFile);
+        fileRoutes.map(processFile);
         const relativePaths = (file) => ({
             origin: file.origin.substring(source.length + 1),
             dest: file.dest.substring(target.length + 1),
@@ -112,9 +116,9 @@ const replacer = {
         return {
             source: source,
             target: target,
-            count: files.length,
+            count: fileRoutes.length,
             duration: Date.now() - startTime,
-            files: files.map(relativePaths),
+            files: fileRoutes.map(relativePaths),
         };
     },
 };

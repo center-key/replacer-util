@@ -1,18 +1,19 @@
-//! replacer-util v1.1.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
     concat: string | null;
     content: string | null;
+    exclude: string | null;
     extensions: string[];
     filename: string | null;
     find: string | null;
     header: string | null;
     noSourceMap: boolean;
+    pkg: boolean;
     regex: RegExp | null;
     rename: string | null;
     replacement: string | null;
-    pkg: boolean;
 };
 export type Options = Partial<Settings>;
 export type Results = {
