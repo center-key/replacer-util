@@ -16,10 +16,10 @@ export type Settings = {
    filename:    string | null,  //single file in the source folder to be processed
    find:        string | null,  //text to search for in the source input files
    header:      string | null,  //prepend a line of text to each file
-   noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives.
+   noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives
    pkg:         boolean,        //load package.json and make it available as "pkg"
    regex:       RegExp | null,  //pattern to search for in the source input files
-   rename:      string | null,  //new output filename if there's only one source file.
+   rename:      string | null,  //new output filename
    replacement: string | null,  //text to insert into the target output files
    };
 export type Options = Partial<Settings>;
@@ -76,7 +76,6 @@ const replacer = {
       const source =      task.normalizeFolder(startFolder + sourceFolder);
       const target =      task.normalizeFolder(startFolder + targetFolder);
       const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
-      const renameFile =  settings.rename ? path.join(target, settings.rename) : null;
       const missingFind = !settings.find && !settings.regex && !!settings.replacement;
       if (targetFolder)
          fs.mkdirSync(target, { recursive: true });
@@ -93,18 +92,22 @@ const replacer = {
          throw Error('[replacer-util] ' + errorMessage);
       const globFiles = () =>
          exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
-      const keep = (filename: string) =>
-         !settings.exclude || !filename.includes(settings.exclude);
-      const resultsFile = (file: string) => ({
+      const keep = (file: string) =>
+         !settings.exclude || !file.includes(settings.exclude);
+      const relativeFolders = (file: string) =>
+         file.substring(source.length, file.length - path.basename(file).length);
+      const renameFile = (file: string) =>
+         settings.rename ? target + relativeFolders(file) + settings.rename : null;
+      const getFileRoute = (file: string) => ({
          origin: file,
-         dest:   concatFile ?? renameFile ?? target + '/' + file.substring(source.length + 1),
+         dest:   concatFile ?? renameFile(file) ?? target + '/' + file.substring(source.length + 1),
          });
-      const exts =      settings.extensions.length ? settings.extensions : [''];
-      const filesRaw =  settings.filename ? [source + '/' + settings.filename] : globFiles();
-      const filtered =  filesRaw.filter(task.isTextFile).filter(keep);
-      const files =     filtered.map(file => slash(file)).map(resultsFile);
-      const pkg =       settings.pkg ? task.readPackageJson() : null;
-      const engine =    new Liquid({ globals: { pkg } });
+      const exts =       settings.extensions.length ? settings.extensions : [''];
+      const filesRaw =   settings.filename ? [source + '/' + settings.filename] : globFiles();
+      const filtered =   filesRaw.filter(task.isTextFile).filter(keep);
+      const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
+      const pkg =        settings.pkg ? task.readPackageJson() : null;
+      const engine =     new Liquid({ globals: { pkg } });
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
@@ -138,7 +141,7 @@ const replacer = {
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
-      files.map(processFile);
+      fileRoutes.map(processFile);
       const relativePaths = (file: ResultsFile) => ({
          origin: file.origin.substring(source.length + 1),
          dest:   file.dest.substring(target.length + 1),
@@ -146,9 +149,9 @@ const replacer = {
       return {
          source:   source,
          target:   target,
-         count:    files.length,
+         count:    fileRoutes.length,
          duration: Date.now() - startTime,
-         files:    files.map(relativePaths),
+         files:    fileRoutes.map(relativePaths),
          };
       },
    };

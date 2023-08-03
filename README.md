@@ -60,7 +60,7 @@ Command-line flags:
 | `--note`          | Place to add a comment only for humans.               | **string** |
 | `--quiet`         | Suppress informational messages.                      | N/A        |
 | `--regex`         | Pattern to search for in the source input files.      | **string** |
-| `--rename`        | New output filename if there's only one source file.  | **string** |
+| `--rename`        | New output filename.                                  | **string** |
 | `--replacement`   | Text to insert into the target output files.          | **string** |
 | `--summary`       | Only print out the single line summary message.       | N/A        |
 
@@ -109,6 +109,9 @@ Examples:
 
    - `replacer build/my-app.js --rename=my-app.browser.js build`<br>
    Copy **my-app.js** to **my-app.browser.js** without making and changes.
+
+   - `replacer src/web --ext=.html --rename=index.html dist/website`<br>
+   Rename all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder stucture.
 
    - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. --pkg target`<br>
    Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)

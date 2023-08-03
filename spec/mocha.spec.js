@@ -5,7 +5,7 @@
 import { assertDeepStrictEqual } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
 import assert from 'assert';
-import fs from     'fs';
+import fs     from 'fs';
 
 // Setup
 import { replacer } from '../dist/replacer.js';
@@ -102,6 +102,19 @@ describe('Executing the CLI', () => {
       run('replacer --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js');
       const actual =   ['bundle.js', fs.readdirSync('spec/fixtures/target')?.includes('bundle.js')];
       const expected = ['bundle.js', true];
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   it('on HTML files to create index.html files preserves the folder structure', () => {
+      run('replacer spec/fixtures/source --ext=.html --pkg --rename=index.html spec/fixtures/target/web');
+      const actual = fs.readdirSync('spec/fixtures/target/web', { recursive: true }).sort();
+      const expected = [
+         'index.html',
+         'subfolder-a',
+         'subfolder-a/index.html',
+         'subfolder-b',
+         'subfolder-b/index.html',
+         ];
       assertDeepStrictEqual(actual, expected);
       });
 
