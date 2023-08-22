@@ -55,7 +55,7 @@ describe('Calling replacer.transform()', () => {
          replacement: 'A.I. {{pkg.type}}',  //'A.I. module'
          };
       replacer.transform('source', 'target', options);
-      const actual = fs.readdirSync('spec/fixtures/target', { recursive: true }).sort();
+      const actual = cliArgvUtil.readFolder('spec/fixtures/target');
       const expected = [
          'mock1.html',
          'mock1.js',
@@ -107,7 +107,7 @@ describe('Executing the CLI', () => {
 
    it('on HTML files to create index.html files preserves the folder structure', () => {
       run('replacer spec/fixtures/source --ext=.html --pkg --rename=index.html spec/fixtures/target/web');
-      const actual = fs.readdirSync('spec/fixtures/target/web', { recursive: true }).sort();
+      const actual = cliArgvUtil.readFolder('spec/fixtures/target/web');
       const expected = [
          'index.html',
          'subfolder-a',

@@ -11,7 +11,7 @@
 //    },
 //
 // Usage from command line:
-//    $ npm install --global replacer-util
+//    $ npm install --save-dev replacer-util
 //    $ replacer src/web --ext=.html docs --pkg --quiet
 //    $ replacer src --ext=.js build --regex=/^let/gm --replacement=const
 //
