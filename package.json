@@ -90,7 +90,7 @@
       "fancy-log": "~2.0",
       "glob": "~10.3",
       "istextorbinary": "~6.0",
-      "liquidjs": "~10.8",
+      "liquidjs": "~10.9",
       "slash": "~5.1"
    },
    "devDependencies": {

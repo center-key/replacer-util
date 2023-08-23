@@ -1,5 +1,6 @@
 // replacer-util ~~ MIT License
 
+// Imports
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -7,6 +8,7 @@ import fs    from 'fs';
 import path  from 'path';
 import slash from 'slash';
 
+// Types
 export type Settings = {
    cd:          string | null,  //change working directory before starting search
    concat:      string | null,  //merge all files into one file in the target folder
@@ -22,7 +24,6 @@ export type Settings = {
    rename:      string | null,  //new output filename
    replacement: string | null,  //text to insert into the target output files
    };
-export type Options = Partial<Settings>;
 export type Results = {
    source:   string,  //path of origination folder
    target:   string,  //path of destination folder
@@ -58,7 +59,7 @@ const task = {
    };
 
 const replacer = {
-   transform(sourceFolder: string, targetFolder: string, options?: Options): Results {
+   transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
       const defaults = {
          cd:          null,
          concat:      null,
