@@ -162,7 +162,7 @@ For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"
 ```
 
 ## C) Application Code
-Even though **replacer-util** is primarily intended for build scripts, the package can easily be used programmatically in ESM and TypeScript projects.
+Even though **replacer-util** is primarily intended for build scripts, the package can be used programmatically in ESM and TypeScript projects.
 
 Example:
 ``` typescript

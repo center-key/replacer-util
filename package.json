@@ -98,12 +98,12 @@
       "@types/fancy-log": "~2.0",
       "@types/glob": "~8.1",
       "@types/node": "~20.5",
-      "@typescript-eslint/eslint-plugin": "~6.4",
-      "@typescript-eslint/parser": "~6.4",
-      "add-dist-header": "~1.2",
+      "@typescript-eslint/eslint-plugin": "~6.6",
+      "@typescript-eslint/parser": "~6.6",
+      "add-dist-header": "~1.3",
       "assert-deep-strict-equal": "~1.1",
       "copy-file-util": "~1.1",
-      "eslint": "~8.47",
+      "eslint": "~8.48",
       "fetch-json": "~3.2",
       "highlight.js": "~11.8",
       "jshint": "~2.13",
@@ -111,7 +111,7 @@
       "pretty-print-json": "~2.0",
       "rimraf": "~5.0",
       "run-scripts-util": "~1.2",
-      "typescript": "~5.1",
+      "typescript": "~5.2",
       "w3c-html-validator": "~1.4"
    }
 }

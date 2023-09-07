@@ -4,7 +4,9 @@
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
+import chalk from 'chalk';
 import fs    from 'fs';
+import log   from 'fancy-log';
 import path  from 'path';
 import slash from 'slash';
 
@@ -32,6 +34,9 @@ export type Results = {
    files:    { origin: string, dest: string }[],  //list of processed files
    };
 export type ResultsFile = Results['files'][0];
+export type ReporterSettings = {
+   summaryOnly: boolean,  //only print out the single line summary message
+   };
 
 const task = {
    normalizeFolder(folderPath: string): string {
@@ -59,6 +64,7 @@ const task = {
    };
 
 const replacer = {
+
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
       const defaults = {
          cd:          null,
@@ -155,6 +161,26 @@ const replacer = {
          files:    fileRoutes.map(relativePaths),
          };
       },
+
+   reporter(results: Results, options?: Partial<ReporterSettings>): Results {
+      const defaults = {
+         summaryOnly: false,
+         };
+      const settings =  { ...defaults, ...options };
+      const name =      chalk.gray('replacer');
+      const source =    chalk.blue.bold(results.source);
+      const target =    chalk.magenta(results.target);
+      const arrow =     { big: chalk.gray.bold(' ⟹  '), little: chalk.gray.bold('→') };
+      const infoColor = results.count ? chalk.white : chalk.red.bold;
+      const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
+      log(name, source, arrow.big, target, info);
+      const logFile = (file: ResultsFile) =>
+         log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
+      if (!settings.summaryOnly)
+         results.files.forEach(logFile);
+      return results;
+      },
+
    };
 
 export { replacer };

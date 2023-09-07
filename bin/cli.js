@@ -25,9 +25,7 @@
 // Imports
 import { cliArgvUtil } from 'cli-argv-util';
 import { replacer } from '../dist/replacer.js';
-import chalk from 'chalk';
 import fs    from 'fs';
-import log   from 'fancy-log';
 import path  from 'path';
 
 // Parameters and flags
@@ -36,20 +34,6 @@ const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header
 const cli =        cliArgvUtil.parse(validFlags);
 const source =     cli.params[0];  //origin file or folder
 const target =     cli.params[1];  //destination folder
-
-// Reporting
-const printReport = (results) => {
-   const name =      chalk.gray('replacer');
-   const source =    chalk.blue.bold(results.source);
-   const target =    chalk.magenta(results.target);
-   const arrow =     { big: chalk.gray.bold(' ⟹  '), little: chalk.gray.bold('→') };
-   const infoColor = results.count ? chalk.white : chalk.red.bold;
-   const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
-   const logFile =   (file) => log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
-   log(name, source, arrow.big, target, info);
-   if (!cli.flagOn.summary)
-      results.files.forEach(logFile);
-   };
 
 // Escapers
 const escapers = [
@@ -101,4 +85,4 @@ const options = {
    };
 const results = replacer.transform(sourceFolder, target, options);
 if (!cli.flagOn.quiet)
-   printReport(results);
+   replacer.reporter(results, { summaryOnly: cli.flagOn.summary });
