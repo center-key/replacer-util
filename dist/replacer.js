@@ -1,9 +1,11 @@
-//! replacer-util v1.2.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
+import chalk from 'chalk';
 import fs from 'fs';
+import log from 'fancy-log';
 import path from 'path';
 import slash from 'slash';
 const task = {
@@ -120,6 +122,23 @@ const replacer = {
             duration: Date.now() - startTime,
             files: fileRoutes.map(relativePaths),
         };
+    },
+    reporter(results, options) {
+        const defaults = {
+            summaryOnly: false,
+        };
+        const settings = { ...defaults, ...options };
+        const name = chalk.gray('replacer');
+        const source = chalk.blue.bold(results.source);
+        const target = chalk.magenta(results.target);
+        const arrow = { big: chalk.gray.bold(' ⟹  '), little: chalk.gray.bold('→') };
+        const infoColor = results.count ? chalk.white : chalk.red.bold;
+        const info = infoColor(`(files: ${results.count}, ${results.duration}ms)`);
+        log(name, source, arrow.big, target, info);
+        const logFile = (file) => log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
+        if (!settings.summaryOnly)
+            results.files.forEach(logFile);
+        return results;
     },
 };
 export { replacer };
