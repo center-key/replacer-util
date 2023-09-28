@@ -21,7 +21,6 @@ export type Settings = {
    find:        string | null,  //text to search for in the source input files
    header:      string | null,  //prepend a line of text to each file
    noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives
-   pkg:         boolean,        //load package.json and make it available as "pkg"
    regex:       RegExp | null,  //pattern to search for in the source input files
    rename:      string | null,  //new output filename
    replacement: string | null,  //text to insert into the target output files
@@ -73,7 +72,6 @@ const replacer = {
          extensions:  [],
          find:        null,
          noSourceMap: false,
-         pkg:         false,
          regex:       null,
          replacement: null,
          };
@@ -113,8 +111,8 @@ const replacer = {
       const filesRaw =   settings.filename ? [source + '/' + settings.filename] : globFiles();
       const filtered =   filesRaw.filter(task.isTextFile).filter(keep);
       const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
-      const pkg =        settings.pkg ? task.readPackageJson() : null;
-      const engine =     new Liquid({ globals: { pkg } });
+      const pkg =        task.readPackageJson();
+      const engine =     new Liquid({ globals: { package: pkg, pkg: pkg } });  //pkg global is deprecated
       const versionFormatter = (numIds: number) =>
          (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
       engine.registerFilter('version',       versionFormatter(3));
@@ -137,8 +135,8 @@ const replacer = {
          const append =   settings.concat && index > 0;
          const altText =  settings.content ? render(settings.content) : null;
          const content =  render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
-         const newStr =   settings.pkg ? render(rep) : rep;
-         const out1 =     settings.pkg ? render(content) : content;
+         const newStr =   render(rep);
+         const out1 =     render(content);
          const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
          const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
          const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;

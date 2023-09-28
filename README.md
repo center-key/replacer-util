@@ -8,7 +8,7 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 [![Build](https://github.com/center-key/replacer-util/workflows/build/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
 
 **replacer-util** searches for text to substitute with a replacement string or with values from your project's **package.json** file, such as the project version number.&nbsp;
-**LiquidJS** powers the templates outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for including partials.&nbsp;
+**LiquidJS** powers the template outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for including partials.&nbsp;
 
 <img src=https://raw.githubusercontent.com/center-key/replacer-util/main/screenshot.png
 width=800 alt=screenshot>
@@ -30,10 +30,12 @@ Parameters:
 Example **package.json** scripts:
 ```json
    "scripts": {
-      "build-web": "replacer src/web --ext=.html --pkg dist/website",
+      "build-web": "replacer src/web --ext=.html dist/website",
       "poetry": "replacer poems --find=human --replacement=robot dystopian-poems"
    },
 ```
+In addition to the `--find` and `--replacement` CLI flags, template outputs in the source files will be replaced with their corresponding template variable values.&nbsp;
+The template variable `package` points to the **package.json** object, enabling `{{package.version}}` in the source file to be replaced with the project's version number.
 
 ### 2. Command-line npx
 Example terminal commands:
@@ -54,7 +56,6 @@ Command-line flags:
 | `--ext`           | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`          | Text to search for in the source input files.         | **string** |
 | `--header`        | Prepend a line of text to each file.                  | **string** |
-| `--pkg`           | Load **package.json** and make it available as `pkg`. | N/A        |
 | `--no-source-map` | Remove any `sourceMappingURL` comment directives.     | N/A        |
 | `--note`          | Place to add a comment only for humans.               | **string** |
 | `--quiet`         | Suppress informational messages.                      | N/A        |
@@ -82,7 +83,7 @@ Escape characters:
 
 ### 4. Example CLI usage
 Examples:
-   - `replacer src --pkg build`<br>
+   - `replacer src build`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
 
    - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer fixed`<br>
@@ -93,13 +94,13 @@ Examples:
    `replacer web --find=cat{{space}}dog --replacement={{space}}cat{{pipe}}dog{{space}} target`<br>
    Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
 
-   - `replacer src --ext=.js --pkg --concat=bundle.js build`<br>
+   - `replacer src --ext=.js --concat=bundle.js build`<br>
    Merge all JS files into **build/bundle.js**.
 
-   - `replacer app/widgets --ext=.less --pkg --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
+   - `replacer app/widgets --ext=.less --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
    Create a single LESS file that imports the LESS files of every widget component.
 
-   - `replacer src --pkg --summary build`<br>
+   - `replacer src --summary build`<br>
    Display the summary but not the individual files copied.
 
    - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
@@ -112,20 +113,20 @@ Examples:
    - `replacer src/web --ext=.html --rename=index.html dist/website`<br>
    Rename all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder stucture.
 
-   - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. --pkg target`<br>
+   - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. target`<br>
    Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
 
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 
 ### 5. Template outputs and filter formatters
-When the `--pkg` flag is used, values from your project's **package.json** are available as variables for LiquidJS [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs).&nbsp;
-Formatting, such as appling `upcase`, is done with LiquidJS [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
-[Path information](https://nodejs.org/api/path.html#pathparsepath) is also available in the `file` object (which also includes the supplemental `path` field).
+The source files are processed by LiquidJS, so you can use [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs) and [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
+The values from your project's **package.json** file are available as fields of the `package` variable.&nbsp;
+In addition to the `package` variable, [path information](https://nodejs.org/api/path.html#pathparsepath) is available in the `file` variable (which also includes the supplemental `path` field).
 
 For example, a TypeScript file with the lines:
 ```typescript
-const msg1: string = 'The current release of {{pkg.name | upcase}} is v{{pkg.version}}.';
+const msg1: string = 'The current release of {{package.name | upcase}} is v{{package.version}}.';
 const msg2: string = 'This file is: {{file.base}}';
 ```
 will be transformed into something like:
@@ -145,7 +146,7 @@ Three special filter formatters are available to support Semantic Versioning (Se
 
 For example, if your project declares a dependency of `^3.1.2` for **fetch-json**, the line:
 ```html
-<script src=https://cdn.jsdelivr.net/npm/fetch-json@{{pkg.dependencies.fetch-json|minor-version}}/dist/fetch-json.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/fetch-json@{{package.dependencies.fetch-json|minor-version}}/dist/fetch-json.min.js></script>
 ```
 will be transformed into:
 ```html
@@ -157,8 +158,8 @@ Use `-` in the package name instead.
 
 For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"highlight.js"` can be created with:
 ```html
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{pkg.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
-<script src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{pkg.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{package.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
+<script src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{package.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
 ```
 
 ## C) Application Code
@@ -168,7 +169,7 @@ Example:
 ``` typescript
 import { replacer } from 'replacer-util';
 
-const options = { extensions: ['.html', '.js'], pkg: true };
+const options = { extensions: ['.html', '.js'] };
 const results = replacer.transform('src/web', 'docs/api-manual', options);
 console.log('Number of files copied:', results.count);
 ```

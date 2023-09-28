@@ -55,8 +55,7 @@ describe('Calling replacer.transform()', () => {
          exclude:     'subfolder-b',
          find:        'insect',
          noSourceMap: true,
-         pkg:         true,
-         replacement: 'A.I. {{pkg.type}}',  //'A.I. module'
+         replacement: 'A.I. {{package.type}}',  //'A.I. module'
          };
       replacer.transform('source', 'target', options);
       const actual = cliArgvUtil.readFolder('spec/fixtures/target');
@@ -103,14 +102,14 @@ describe('Executing the CLI', () => {
       });
 
    it('with --header and --concat flags creates the expected bundle file', () => {
-      run('replacer --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --pkg --concat=bundle.js');
+      run('replacer --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --concat=bundle.js');
       const actual =   ['bundle.js', fs.readdirSync('spec/fixtures/target')?.includes('bundle.js')];
       const expected = ['bundle.js', true];
       assertDeepStrictEqual(actual, expected);
       });
 
    it('on HTML files to create index.html files preserves the folder structure', () => {
-      run('replacer spec/fixtures/source --ext=.html --pkg --rename=index.html spec/fixtures/target/web');
+      run('replacer spec/fixtures/source --ext=.html --rename=index.html spec/fixtures/target/web');
       const actual = cliArgvUtil.readFolder('spec/fixtures/target/web');
       const expected = [
          'index.html',

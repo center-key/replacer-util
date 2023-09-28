@@ -6,21 +6,21 @@
 
 // Usage in package.json:
 //    "scripts": {
-//       "build-web": "replacer src/web --ext=.html dist/website --pkg",
+//       "build-web": "replacer src/web --ext=.html dist/website",
 //       "poetry": "replacer poems dystopian-poems --find=humans --replacement=robots"
 //    },
 //
 // Usage from command line:
 //    $ npm install --save-dev replacer-util
-//    $ replacer src/web --ext=.html docs --pkg --quiet
+//    $ replacer src/web --ext=.html docs --quiet
 //    $ replacer src --ext=.js build --regex=/^let/gm --replacement=const
 //
 // Contributors to this project:
 //    $ cd replacer-util
 //    $ npm install
 //    $ npm test
-//    $ node bin/cli.js --cd=spec/fixtures source target --pkg --find=insect --replacement=A.I.{{space}}{{pkg.type}} --no-source-map --note=space
-//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --pkg --concat=bundle.js
+//    $ node bin/cli.js --cd=spec/fixtures source target --find=insect --replacement=A.I.{{space}}{{package.type}} --no-source-map --note=space
+//    $ node bin/cli.js --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --concat=bundle.js
 
 // Imports
 import { cliArgvUtil } from 'cli-argv-util';
@@ -30,7 +30,8 @@ import path  from 'path';
 
 // Parameters and flags
 const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-source-map',
-   'note', 'pkg', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+   'note', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+validFlags.push('pkg');  //deprecated flag
 const cli =        cliArgvUtil.parse(validFlags);
 const source =     cli.params[0];  //origin file or folder
 const target =     cli.params[1];  //destination folder
@@ -61,6 +62,8 @@ const error =
    null;
 if (error)
    throw Error('[replacer-util] ' + error);
+if (cli.flagOn.pkg)
+   console.log('[replacer-util]  The --pkg flag is deprecated as the package.json file is now always loaded.');
 const sourceFile =   path.join(cli.flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;
@@ -81,7 +84,6 @@ const options = {
    regex:       cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
    rename:      cli.flagMap.rename ?? null,
    replacement: escape(cli.flagMap.replacement),
-   pkg:         cli.flagOn.pkg,
    };
 const results = replacer.transform(sourceFolder, target, options);
 if (!cli.flagOn.quiet)

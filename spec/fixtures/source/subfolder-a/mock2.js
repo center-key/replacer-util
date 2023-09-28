@@ -5,8 +5,8 @@ let π2 = 3.14;
 let τ2 = 2 * π2;
 
 const info2 = {
-   banner:      '🔍🔍🔍 {{pkg.name}} v{{pkg.version}} 🔍🔍🔍',
-   description: '{{pkg.description}}',
+   banner:      '🔍🔍🔍 {{package.name}} v{{package.version}} 🔍🔍🔍',
+   description: '{{package.description}}',
    list1:       'insect, insect, insect',
    list2:       'insect, iNsEcT, INSECT, insect',
    math:        { π2, τ2 },
