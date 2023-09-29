@@ -135,6 +135,17 @@ const msg1: string = 'The current release of MY-COOL-NPM-PACKAGE is v1.2.3.';
 const msg2: string = 'This file is: my-app.ts';
 ```
 
+Example outputs and formatters:
+| Source file text               | Example output value      | Note                                           |
+| ------------------------------ | ------------------------- | ---------------------------------------------- |
+| `{{package.name}}`             | `my-project`              | Value from `name` field in **pacakge.json**    |
+| `{{package.version}}`          | `3.1.4`                   | Value from `version` field in **pacakge.json** |
+| `{{package.version | size}}`   | `5`                       | Length of the version number string            |
+| `{{file.name}}`                | `password-reset`          | Source filename without the file extension     |
+| `{{file.path}}`                | `web/password-reset.html` | Full path to source file                       |
+| `{{"now" | date: "%Y-%m-%d"}}` | `2023-09-28`              | Build date timestamp                           |
+| `{{myVariable | upcase}}`      | `DARK MODE`               | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
+
 ### 6. SemVer
 Your project's dependancies declared in **package.json** can be used to automatically keep your
 CDN links up-to-date.
@@ -144,13 +155,13 @@ Three special filter formatters are available to support Semantic Versioning (Se
    * `major-version`
    * `minor-version`
 
-For example, if your project declares a dependency of `^3.1.2` for **fetch-json**, the line:
+For example, if your project declares a dependency of `^3.1.4` for **fetch-json**, the line:
 ```html
 <script src=https://cdn.jsdelivr.net/npm/fetch-json@{{package.dependencies.fetch-json|minor-version}}/dist/fetch-json.min.js></script>
 ```
 will be transformed into:
 ```html
-<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.2/dist/fetch-json.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
 ```
 _Note:_ Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
 characters are not supported for replacement.&nbsp;

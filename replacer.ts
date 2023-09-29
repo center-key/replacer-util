@@ -39,12 +39,16 @@ export type ReporterSettings = {
 
 const task = {
    normalizeFolder(folderPath: string): string {
+      // Clean up path and remove trailing slash.
+      // Example: 'data\books///123\' --> 'data/books/123'
       return !folderPath ? '' : slash(path.normalize(folderPath)).replace(/\/$/, '');
       },
    isTextFile(filename: string): boolean {
+      // Returns true if the file is not a binary file such as a .png or .jpg file.
       return fs.statSync(filename).isFile() && !isBinary(filename);
       },
    readPackageJson() {
+      // Returns package.json as an object literal.
       const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
       const fixHiddenKeys = (pkgObj: { [key: string]: string }) => {
          const unhide = (key: string) => {
@@ -107,17 +111,11 @@ const replacer = {
          origin: file,
          dest:   concatFile ?? renameFile(file) ?? target + '/' + file.substring(source.length + 1),
          });
-      const exts =       settings.extensions.length ? settings.extensions : [''];
-      const filesRaw =   settings.filename ? [source + '/' + settings.filename] : globFiles();
-      const filtered =   filesRaw.filter(task.isTextFile).filter(keep);
-      const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
-      const pkg =        task.readPackageJson();
-      const engine =     new Liquid({ globals: { package: pkg, pkg: pkg } });  //pkg global is deprecated
-      const versionFormatter = (numIds: number) =>
-         (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
-      engine.registerFilter('version',       versionFormatter(3));
-      engine.registerFilter('minor-version', versionFormatter(2));
-      engine.registerFilter('major-version', versionFormatter(1));
+      const exts =          settings.extensions.length ? settings.extensions : [''];
+      const filesRaw =      settings.filename ? [source + '/' + settings.filename] : globFiles();
+      const filtered =      filesRaw.filter(task.isTextFile).filter(keep);
+      const fileRoutes =    filtered.map(file => slash(file)).map(getFileRoute);
+      const pkg =           task.readPackageJson();
       const normalizeEol =  /\r/g;
       const normalizeEof =  /\s*$(?!\n)/;
       const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
@@ -127,22 +125,33 @@ const replacer = {
          const parsedPath = path.parse(origin);
          const dir =        slash(parsedPath.dir);
          const filePath =   dir + '/' + slash(parsedPath.base);
-         return { file: { ...parsedPath, dir: dir, path: filePath } };
+         return { ...parsedPath, dir: dir, path: filePath };
+         };
+      const createEngine = (file: ResultsFile) => {
+         const globals = { package: pkg, file: getFileInfo(file.origin) };
+         globals[<keyof typeof globals>'pkg'] = pkg;  //pkg global is deprecated
+         const engine =  new Liquid({ globals });
+         const versionFormatter = (numIds: number) =>
+            (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
+         engine.registerFilter('version',       versionFormatter(3));
+         engine.registerFilter('minor-version', versionFormatter(2));
+         engine.registerFilter('major-version', versionFormatter(1));
+         return engine;
          };
       const processFile = (file: ResultsFile, index: number) => {
-         const fileInfo = getFileInfo(file.origin);
-         const render =   (text: string) => engine.parseAndRenderSync(text, fileInfo);
-         const append =   settings.concat && index > 0;
-         const altText =  settings.content ? render(settings.content) : null;
-         const content =  render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
-         const newStr =   render(rep);
-         const out1 =     render(content);
-         const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
-         const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-         const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;
-         const out5 =     settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
-         const out6 =     out5.trimStart();
-         const final =    append && settings.header ? '\n' + out6 : out6;
+         const engine =  createEngine(file);
+         const render =  (text: string) => engine.parseAndRenderSync(text);
+         const append =  settings.concat && index > 0;
+         const altText = settings.content ? render(settings.content) : null;
+         const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
+         const newStr =  render(rep);
+         const out1 =    render(content);
+         const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
+         const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
+         const out4 =    settings.regex ? out3.replace(settings.regex, newStr) : out3;
+         const out5 =    settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
+         const out6 =    out5.trimStart();
+         const final =   append && settings.header ? '\n' + out6 : out6;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
@@ -161,6 +170,7 @@ const replacer = {
       },
 
    reporter(results: Results, options?: Partial<ReporterSettings>): Results {
+      // Pretty prints the output of the replacer.transform() function.
       const defaults = {
          summaryOnly: false,
          };
