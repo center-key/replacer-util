@@ -1,4 +1,4 @@
-//! replacer-util v1.2.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -43,6 +43,7 @@ const replacer = {
             noSourceMap: false,
             regex: null,
             replacement: null,
+            templatingOn: true,
         };
         const settings = { ...defaults, ...options };
         const startTime = Date.now();
@@ -104,7 +105,7 @@ const replacer = {
             const altText = settings.content ? render(settings.content) : null;
             const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
             const newStr = render(rep);
-            const out1 = render(content);
+            const out1 = settings.templatingOn ? render(content) : content;
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
             const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
             const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;

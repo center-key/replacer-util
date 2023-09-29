@@ -1,4 +1,4 @@
-//! replacer-util v1.2.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
@@ -13,6 +13,7 @@ export type Settings = {
     regex: RegExp | null;
     rename: string | null;
     replacement: string | null;
+    templatingOn: boolean;
 };
 export type Results = {
     source: string;
