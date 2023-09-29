@@ -1,4 +1,4 @@
-//! replacer-util v1.2.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -41,7 +41,6 @@ const replacer = {
             extensions: [],
             find: null,
             noSourceMap: false,
-            pkg: false,
             regex: null,
             replacement: null,
         };
@@ -76,12 +75,7 @@ const replacer = {
         const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
         const filtered = filesRaw.filter(task.isTextFile).filter(keep);
         const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
-        const pkg = settings.pkg ? task.readPackageJson() : null;
-        const engine = new Liquid({ globals: { pkg } });
-        const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
-        engine.registerFilter('version', versionFormatter(3));
-        engine.registerFilter('minor-version', versionFormatter(2));
-        engine.registerFilter('major-version', versionFormatter(1));
+        const pkg = task.readPackageJson();
         const normalizeEol = /\r/g;
         const normalizeEof = /\s*$(?!\n)/;
         const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
@@ -91,16 +85,26 @@ const replacer = {
             const parsedPath = path.parse(origin);
             const dir = slash(parsedPath.dir);
             const filePath = dir + '/' + slash(parsedPath.base);
-            return { file: { ...parsedPath, dir: dir, path: filePath } };
+            return { ...parsedPath, dir: dir, path: filePath };
+        };
+        const createEngine = (file) => {
+            const globals = { package: pkg, file: getFileInfo(file.origin) };
+            globals['pkg'] = pkg;
+            const engine = new Liquid({ globals });
+            const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
+            engine.registerFilter('version', versionFormatter(3));
+            engine.registerFilter('minor-version', versionFormatter(2));
+            engine.registerFilter('major-version', versionFormatter(1));
+            return engine;
         };
         const processFile = (file, index) => {
-            const fileInfo = getFileInfo(file.origin);
-            const render = (text) => engine.parseAndRenderSync(text, fileInfo);
+            const engine = createEngine(file);
+            const render = (text) => engine.parseAndRenderSync(text);
             const append = settings.concat && index > 0;
             const altText = settings.content ? render(settings.content) : null;
             const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
-            const newStr = settings.pkg ? render(rep) : rep;
-            const out1 = settings.pkg ? render(content) : content;
+            const newStr = render(rep);
+            const out1 = render(content);
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
             const out3 = settings.find ? out2.replaceAll(settings.find, newStr) : out2;
             const out4 = settings.regex ? out3.replace(settings.regex, newStr) : out3;
