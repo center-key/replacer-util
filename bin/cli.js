@@ -29,7 +29,7 @@ import fs    from 'fs';
 import path  from 'path';
 
 // Parameters and flags
-const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-source-map',
+const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-liquid' ,'no-source-map',
    'note', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
 validFlags.push('pkg');  //deprecated flag
 const cli =        cliArgvUtil.parse(validFlags);
@@ -72,18 +72,19 @@ const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                    
 const escapeChar =   (param, escaper) => param.replace(escaper[0], escaper[1]);
 const escape =       (param) => !param ? null : escapers.reduce(escapeChar, param);
 const options = {
-   cd:          cli.flagMap.cd ?? null,
-   concat:      cli.flagMap.concat ?? null,
-   content:     escape(cli.flagMap.content),
-   exclude:     cli.flagMap.exclude ?? null,
-   extensions:  cli.flagMap.ext?.split(',') ?? [],
-   filename:    isFile ? path.basename(source) : null,
-   find:        escape(cli.flagMap.find),
-   header:      escape(cli.flagMap.header),
-   noSourceMap: cli.flagOn.noSourceMap,
-   regex:       cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
-   rename:      cli.flagMap.rename ?? null,
-   replacement: escape(cli.flagMap.replacement),
+   cd:           cli.flagMap.cd ?? null,
+   concat:       cli.flagMap.concat ?? null,
+   content:      escape(cli.flagMap.content),
+   exclude:      cli.flagMap.exclude ?? null,
+   extensions:   cli.flagMap.ext?.split(',') ?? [],
+   filename:     isFile ? path.basename(source) : null,
+   find:         escape(cli.flagMap.find),
+   header:       escape(cli.flagMap.header),
+   noSourceMap:  cli.flagOn.noSourceMap,
+   regex:        cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
+   rename:       cli.flagMap.rename ?? null,
+   replacement:  escape(cli.flagMap.replacement),
+   templatingOn: !cli.flagOn.noLiquid,
    };
 const results = replacer.transform(sourceFolder, target, options);
 if (!cli.flagOn.quiet)

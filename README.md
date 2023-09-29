@@ -56,6 +56,7 @@ Command-line flags:
 | `--ext`           | Filter files by file extension, such as `.js`.<br>Use a comma to specify multiple extensions. | **string** |
 | `--find`          | Text to search for in the source input files.         | **string** |
 | `--header`        | Prepend a line of text to each file.                  | **string** |
+| `--no-liquid`     | Turn off LiquidJS templating.                         | N/A        |
 | `--no-source-map` | Remove any `sourceMappingURL` comment directives.     | N/A        |
 | `--note`          | Place to add a comment only for humans.               | **string** |
 | `--quiet`         | Suppress informational messages.                      | N/A        |
@@ -86,8 +87,11 @@ Examples:
    - `replacer src build`<br>
    Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
 
-   - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer fixed`<br>
+   - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer output/fixed`<br>
    Fix spelling error in markdown files.
+
+   - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer --no-liquid output/fixed`<br>
+   Same as previous example but disable LiquidJS templating (useful in case source files contain characters inadvertenly interpreted at templating commands).
 
    - `replacer web '--find=cat dog' '--replacement= cat{{pipe}}dog ' target`<br>
    `replacer web --find=cat\ dog --replacement=\ cat{{pipe}}dog\  target`<br>
@@ -145,6 +149,8 @@ Example outputs and formatters:
 | `{{file.path}}`                | `web/password-reset.html` | Full path to source file                       |
 | `{{"now" | date: "%Y-%m-%d"}}` | `2023-09-28`              | Build date timestamp                           |
 | `{{myVariable | upcase}}`      | `DARK MODE`               | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
+
+**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertenly being interpreted as templating commands and causing errors.
 
 ### 6. SemVer
 Your project's dependancies declared in **package.json** can be used to automatically keep your

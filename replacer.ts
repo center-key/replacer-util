@@ -12,18 +12,19 @@ import slash from 'slash';
 
 // Types
 export type Settings = {
-   cd:          string | null,  //change working directory before starting search
-   concat:      string | null,  //merge all files into one file in the target folder
-   content:     string | null,  //string to be used instead of the input file contents
-   exclude:     string | null,  //skip files containing the string in their path
-   extensions:  string[],       //filter files by file extensions, example: ['.js', '.css']
-   filename:    string | null,  //single file in the source folder to be processed
-   find:        string | null,  //text to search for in the source input files
-   header:      string | null,  //prepend a line of text to each file
-   noSourceMap: boolean,        //remove all "sourceMappingURL" comments directives
-   regex:       RegExp | null,  //pattern to search for in the source input files
-   rename:      string | null,  //new output filename
-   replacement: string | null,  //text to insert into the target output files
+   cd:           string | null,  //change working directory before starting search
+   concat:       string | null,  //merge all files into one file in the target folder
+   content:      string | null,  //string to be used instead of the input file contents
+   exclude:      string | null,  //skip files containing the string in their path
+   extensions:   string[],       //filter files by file extensions, example: ['.js', '.css']
+   filename:     string | null,  //single file in the source folder to be processed
+   find:         string | null,  //text to search for in the source input files
+   header:       string | null,  //prepend a line of text to each file
+   noSourceMap:  boolean,        //remove all "sourceMappingURL" comments directives
+   regex:        RegExp | null,  //pattern to search for in the source input files
+   rename:       string | null,  //new output filename
+   replacement:  string | null,  //text to insert into the target output files
+   templatingOn: boolean,        //enable LiquidJS templating
    };
 export type Results = {
    source:   string,  //path of origination folder
@@ -70,14 +71,15 @@ const replacer = {
 
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
       const defaults = {
-         cd:          null,
-         concat:      null,
-         exclude:     null,
-         extensions:  [],
-         find:        null,
-         noSourceMap: false,
-         regex:       null,
-         replacement: null,
+         cd:           null,
+         concat:       null,
+         exclude:      null,
+         extensions:   [],
+         find:         null,
+         noSourceMap:  false,
+         regex:        null,
+         replacement:  null,
+         templatingOn: true,
          };
       const settings =    { ...defaults, ...options };
       const startTime =   Date.now();
@@ -145,7 +147,7 @@ const replacer = {
          const altText = settings.content ? render(settings.content) : null;
          const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
          const newStr =  render(rep);
-         const out1 =    render(content);
+         const out1 =    settings.templatingOn ? render(content) : content;
          const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
          const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
          const out4 =    settings.regex ? out3.replace(settings.regex, newStr) : out3;
