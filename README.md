@@ -85,48 +85,54 @@ Escape characters:
 ### 4. Example CLI usage
 Examples:
    - `replacer src build`<br>
-   Recursively copy all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
+   Recursively copies all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
 
    - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer output/fixed`<br>
-   Fix spelling error in markdown files.
+   Fixes spelling error in markdown files.
 
    - `replacer src/docs --ext=.md --find=Referer --replacement=Referrer --no-liquid output/fixed`<br>
-   Same as previous example but disable LiquidJS templating (useful in case source files contain characters inadvertenly interpreted at templating commands).
+   Same as previous example but disables LiquidJS templating (useful in case source files contain characters inadvertently interpreted at templating commands).
 
    - `replacer web '--find=cat dog' '--replacement= cat{{pipe}}dog ' target`<br>
    `replacer web --find=cat\ dog --replacement=\ cat{{pipe}}dog\  target`<br>
    `replacer web --find=cat{{space}}dog --replacement={{space}}cat{{pipe}}dog{{space}} target`<br>
-   Replace all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
+   Replaces all occurances of the string `'cat dog'` with `' cat|dog '` (note the _3 different_ ways to _"escape"_ a space character).
 
-   - `replacer src --ext=.js --concat=bundle.js build`<br>
-   Merge all JS files into **build/bundle.js**.
+   - `replacer src --ext=.js --no-liquid --concat=bundle.js build`<br>
+   Merges all JS files into **build/bundle.js**.
 
    - `replacer app/widgets --ext=.less --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
-   Create a single LESS file that imports the LESS files of every widget component.
+   Creates a single LESS file that imports the LESS files of every widget component.
 
    - `replacer src --summary build`<br>
-   Display the summary but not the individual files copied.
+   Displays the summary but not the individual files copied.
 
    - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
-   Find double dashes at the start of lines and replace them with 3 carrots.&nbsp;
+   Finds double dashes at the start of lines and replace them with 3 carrots.&nbsp;
    Note the `gm` [regex options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags).
 
    - `replacer build/my-app.js --rename=my-app.browser.js build`<br>
-   Copy **my-app.js** to **my-app.browser.js** without making and changes.
+   Copies **my-app.js** to **my-app.browser.js** without making and changes.
 
    - `replacer src/web --ext=.html --rename=index.html dist/website`<br>
-   Rename all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder stucture.
+   Renames all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder structure.
 
    - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. target`<br>
-   Remove all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
+   Removes all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
 
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 
+_**Note:** Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
+
 ### 5. Template outputs and filter formatters
 The source files are processed by LiquidJS, so you can use [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs) and [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
-The values from your project's **package.json** file are available as fields of the `package` variable.&nbsp;
-In addition to the `package` variable, [path information](https://nodejs.org/api/path.html#pathparsepath) is available in the `file` variable (which also includes the supplemental `path` field).
+Custom variables are created with the [assign](ttps://liquidjs.com/tags/assign.html) tag.
+
+Three special variables are available by default:
+   * `file`    ([path information](https://nodejs.org/api/path.html#pathparsepath) about the target file)
+   * `package` (values from your project's **package.json** file)
+   * `webRoot` (relative path to root folder: `.`, `..`, `../..`, `../../..`, etc.)
 
 For example, a TypeScript file with the lines:
 ```typescript
@@ -142,15 +148,16 @@ const msg2: string = 'This file is: my-app.ts';
 Example outputs and formatters:
 | Source file text               | Example output value      | Note                                           |
 | ------------------------------ | ------------------------- | ---------------------------------------------- |
-| `{{package.name}}`             | `my-project`              | Value from `name` field in **pacakge.json**    |
-| `{{package.version}}`          | `3.1.4`                   | Value from `version` field in **pacakge.json** |
+| `{{package.name}}`             | `my-project`              | Value from `name` field in **package.json**    |
+| `{{package.version}}`          | `3.1.4`                   | Value from `version` field in **package.json** |
 | `{{package.version | size}}`   | `5`                       | Length of the version number string            |
 | `{{file.name}}`                | `password-reset`          | Source filename without the file extension     |
 | `{{file.path}}`                | `web/password-reset.html` | Full path to source file                       |
+| `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>`  | Link is relative to the source folder          |
 | `{{"now" | date: "%Y-%m-%d"}}` | `2023-09-28`              | Build date timestamp                           |
 | `{{myVariable | upcase}}`      | `DARK MODE`               | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
 
-**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertenly being interpreted as templating commands and causing errors.
+_**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
 
 ### 6. SemVer
 Your project's dependancies declared in **package.json** can be used to automatically keep your
@@ -169,9 +176,8 @@ will be transformed into:
 ```html
 <script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
 ```
-_Note:_ Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
-characters are not supported for replacement.&nbsp;
-Use `-` in the package name instead.
+_**Note:** Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
+characters are not supported for replacement.&nbsp; Use `-` in the package name instead._
 
 For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"highlight.js"` can be created with:
 ```html

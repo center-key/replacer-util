@@ -117,6 +117,8 @@ describe('Executing the CLI', () => {
          'subfolder-a/index.html',
          'subfolder-b',
          'subfolder-b/index.html',
+         'subfolder-b/subfolder-bb',
+         'subfolder-b/subfolder-bb/index.html',
          ];
       assertDeepStrictEqual(actual, expected);
       });

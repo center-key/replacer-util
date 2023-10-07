@@ -129,8 +129,16 @@ const replacer = {
          const filePath =   dir + '/' + slash(parsedPath.base);
          return { ...parsedPath, dir: dir, path: filePath };
          };
+      const getWebRoot = (origin: string) => {
+         const depth = origin.substring(source.length).split('/').length - 2;
+         return depth === 0 ? '.' : '..' + '/..'.repeat(depth - 1);
+         };
       const createEngine = (file: ResultsFile) => {
-         const globals = { package: pkg, file: getFileInfo(file.origin) };
+         const globals = {
+            package: pkg,
+            file:    getFileInfo(file.origin),
+            webRoot: getWebRoot(file.origin),
+            };
          globals[<keyof typeof globals>'pkg'] = pkg;  //pkg global is deprecated
          const engine =  new Liquid({ globals });
          const versionFormatter = (numIds: number) =>
