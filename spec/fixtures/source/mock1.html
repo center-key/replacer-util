@@ -10,15 +10,19 @@
       <script defer src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{package.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
    </head>
    <body>
-      <h1>🔍🔍🔍 {{package.name}} 🔍🔍🔍</h1>
-      <h2>{{package.description}}</h2>
-      <p>I, for one, welcome our new insect overlords.</p>
-      <ul>
-         <li>Release: v{{package.version | version}}</li>
-         <li>Minor:   v{{package.version | minor-version}}</li>
-         <li>Major:   v{{package.version | major-version}}</li>
-      </ul>
-      <pre><code class=language-js>{% render 'spec/fixtures/source/subfolder-a/mock2.js' %}</code></pre>
+      <header>
+         <h1>🔍🔍🔍 {{package.name}} 🔍🔍🔍</h1>
+         <h2>{{package.description}}</h2>
+      </header>
+      <main>
+         <p>I, for one, welcome our new insect overlords.</p>
+         <ul>
+            <li>Release: v{{package.version | version}}</li>
+            <li>Minor:   v{{package.version | minor-version}}</li>
+            <li>Major:   v{{package.version | major-version}}</li>
+         </ul>
+         <pre><code class=language-js>{% render 'spec/fixtures/source/subfolder-a/mock2.js' %}</code></pre>
+      </main>
       <footer>
          <a href={{webRoot}}>Home</a>
       </footer>

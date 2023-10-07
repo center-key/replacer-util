@@ -1,4 +1,4 @@
-//! replacer-util v1.2.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -88,8 +88,16 @@ const replacer = {
             const filePath = dir + '/' + slash(parsedPath.base);
             return { ...parsedPath, dir: dir, path: filePath };
         };
+        const getWebRoot = (origin) => {
+            const depth = origin.substring(source.length).split('/').length - 2;
+            return depth === 0 ? '.' : '..' + '/..'.repeat(depth - 1);
+        };
         const createEngine = (file) => {
-            const globals = { package: pkg, file: getFileInfo(file.origin) };
+            const globals = {
+                package: pkg,
+                file: getFileInfo(file.origin),
+                webRoot: getWebRoot(file.origin),
+            };
             globals['pkg'] = pkg;
             const engine = new Liquid({ globals });
             const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
