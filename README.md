@@ -1,7 +1,7 @@
 # replacer-util
 <img src=https://centerkey.com/graphics/center-key-logo.svg align=right width=200 alt=logo>
 
-_Find and replace strings, regex patterns, or template outputs in text files (CLI tool designed for use in npm scripts)_
+_Find and replace strings, regex patterns, or template outputs in text files (CLI tool designed for use in npm package.json scripts)_
 
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/replacer-util/blob/main/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/replacer-util.svg)](https://www.npmjs.com/package/replacer-util)
@@ -20,7 +20,7 @@ $ npm install --save-dev replacer-util
 ```
 
 ## B) Usage
-### 1. npm scripts
+### 1. npm package.json scripts
 Run `replacer` from the `"scripts"` section of your **package.json** file.
 
 Parameters:
@@ -154,7 +154,7 @@ Example outputs and formatters:
 | `{{file.name}}`                | `password-reset`          | Source filename without the file extension     |
 | `{{file.path}}`                | `web/password-reset.html` | Full path to source file                       |
 | `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>`  | Link is relative to the source folder          |
-| `{{"now"\|date:"%Y-%m-%d"}}`   | `2023-09-28`              | Build date timestamp                           |
+| `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`              | Build date timestamp                           |
 | `{{myVariable\|upcase}}`       | `DARK MODE`               | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
 
 _**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
@@ -209,7 +209,7 @@ See the **TypeScript Declarations** at the top of [replacer.ts](replacer.ts) for
    - 🪺 [recursive-exec](https://github.com/center-key/recursive-exec):&nbsp; _Run a command on each file in a folder and its subfolders_
    - 🔍 [replacer-util](https://github.com/center-key/replacer-util):&nbsp; _Find and replace strings or template outputs in text files_
    - 🔢 [rev-web-assets](https://github.com/center-key/rev-web-assets):&nbsp; _Revision web asset filenames with cache busting content hash fingerprints_
-   - 🚆 [run-scripts-util](https://github.com/center-key/run-scripts-util):&nbsp; _Organize npm scripts into named groups of easy to manage commands_
+   - 🚆 [run-scripts-util](https://github.com/center-key/run-scripts-util):&nbsp; _Organize npm package.json scripts into named groups of easy to manage commands_
    - 🚦 [w3c-html-validator](https://github.com/center-key/w3c-html-validator):&nbsp; _Check the markup validity of HTML files using the W3C validator_
 
 Feel free to submit questions at:<br>
