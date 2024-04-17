@@ -141,7 +141,7 @@ const replacer = {
             webRoot: getWebRoot(file.origin),
             };
          globals[<keyof typeof globals>'pkg'] = pkg;  //pkg global is deprecated
-         const engine =  new Liquid({ globals });
+         const engine = new Liquid({ globals });
          const versionFormatter = (numIds: number) =>
             (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
          engine.registerFilter('version',       versionFormatter(3));

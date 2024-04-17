@@ -1,4 +1,4 @@
-//! replacer-util v1.2.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.2.6 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -86,7 +86,8 @@ const replacer = {
             const parsedPath = path.parse(origin);
             const dir = slash(parsedPath.dir);
             const filePath = dir + '/' + slash(parsedPath.base);
-            return { ...parsedPath, dir: dir, path: filePath };
+            const folder = path.basename(dir);
+            return { ...parsedPath, dir: dir, folder: folder, path: filePath };
         };
         const getWebRoot = (origin) => {
             const depth = origin.substring(source.length).split('/').length - 2;
