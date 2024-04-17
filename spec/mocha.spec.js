@@ -101,6 +101,24 @@ describe('Executing the CLI', () => {
       assertDeepStrictEqual(actual, expected);
       });
 
+   it('to concatenate file metadata generates the correct list of file parts', () => {
+      const fileParts = ['folder', 'base', 'name', 'ext', 'dir', 'path'];
+      const template = fileParts.map(part => `${part}-{{gt}}{{file.${part}}}`).join('{{space}}');
+      run('replacer spec/fixtures/source spec/fixtures/target --content=' + template + ' --concat=file-parts.txt');
+      const actual = fs.readFileSync('spec/fixtures/target/file-parts.txt').toString().trim().split('\n');
+      const expected = [
+         'folder->source base->mock1.html name->mock1 ext->.html dir->spec/fixtures/source path->spec/fixtures/source/mock1.html',
+         'folder->source base->mock1.js name->mock1 ext->.js dir->spec/fixtures/source path->spec/fixtures/source/mock1.js',
+         'folder->source base->mock1.min.css name->mock1.min ext->.css dir->spec/fixtures/source path->spec/fixtures/source/mock1.min.css',
+         'folder->subfolder-a base->mock2.html name->mock2 ext->.html dir->spec/fixtures/source/subfolder-a path->spec/fixtures/source/subfolder-a/mock2.html',
+         'folder->subfolder-a base->mock2.js name->mock2 ext->.js dir->spec/fixtures/source/subfolder-a path->spec/fixtures/source/subfolder-a/mock2.js',
+         'folder->subfolder-a base->mock2.min.css name->mock2.min ext->.css dir->spec/fixtures/source/subfolder-a path->spec/fixtures/source/subfolder-a/mock2.min.css',
+         'folder->subfolder-b base->mock3.html name->mock3 ext->.html dir->spec/fixtures/source/subfolder-b path->spec/fixtures/source/subfolder-b/mock3.html',
+         'folder->subfolder-bb base->mock4.html name->mock4 ext->.html dir->spec/fixtures/source/subfolder-b/subfolder-bb path->spec/fixtures/source/subfolder-b/subfolder-bb/mock4.html',
+         ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
    it('with --header and --concat flags creates the expected bundle file', () => {
       run('replacer --cd=spec/fixtures source --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --concat=bundle.js');
       const actual =   ['bundle.js', fs.readdirSync('spec/fixtures/target')?.includes('bundle.js')];

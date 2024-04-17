@@ -5,9 +5,10 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/replacer-util/blob/main/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/replacer-util.svg)](https://www.npmjs.com/package/replacer-util)
-[![Build](https://github.com/center-key/replacer-util/workflows/build/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
+[![Build](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
 
 **replacer-util** searches for text to substitute with a replacement string or with values from your project's **package.json** file, such as the project version number.&nbsp;
+It can also insert path metadata and concatenate output to generate content such as a file of HTML links.&nbsp;
 **LiquidJS** powers the template outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for including partials.&nbsp;
 
 <img src=https://raw.githubusercontent.com/center-key/replacer-util/main/screenshot.png
@@ -146,16 +147,19 @@ const msg2: string = 'This file is: my-app.ts';
 ```
 
 Example outputs and formatters:
-| Source file text               | Example output value      | Note                                           |
-| ------------------------------ | ------------------------- | ---------------------------------------------- |
-| `{{package.name}}`             | `my-project`              | Value from `name` field in **package.json**    |
-| `{{package.version}}`          | `3.1.4`                   | Value from `version` field in **package.json** |
-| `{{package.version\|size}}`    | `5`                       | Length of the version number string            |
-| `{{file.name}}`                | `password-reset`          | Source filename without the file extension     |
-| `{{file.path}}`                | `web/password-reset.html` | Full path to source file                       |
-| `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>`  | Link is relative to the source folder          |
-| `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`              | Build date timestamp                           |
-| `{{myVariable\|upcase}}`       | `DARK MODE`               | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
+| Source file text               | Example output value     | Note                                           |
+| ------------------------------ | ------------------------ | ---------------------------------------------- |
+| `{{package.name}}`             | `my-project`             | Value from `name` field in **package.json**    |
+| `{{package.version}}`          | `3.1.4`                  | Value from `version` field in **package.json** |
+| `{{package.version\|size}}`    | `5`                      | Length of the version number string            |
+| `{{file.path}}`                | `src/web/sign-in.html`   | Full path to source file                       |
+| `{{file.folder}}`              | `web`                    | Name of parent folder of the source file       |
+| `{{file.base}}`                | `sign-in.html`           | Source filename with the file extension        |
+| `{{file.name}}`                | `sign-in`                | Source filename without the file extension     |
+| `{{file.ext}}`                 | `.html`                  | File extension of the source file              |
+| `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>` | Link is relative to the source folder          |
+| `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`             | Build date timestamp                           |
+| `{{myVariable\|upcase}}`       | `DARK MODE`              | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
 
 _**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
 

@@ -127,7 +127,8 @@ const replacer = {
          const parsedPath = path.parse(origin);
          const dir =        slash(parsedPath.dir);
          const filePath =   dir + '/' + slash(parsedPath.base);
-         return { ...parsedPath, dir: dir, path: filePath };
+         const folder =     path.basename(dir);
+         return { ...parsedPath, dir: dir, folder: folder, path: filePath };
          };
       const getWebRoot = (origin: string) => {
          const depth = origin.substring(source.length).split('/').length - 2;
