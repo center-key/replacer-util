@@ -141,4 +141,16 @@ describe('Executing the CLI', () => {
       assertDeepStrictEqual(actual, expected);
       });
 
+   it('with the --content flag is able to access page variables in the source files', () => {
+      run('replacer spec/fixtures/source --ext=.html spec/fixtures --content={{file.name}}:{{space}}{{slogan}} --concat=page-variables.txt');
+      const actual = fs.readFileSync('spec/fixtures/page-variables.txt').toString().trim().split('\n');
+      const expected = [
+         'mock1: I, for one, welcome our new insect overlords.',
+         'mock2: I, for one, welcome our new insect overlords.',
+         'mock3: I, for one, welcome our new insect overlords.',
+         'mock4: I, for one, welcome our new insect overlords.',
+         ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
    });

@@ -1,7 +1,9 @@
+{% assign charset = 'utf-8' %}
+{% assign slogan = 'I, for one, welcome our new insect overlords.' %}
 <!doctype html>
 <html lang=en>
    <head>
-      <meta charset=utf-8>
+      <meta charset={{charset}}>
       <title>🔍🔍🔍 {{package.name}} 🔍🔍🔍</title>
       <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@{{package.devDependencies.pretty-print-json|version}}/dist/css/pretty-print-json.css>
       <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{package.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
@@ -15,7 +17,7 @@
          <h2>{{package.description}}</h2>
       </header>
       <main>
-         <p>I, for one, welcome our new insect overlords.</p>
+         <p>{{slogan}}</p>
          <ul>
             <li>Release: v{{package.version | version}}</li>
             <li>Minor:   v{{package.version | minor-version}}</li>

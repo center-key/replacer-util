@@ -140,7 +140,6 @@ const replacer = {
             file:    getFileInfo(file.origin),
             webRoot: getWebRoot(file.origin),
             };
-         globals[<keyof typeof globals>'pkg'] = pkg;  //pkg global is deprecated
          const engine = new Liquid({ globals });
          const versionFormatter = (numIds: number) =>
             (str: string): string => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
@@ -149,20 +148,35 @@ const replacer = {
          engine.registerFilter('major-version', versionFormatter(1));
          return engine;
          };
+      const extractPageVars = (engine: Liquid, file: string) => {
+         // Exammple:
+         //    {% assign colorScheme = 'dark mode' %} ==> { colorScheme: 'dark mode' }
+         type AssignTag = {  //warning: this type accesses unsupported private fields
+            name:  string,
+            key:   number,
+            value: { initial: { postfix: { content: string }[] } },
+            };
+         const tags =     <AssignTag[]><object[]>engine.parseFileSync(file);
+         const toPair =   (tag: AssignTag) => [tag.key, tag.value.initial.postfix[0]?.content];
+         const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
+         return Object.fromEntries(tagPairs);
+         }
       const processFile = (file: ResultsFile, index: number) => {
          const engine =  createEngine(file);
-         const render =  (text: string) => engine.parseAndRenderSync(text);
-         const append =  settings.concat && index > 0;
-         const altText = settings.content ? render(settings.content) : null;
-         const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
-         const newStr =  render(rep);
-         const out1 =    settings.templatingOn ? render(content) : content;
-         const out2 =    out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
-         const out3 =    settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-         const out4 =    settings.regex ? out3.replace(settings.regex, newStr) : out3;
-         const out5 =    settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
-         const out6 =    out5.trimStart();
-         const final =   append && settings.header ? '\n' + out6 : out6;
+         const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
+         const render =   (text: string) => engine.parseAndRenderSync(text, pageVars);
+         const append =   settings.concat && index > 0;
+         const altText =  settings.content ? render(settings.content) : null;
+         const text =     altText ?? fs.readFileSync(file.origin, 'utf-8');
+         const content =  render(header) + text;
+         const newStr =   render(rep);
+         const out1 =     settings.templatingOn ? render(content) : content;
+         const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
+         const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
+         const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;
+         const out5 =     settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
+         const out6 =     out5.trimStart();
+         const final =    append && settings.header ? '\n' + out6 : out6;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
