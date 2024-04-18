@@ -1,4 +1,4 @@
-//! replacer-util v1.2.6 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.3.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -99,7 +99,6 @@ const replacer = {
                 file: getFileInfo(file.origin),
                 webRoot: getWebRoot(file.origin),
             };
-            globals['pkg'] = pkg;
             const engine = new Liquid({ globals });
             const versionFormatter = (numIds) => (str) => str.replace(/[^0-9]*/, '').split('.').slice(0, numIds).join('.');
             engine.registerFilter('version', versionFormatter(3));
@@ -107,12 +106,20 @@ const replacer = {
             engine.registerFilter('major-version', versionFormatter(1));
             return engine;
         };
+        const extractPageVars = (engine, file) => {
+            const tags = engine.parseFileSync(file);
+            const toPair = (tag) => [tag.key, tag.value.initial.postfix[0]?.content];
+            const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
+            return Object.fromEntries(tagPairs);
+        };
         const processFile = (file, index) => {
             const engine = createEngine(file);
-            const render = (text) => engine.parseAndRenderSync(text);
+            const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
+            const render = (text) => engine.parseAndRenderSync(text, pageVars);
             const append = settings.concat && index > 0;
             const altText = settings.content ? render(settings.content) : null;
-            const content = render(header) + (altText ?? fs.readFileSync(file.origin, 'utf-8'));
+            const text = altText ?? fs.readFileSync(file.origin, 'utf-8');
+            const content = render(header) + text;
             const newStr = render(rep);
             const out1 = settings.templatingOn ? render(content) : content;
             const out2 = out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
