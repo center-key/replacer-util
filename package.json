@@ -85,17 +85,16 @@
       "chalk": "~5.3",
       "cli-argv-util": "~1.2",
       "fancy-log": "~2.0",
-      "glob": "~10.3",
+      "glob": "~10.4",
       "istextorbinary": "~9.5",
-      "liquidjs": "~10.11",
+      "liquidjs": "~10.13",
       "slash": "~5.1"
    },
    "devDependencies": {
+      "@eslint/js": "~9.3",
       "@fortawesome/fontawesome-free": "~6.5",
       "@types/fancy-log": "~2.0",
       "@types/node": "~20.12",
-      "@typescript-eslint/eslint-plugin": "~7.7",
-      "@typescript-eslint/parser": "~7.7",
       "add-dist-header": "~1.4",
       "assert-deep-strict-equal": "~1.2",
       "copy-file-util": "~1.2",
@@ -108,6 +107,7 @@
       "rimraf": "~5.0",
       "run-scripts-util": "~1.2",
       "typescript": "~5.4",
-      "w3c-html-validator": "~1.7"
+      "typescript-eslint": "~7.11",
+      "w3c-html-validator": "~1.8"
    }
 }

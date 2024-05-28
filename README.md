@@ -8,7 +8,7 @@ _Find and replace strings, regex patterns, or template outputs in text files (CL
 [![Build](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml/badge.svg)](https://github.com/center-key/replacer-util/actions/workflows/run-spec-on-push.yaml)
 
 **replacer-util** searches for text to substitute with a replacement string or with values from your project's **package.json** file, such as the project version number.&nbsp;
-It can also insert path metadata and concatenate output to generate content such as a file of HTML links.&nbsp;
+It can also insert path metadata and concatenate output to generate content such as an HTML file of `<a>` links.&nbsp;
 **LiquidJS** powers the template outputs and enables **replacer-util** to act as a static site generator complete with filter formatters and `render` tags for including partials.&nbsp;
 
 <img src=https://raw.githubusercontent.com/center-key/replacer-util/main/screenshot.png
@@ -123,6 +123,9 @@ Examples:
 
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
+
+For examples of using `replacer` as part of front-end build process, check out the `"runScriptsConfig"` section of:<br>
+https://github.com/dna-engine/data-dashboard/blob/main/package.json
 
 _**Note:** Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
 
