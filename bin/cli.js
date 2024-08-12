@@ -25,16 +25,15 @@
 // Imports
 import { cliArgvUtil } from 'cli-argv-util';
 import { replacer } from '../dist/replacer.js';
-import fs    from 'fs';
-import path  from 'path';
+import fs   from 'fs';
+import path from 'path';
 
 // Parameters and flags
-const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-liquid' ,'no-source-map',
-   'note', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
-validFlags.push('pkg');  //deprecated flag
-const cli =        cliArgvUtil.parse(validFlags);
-const source =     cli.params[0];  //origin file or folder
-const target =     cli.params[1];  //destination folder
+const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-liquid',
+   'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+const cli =    cliArgvUtil.parse(validFlags);
+const source = cli.params[0];  //origin file or folder
+const target = cli.params[1];  //destination folder
 
 // Escapers
 const escapers = [
@@ -61,9 +60,7 @@ const error =
    cli.paramsCount > 2 ? 'Extraneous parameter: ' + cli.params[2] :
    null;
 if (error)
-   throw Error('[replacer-util] ' + error);
-if (cli.flagOn.pkg)
-   console.log('[replacer-util]  The --pkg flag is deprecated as the package.json file is now always loaded.');
+   throw new Error('[replacer-util] ' + error);
 const sourceFile =   path.join(cli.flagMap.cd ?? '', source);
 const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
 const sourceFolder = isFile ? path.dirname(source) : source;

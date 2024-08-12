@@ -37,6 +37,9 @@ export type ResultsFile = Results['files'][0];
 export type ReporterSettings = {
    summaryOnly: boolean,  //only print out the single line summary message
    };
+type PkgObj =   { [subkey: string]: string };
+type Pkg =      { [key: string]: PkgObj };
+type PageVars = { [name: string]: string };
 
 const task = {
    normalizeFolder(folderPath: string): string {
@@ -48,10 +51,10 @@ const task = {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
       return fs.statSync(filename).isFile() && !isBinary(filename);
       },
-   readPackageJson() {
+   readPackageJson(): Pkg {
       // Returns package.json as an object literal.
-      const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
-      const fixHiddenKeys = (pkgObj: { [key: string]: string }) => {
+      const pkg = <Pkg>JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+      const fixHiddenKeys = (pkgObj: PkgObj) => {
          const unhide = (key: string) => {
             const newKey = key.replace(/[@./]/g, '-');
             if (!pkgObj[newKey])
@@ -59,9 +62,9 @@ const task = {
             };
          Object.keys(pkgObj).forEach(unhide);
          };
-      if (pkg?.dependencies)
+      if (pkg.dependencies)
          fixHiddenKeys(pkg.dependencies);
-      if (pkg?.devDependencies)
+      if (pkg.devDependencies)
          fixHiddenKeys(pkg.devDependencies);
       return pkg;
       },
@@ -100,7 +103,7 @@ const replacer = {
          missingFind ?                        'Must specify search text with --find or --regex' :
          null;
       if (errorMessage)
-         throw Error('[replacer-util] ' + errorMessage);
+         throw new Error('[replacer-util] ' + errorMessage);
       const globFiles = () =>
          exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
       const keep = (file: string) =>
@@ -148,7 +151,7 @@ const replacer = {
          engine.registerFilter('major-version', versionFormatter(1));
          return engine;
          };
-      const extractPageVars = (engine: Liquid, file: string) => {
+      const extractPageVars = (engine: Liquid, file: string): PageVars => {
          // Exammple:
          //    {% assign colorScheme = 'dark mode' %} ==> { colorScheme: 'dark mode' }
          type AssignTag = {  //warning: this type accesses unsupported private fields
@@ -159,12 +162,12 @@ const replacer = {
          const tags =     <AssignTag[]><object[]>engine.parseFileSync(file);
          const toPair =   (tag: AssignTag) => [tag.key, tag.value.initial.postfix[0]?.content];
          const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
-         return Object.fromEntries(tagPairs);
+         return <PageVars>Object.fromEntries(tagPairs);
          }
       const processFile = (file: ResultsFile, index: number) => {
-         const engine =  createEngine(file);
+         const engine =   createEngine(file);
          const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
-         const render =   (text: string) => engine.parseAndRenderSync(text, pageVars);
+         const render =   (text: string) => <string>engine.parseAndRenderSync(text, pageVars);
          const append =   settings.concat && index > 0;
          const altText =  settings.content ? render(settings.content) : null;
          const text =     altText ?? fs.readFileSync(file.origin, 'utf-8');
