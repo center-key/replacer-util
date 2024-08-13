@@ -1,4 +1,4 @@
-//! replacer-util v1.3.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.3.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -90,7 +90,8 @@ const replacer = {
             const date = fs.statSync(origin).mtime;
             const dateFormat = { day: 'numeric', month: 'long', year: 'numeric' };
             const modified = date.toLocaleString([], dateFormat);
-            return { ...parsedPath, dir: dir, folder: folder, path: filePath, date, modified };
+            const timestamp = date.toISOString();
+            return { ...parsedPath, dir, folder, path: filePath, date, modified, timestamp };
         };
         const getWebRoot = (origin) => {
             const depth = origin.substring(source.length).split('/').length - 2;
