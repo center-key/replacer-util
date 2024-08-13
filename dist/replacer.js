@@ -1,4 +1,4 @@
-//! replacer-util v1.3.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.3.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -25,9 +25,9 @@ const task = {
             };
             Object.keys(pkgObj).forEach(unhide);
         };
-        if (pkg?.dependencies)
+        if (pkg.dependencies)
             fixHiddenKeys(pkg.dependencies);
-        if (pkg?.devDependencies)
+        if (pkg.devDependencies)
             fixHiddenKeys(pkg.devDependencies);
         return pkg;
     },
@@ -63,7 +63,7 @@ const replacer = {
                                 missingFind ? 'Must specify search text with --find or --regex' :
                                     null;
         if (errorMessage)
-            throw Error('[replacer-util] ' + errorMessage);
+            throw new Error('[replacer-util] ' + errorMessage);
         const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
         const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
         const relativeFolders = (file) => file.substring(source.length, file.length - path.basename(file).length);
@@ -87,7 +87,10 @@ const replacer = {
             const dir = slash(parsedPath.dir);
             const filePath = dir + '/' + slash(parsedPath.base);
             const folder = path.basename(dir);
-            return { ...parsedPath, dir: dir, folder: folder, path: filePath };
+            const date = fs.statSync(origin).mtime;
+            const dateFormat = { day: 'numeric', month: 'long', year: 'numeric' };
+            const modified = date.toLocaleString([], dateFormat);
+            return { ...parsedPath, dir: dir, folder: folder, path: filePath, date, modified };
         };
         const getWebRoot = (origin) => {
             const depth = origin.substring(source.length).split('/').length - 2;
