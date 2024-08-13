@@ -134,7 +134,7 @@ The source files are processed by LiquidJS, so you can use [template outputs](ht
 Custom variables are created with the [assign](ttps://liquidjs.com/tags/assign.html) tag.
 
 Three special variables are available by default:
-   * `file`    ([path information](https://nodejs.org/api/path.html#pathparsepath) about the target file)
+   * `file`    ([path](https://nodejs.org/api/path.html#pathparsepath) and date information about the source file)
    * `package` (values from your project's **package.json** file)
    * `webRoot` (relative path to root folder: `.`, `..`, `../..`, `../../..`, etc.)
 
@@ -160,6 +160,8 @@ Example outputs and formatters:
 | `{{file.base}}`                | `sign-in.html`           | Source filename with the file extension        |
 | `{{file.name}}`                | `sign-in`                | Source filename without the file extension     |
 | `{{file.ext}}`                 | `.html`                  | File extension of the source file              |
+| `{{file.modified}}`            | `April 7, 2030`          | Formatted date of when file was last modifiled |
+| `{{file.date\|date:"%A"}}`     | `Sunday`                 | Date object for when file was last modifiled   |
 | `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>` | Link is relative to the source folder          |
 | `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`             | Build date timestamp                           |
 | `{{myVariable\|upcase}}`       | `DARK MODE`              | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
@@ -216,7 +218,7 @@ See the **TypeScript Declarations** at the top of [replacer.ts](replacer.ts) for
    - 🪺 [recursive-exec](https://github.com/center-key/recursive-exec):&nbsp; _Run a command on each file in a folder and its subfolders_
    - 🔍 [replacer-util](https://github.com/center-key/replacer-util):&nbsp; _Find and replace strings or template outputs in text files_
    - 🔢 [rev-web-assets](https://github.com/center-key/rev-web-assets):&nbsp; _Revision web asset filenames with cache busting content hash fingerprints_
-   - 🚆 [run-scripts-util](https://github.com/center-key/run-scripts-util):&nbsp; _Organize npm package.json scripts into named groups of easy to manage commands_
+   - 🚆 [run-scripts-util](https://github.com/center-key/run-scripts-util):&nbsp; _Organize npm package.json scripts into groups of easy to manage commands_
    - 🚦 [w3c-html-validator](https://github.com/center-key/w3c-html-validator):&nbsp; _Check the markup validity of HTML files using the W3C validator_
 
 Feel free to submit questions at:<br>

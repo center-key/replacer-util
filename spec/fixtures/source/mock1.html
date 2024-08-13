@@ -15,6 +15,8 @@
       <header>
          <h1>🔍🔍🔍 {{package.name}} 🔍🔍🔍</h1>
          <h2>{{package.description}}</h2>
+         <h3>Last Updated: {{file.modified}}</h3>
+         <h3>Weekday: {{file.date | date: "%A"}}</h3>
       </header>
       <main>
          <p>{{slogan}}</p>

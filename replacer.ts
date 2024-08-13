@@ -131,7 +131,10 @@ const replacer = {
          const dir =        slash(parsedPath.dir);
          const filePath =   dir + '/' + slash(parsedPath.base);
          const folder =     path.basename(dir);
-         return { ...parsedPath, dir: dir, folder: folder, path: filePath };
+         const date =       fs.statSync(origin).mtime;
+         const dateFormat = { day: 'numeric', month: 'long', year: 'numeric' } as const;
+         const modified =   date.toLocaleString([], dateFormat);  //ex: "April 7, 2030"
+         return { ...parsedPath, dir: dir, folder: folder, path: filePath, date, modified };
          };
       const getWebRoot = (origin: string) => {
          const depth = origin.substring(source.length).split('/').length - 2;
