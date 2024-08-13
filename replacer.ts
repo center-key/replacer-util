@@ -134,7 +134,8 @@ const replacer = {
          const date =       fs.statSync(origin).mtime;
          const dateFormat = { day: 'numeric', month: 'long', year: 'numeric' } as const;
          const modified =   date.toLocaleString([], dateFormat);  //ex: "April 7, 2030"
-         return { ...parsedPath, dir: dir, folder: folder, path: filePath, date, modified };
+         const timestamp =  date.toISOString();                   //ex: "2030-04-07T07:01:36.037Z"
+         return { ...parsedPath, dir, folder, path: filePath, date, modified, timestamp };
          };
       const getWebRoot = (origin: string) => {
          const depth = origin.substring(source.length).split('/').length - 2;

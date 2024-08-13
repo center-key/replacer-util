@@ -150,21 +150,22 @@ const msg2: string = 'This file is: my-app.ts';
 ```
 
 Example outputs and formatters:
-| Source file text               | Example output value     | Note                                           |
-| ------------------------------ | ------------------------ | ---------------------------------------------- |
-| `{{package.name}}`             | `my-project`             | Value from `name` field in **package.json**    |
-| `{{package.version}}`          | `3.1.4`                  | Value from `version` field in **package.json** |
-| `{{package.version\|size}}`    | `5`                      | Length of the version number string            |
-| `{{file.path}}`                | `src/web/sign-in.html`   | Full path to source file                       |
-| `{{file.folder}}`              | `web`                    | Name of parent folder of the source file       |
-| `{{file.base}}`                | `sign-in.html`           | Source filename with the file extension        |
-| `{{file.name}}`                | `sign-in`                | Source filename without the file extension     |
-| `{{file.ext}}`                 | `.html`                  | File extension of the source file              |
-| `{{file.modified}}`            | `April 7, 2030`          | Formatted date of when file was last modifiled |
-| `{{file.date\|date:"%A"}}`     | `Sunday`                 | Date object for when file was last modifiled   |
-| `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>` | Link is relative to the source folder          |
-| `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`             | Build date timestamp                           |
-| `{{myVariable\|upcase}}`       | `DARK MODE`              | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
+| Source file text               | Example output value       | Note                                           |
+| ------------------------------ | -------------------------- | ---------------------------------------------- |
+| `{{package.name}}`             | `my-project`               | Value from `name` field in **package.json**    |
+| `{{package.version}}`          | `3.1.4`                    | Value from `version` field in **package.json** |
+| `{{package.version\|size}}`    | `5`                        | Length of the version number string            |
+| `{{file.path}}`                | `src/web/sign-in.html`     | Full path to source file                       |
+| `{{file.folder}}`              | `web`                      | Name of parent folder of the source file       |
+| `{{file.base}}`                | `sign-in.html`             | Source filename with the file extension        |
+| `{{file.name}}`                | `sign-in`                  | Source filename without the file extension     |
+| `{{file.ext}}`                 | `.html`                    | File extension of the source file              |
+| `{{file.modified}}`            | `April 7, 2030`            | Formatted date of when file was last modifiled |
+| `{{file.date\|date:"%A"}}`     | `Sunday`                   | Date object for when file was last modifiled   |
+| `{{file.timestamp}}`           | `2030-04-07T07:01:36.037Z` | Value for the `datetime` attribute of `<time>` |
+| `<a href={{webRoot}}>Home</a>` | `<a href=../..>Home</a>`   | Link is relative to the source folder          |
+| `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`               | Build date timestamp                           |
+| `{{myVariable\|upcase}}`       | `DARK MODE`                | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
 
 _**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
 
@@ -192,6 +193,28 @@ For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"
 ```html
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@{{package.devDependencies.-fortawesome-fontawesome-free|version}}/css/all.min.css>
 <script src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{package.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
+```
+
+### 7. Last Updated
+The special `file` varaible can be leveraged to create a "Last Updated" field that is
+automatically populated with the date the HTML was most recenlty modified.
+
+For example, an HTML file with following lines:
+```html
+<header>
+   <h1>My Blog</h1>
+   <h2>🚀 How to Watch a Rocket Launch 🚀</h2>
+   <time datetime={{file.timestamp}}>{{file.modified}}</time>
+</header>
+```
+
+will be transformed into something similar to:
+```html
+<header>
+   <h1>My Blog</h1>
+   <h2>🚀 How to Watch a Rocket Launch 🚀</h2>
+   <time datetime=2030-04-07T07:01:36.037Z>April 7, 2030</time>
+</header>
 ```
 
 ## C) Application Code
