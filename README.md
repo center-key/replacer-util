@@ -197,7 +197,7 @@ For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"
 
 ### 7. Last Updated
 The special `file` varaible can be leveraged to create a "Last Updated" field that is
-automatically populated with the date the HTML was most recenlty modified.
+automatically populated with the date the source file was most recently modified.
 
 For example, an HTML file with following lines:
 ```html
@@ -207,7 +207,6 @@ For example, an HTML file with following lines:
    <time datetime={{file.timestamp}}>{{file.modified}}</time>
 </header>
 ```
-
 will be transformed into something similar to:
 ```html
 <header>
@@ -216,6 +215,20 @@ will be transformed into something similar to:
    <time datetime=2030-04-07T07:01:36.037Z>April 7, 2030</time>
 </header>
 ```
+**Note:**
+Be aware that `git checkout` deliberately resets file modification dates (`mtime`).&nbsp;
+If you use GitHub Actions to publish your website, you'll need to restore file modification dates with a script or tool.
+One tool that does this is [chetan/git-restore-mtime-action](https://github.com/marketplace/actions/git-restore-mtime):
+```yaml
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main       #fetch the full git history of the "main"
+          fetch-depth: 0  #branch for git-restore-mtime-action
+      - uses: chetan/git-restore-mtime-action@v2
+      - uses: actions/setup-node@v4
+```
+For a working example, see: [publish-website.yaml](https://github.com/center-key/think-metric/blob/main/.github/workflows/publish-website.yaml)
 
 ## C) Application Code
 Even though **replacer-util** is primarily intended for build scripts, the package can be used programmatically in ESM and TypeScript projects.
