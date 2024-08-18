@@ -110,7 +110,7 @@ Examples:
 
    - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
    Finds double dashes at the start of lines and replace them with 3 carrots.&nbsp;
-   Note the `gm` [regex options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags).
+   Note the `g` and `m` [regex options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags).
 
    - `replacer build/my-app.js --rename=my-app.browser.js build`<br>
    Copies **my-app.js** to **my-app.browser.js** without making and changes.
@@ -215,18 +215,20 @@ will be transformed into something similar to:
    <time datetime=2030-04-07T07:01:36.037Z>April 7, 2030</time>
 </header>
 ```
-**Note:**
+**Note:**<br>
 Be aware that `git checkout` deliberately resets file modification dates (`mtime`).&nbsp;
-If you use GitHub Actions to publish your website, you'll need to restore file modification dates with a script or tool.
-One tool that does this is [chetan/git-restore-mtime-action](https://github.com/marketplace/actions/git-restore-mtime):
+If you use GitHub Actions to publish your website, you'll need to restore file modification dates with a script or tool.&nbsp;
+One tool that does this is [git-restore-mtime](https://github.com/marketplace/actions/git-restore-mtime):
 ```yaml
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main       #fetch the full git history of the "main"
-          fetch-depth: 0  #branch for git-restore-mtime-action
+          fetch-depth: 0  #branch for git-restore-mtime-action below
       - uses: chetan/git-restore-mtime-action@v2
       - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npm run publish
 ```
 For a working example, see: [publish-website.yaml](https://github.com/center-key/think-metric/blob/main/.github/workflows/publish-website.yaml)
 
