@@ -45,7 +45,9 @@ const task = {
    normalizeFolder(folderPath: string): string {
       // Clean up path and remove trailing slash.
       // Example: 'data\books///123\' --> 'data/books/123'
-      return !folderPath ? '' : slash(path.normalize(folderPath)).replace(/\/$/, '');
+      const string =        typeof folderPath === 'string' ? folderPath : '';
+      const trailingSlash = /\/$/;
+      return path.normalize(slash(string)).trim().replace(trailingSlash, '');
       },
    isTextFile(filename: string): boolean {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
