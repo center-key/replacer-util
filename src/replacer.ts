@@ -47,7 +47,7 @@ const task = {
       // Example: 'data\books///123\' --> 'data/books/123'
       const string =        typeof folderPath === 'string' ? folderPath : '';
       const trailingSlash = /\/$/;
-      return path.normalize(slash(string)).trim().replace(trailingSlash, '');
+      return slash(path.normalize(string)).trim().replace(trailingSlash, '');
       },
    isTextFile(filename: string): boolean {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
@@ -106,20 +106,22 @@ const replacer = {
          null;
       if (errorMessage)
          throw new Error('[replacer-util] ' + errorMessage);
-      const globFiles = () =>
-         exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
-      const keep = (file: string) =>
-         !settings.exclude || !file.includes(settings.exclude);
-      const relativeFolders = (file: string) =>
-         file.substring(source.length, file.length - path.basename(file).length);
-      const renameFile = (file: string) =>
-         settings.rename ? target + relativeFolders(file) + settings.rename : null;
+      const getNewFilename = (file: string) => {
+         const baseNameLoc =  () => file.length - path.basename(file).length;
+         const relativePath = () => file.substring(source.length, baseNameLoc());
+         const newFilename =  () => target + relativePath() + <string>settings.rename;
+         return settings.rename ? newFilename() : null;
+         };
+      const outputFilename = (file: string) => target + '/' + file.substring(source.length + 1);
       const getFileRoute = (file: string) => ({
          origin: file,
-         dest:   concatFile ?? renameFile(file) ?? target + '/' + file.substring(source.length + 1),
+         dest:   concatFile ?? getNewFilename(file) ?? outputFilename(file),
          });
+      const readPaths =     (ext: string) => globSync(source + '/**/*' + ext).map(slash);
+      const getFiles =      () => exts.map(readPaths).flat().sort();
+      const keep =          (file: string) => !settings.exclude || !file.includes(settings.exclude);
       const exts =          settings.extensions.length ? settings.extensions : [''];
-      const filesRaw =      settings.filename ? [source + '/' + settings.filename] : globFiles();
+      const filesRaw =      settings.filename ? [source + '/' + settings.filename] : getFiles();
       const filtered =      filesRaw.filter(task.isTextFile).filter(keep);
       const fileRoutes =    filtered.map(file => slash(file)).map(getFileRoute);
       const pkg =           task.readPackageJson();

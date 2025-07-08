@@ -64,7 +64,7 @@
    },
    "dependencies": {
       "chalk": "~5.4",
-      "cli-argv-util": "~1.2",
+      "cli-argv-util": "~1.3",
       "fancy-log": "~2.0",
       "glob": "~11.0",
       "istextorbinary": "~9.5",
@@ -72,23 +72,23 @@
       "slash": "~5.1"
    },
    "devDependencies": {
-      "@eslint/js": "~9.28",
+      "@eslint/js": "~9.30",
       "@fortawesome/fontawesome-free": "~6.7",
       "@types/fancy-log": "~2.0",
       "@types/node": "~24.0",
       "add-dist-header": "~1.4",
       "assert-deep-strict-equal": "~1.2",
       "copy-file-util": "~1.2",
-      "eslint": "~9.28",
+      "eslint": "~9.30",
       "fetch-json": "~3.3",
       "highlight.js": "~11.11",
       "jshint": "~2.13",
-      "mocha": "~11.6",
+      "mocha": "~11.7",
       "pretty-print-json": "~3.0",
       "rimraf": "~6.0",
       "run-scripts-util": "~1.3",
       "typescript": "~5.8",
-      "typescript-eslint": "~8.34",
-      "w3c-html-validator": "~1.8"
+      "typescript-eslint": "~8.36",
+      "w3c-html-validator": "~1.9"
    }
 }
