@@ -1,4 +1,4 @@
-//! replacer-util v1.3.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.3.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -10,7 +10,9 @@ import path from 'path';
 import slash from 'slash';
 const task = {
     normalizeFolder(folderPath) {
-        return !folderPath ? '' : slash(path.normalize(folderPath)).replace(/\/$/, '');
+        const string = typeof folderPath === 'string' ? folderPath : '';
+        const trailingSlash = /\/$/;
+        return slash(path.normalize(string)).trim().replace(trailingSlash, '');
     },
     isTextFile(filename) {
         return fs.statSync(filename).isFile() && !isBinary(filename);
@@ -64,16 +66,22 @@ const replacer = {
                                     null;
         if (errorMessage)
             throw new Error('[replacer-util] ' + errorMessage);
-        const globFiles = () => exts.map(ext => globSync(source + '/**/*' + ext)).flat().sort();
-        const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
-        const relativeFolders = (file) => file.substring(source.length, file.length - path.basename(file).length);
-        const renameFile = (file) => settings.rename ? target + relativeFolders(file) + settings.rename : null;
+        const getNewFilename = (file) => {
+            const baseNameLoc = () => file.length - path.basename(file).length;
+            const relativePath = () => file.substring(source.length, baseNameLoc());
+            const newFilename = () => target + relativePath() + settings.rename;
+            return settings.rename ? newFilename() : null;
+        };
+        const outputFilename = (file) => target + '/' + file.substring(source.length + 1);
         const getFileRoute = (file) => ({
             origin: file,
-            dest: concatFile ?? renameFile(file) ?? target + '/' + file.substring(source.length + 1),
+            dest: concatFile ?? getNewFilename(file) ?? outputFilename(file),
         });
+        const readPaths = (ext) => globSync(source + '/**/*' + ext).map(slash);
+        const getFiles = () => exts.map(readPaths).flat().sort();
+        const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
         const exts = settings.extensions.length ? settings.extensions : [''];
-        const filesRaw = settings.filename ? [source + '/' + settings.filename] : globFiles();
+        const filesRaw = settings.filename ? [source + '/' + settings.filename] : getFiles();
         const filtered = filesRaw.filter(task.isTextFile).filter(keep);
         const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
         const pkg = task.readPackageJson();
