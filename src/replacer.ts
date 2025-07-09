@@ -1,6 +1,7 @@
 // replacer-util ~~ MIT License
 
 // Imports
+import { EOL } from 'node:os';
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
@@ -125,10 +126,8 @@ const replacer = {
       const filtered =      filesRaw.filter(task.isTextFile).filter(keep);
       const fileRoutes =    filtered.map(file => slash(file)).map(getFileRoute);
       const pkg =           task.readPackageJson();
-      const normalizeEol =  /\r/g;
-      const normalizeEof =  /\s*$(?!\n)/;
-      const sourceMapLine = /^\/.#\ssourceMappingURL=.*\n/gm;
-      const header =        settings.header ? settings.header + '\n' : '';
+      const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
+      const header =        settings.header ? settings.header + EOL : '';
       const rep =           settings.replacement ?? '';
       const getFileInfo = (origin: string) => {
          const parsedPath = path.parse(origin);
@@ -172,6 +171,7 @@ const replacer = {
          const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
          return <PageVars>Object.fromEntries(tagPairs);
          }
+      const eofNewline = (text: string) => text.endsWith(EOL) ? text : text + EOL;
       const processFile = (file: ResultsFile, index: number) => {
          const engine =   createEngine(file);
          const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
@@ -182,12 +182,11 @@ const replacer = {
          const content =  render(header) + text;
          const newStr =   render(rep);
          const out1 =     settings.templatingOn ? render(content) : content;
-         const out2 =     out1.replace(normalizeEol, '').replace(normalizeEof, '\n');
-         const out3 =     settings.find ? out2.replaceAll(settings.find, newStr) : out2;
-         const out4 =     settings.regex ? out3.replace(settings.regex, newStr) : out3;
-         const out5 =     settings.noSourceMap ? out4.replace(sourceMapLine, '') : out4;
-         const out6 =     out5.trimStart();
-         const final =    append && settings.header ? '\n' + out6 : out6;
+         const out2 =     settings.find ? out1.replaceAll(settings.find, newStr) : out1;
+         const out3 =     settings.regex ? out2.replace(settings.regex, newStr) : out2;
+         const out4 =     settings.noSourceMap ? out3.replace(sourceMapLine, '') : out3;
+         const out5 =     eofNewline(out4.trimStart());
+         const final =    append && settings.header ? EOL + out5 : out5;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
