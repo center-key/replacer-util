@@ -241,7 +241,7 @@ import { replacer } from 'replacer-util';
 
 const options = { extensions: ['.html', '.js'] };
 const results = replacer.transform('src/web', 'docs/api-manual', options);
-console.log('Number of files copied:', results.count);
+console.info('Number of files copied:', results.count);
 ```
 
 See the **TypeScript Declarations** at the top of [replacer.ts](src/replacer.ts) for documentation.
