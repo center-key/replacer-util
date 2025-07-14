@@ -2,7 +2,7 @@
 // Mocha Specification Suite
 
 // Imports
-import { assertDeepStrictEqual } from 'assert-deep-strict-equal';
+import { assertDeepStrictEqual, fileToLines } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
 import assert from 'assert';
 import fs     from 'fs';
@@ -105,7 +105,7 @@ describe('Executing the CLI', () => {
       const fileParts = ['folder', 'base', 'name', 'ext', 'dir', 'path'];
       const template = fileParts.map(part => `${part}-{{gt}}{{file.${part}}}`).join('{{space}}');
       run('replacer spec/fixtures/source spec/fixtures/target --content=' + template + ' --concat=file-parts.txt');
-      const actual = fs.readFileSync('spec/fixtures/target/file-parts.txt').toString().trim().split('\n');
+      const actual = fileToLines('spec/fixtures/target/file-parts.txt');
       const expected = [
          'folder->source base->mock1.html name->mock1 ext->.html dir->spec/fixtures/source path->spec/fixtures/source/mock1.html',
          'folder->source base->mock1.js name->mock1 ext->.js dir->spec/fixtures/source path->spec/fixtures/source/mock1.js',
@@ -143,7 +143,7 @@ describe('Executing the CLI', () => {
 
    it('with the --content flag is able to access page variables in the source files', () => {
       run('replacer spec/fixtures/source --ext=.html spec/fixtures --content={{file.name}}:{{space}}{{slogan}} --concat=page-variables.txt');
-      const actual = fs.readFileSync('spec/fixtures/page-variables.txt').toString().trim().split('\n');
+      const actual = fileToLines('spec/fixtures/page-variables.txt');
       const expected = [
          'mock1: I, for one, welcome our new insect overlords.',
          'mock2: I, for one, welcome our new insect overlords.',
