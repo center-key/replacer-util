@@ -15,8 +15,7 @@
       <header>
          <h1>🔍🔍🔍 {{package.name}} 🔍🔍🔍</h1>
          <h2>{{package.description}}</h2>
-         <h3>Weekday: {{file.date | date: "%A"}}</h3>
-         <time datetime={{file.timestamp}}>{{file.modified}}</time>
+         <time datetime={{file.date|date:"%Y"}}>{{file.date|date:"%Y"}}</time>
       </header>
       <main>
          <p>{{slogan}}</p>
