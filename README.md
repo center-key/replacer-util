@@ -221,7 +221,7 @@ If you use GitHub Actions to publish your website, you'll need to restore file m
 One tool that does this is [git-restore-mtime](https://github.com/marketplace/actions/git-restore-mtime):
 ```yaml
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: main       #fetch the full git history of the "main"
           fetch-depth: 0  #branch for git-restore-mtime-action below
