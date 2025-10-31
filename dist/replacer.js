@@ -1,4 +1,4 @@
-//! replacer-util v1.4.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.4.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { EOL } from 'node:os';
 import { globSync } from 'glob';
@@ -81,11 +81,14 @@ const replacer = {
             origin: file,
             dest: concatFile ?? getNewFilename(file) ?? outputFilename(file),
         });
+        const titleCase = () => {
+            const psuedo = /\/index\.[a-z]*$/;
+            const leadingArticle = /^(a|an|the)[- _]/;
+            const toTitle = (filename) => path.basename(filename.replace(psuedo, '')).toLowerCase().replace(leadingArticle, '');
+            return (a, b) => toTitle(a).localeCompare(toTitle(b));
+        };
         const readPaths = (ext) => globSync(source + '/**/*' + ext).map(slash);
-        const toBase = (filename) => path.basename(filename).toLocaleLowerCase();
-        const toTitle = (filename) => toBase(filename).replace(/^(a|an|the)[- _]/, '');
-        const titleCase = (a, b) => toTitle(a).localeCompare(toTitle(b));
-        const comparator = settings.titleSort ? titleCase : undefined;
+        const comparator = settings.titleSort ? titleCase() : undefined;
         const getFiles = () => exts.map(readPaths).flat().sort(comparator);
         const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
         const exts = settings.extensions.length ? settings.extensions : [''];
