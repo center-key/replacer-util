@@ -142,14 +142,36 @@ describe('Executing the CLI', () => {
       });
 
    it('with the --content flag is able to access page variables in the source files', () => {
-      run('replacer spec/fixtures/web --ext=.html spec/fixtures --content={{file.name}}:{{space}}{{slogan}} --concat=page-variables.txt');
-      const actual = fileToLines('spec/fixtures/page-variables.txt');
+      run('replacer spec/fixtures/web --ext=.html spec/target --content={{file.name}}:{{space}}{{slogan}} --concat=page-variables.txt');
+      const actual = fileToLines('spec/target/page-variables.txt');
       const expected = [
          'mock1: I, for one, welcome our new insect overlords.',
          'mock2: I, for one, welcome our new insect overlords.',
          'mock3: I, for one, welcome our new insect overlords.',
          'mock4: I, for one, welcome our new insect overlords.',
          ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   it('with both the --concat and --title-sort flags sorts content by title', () => {
+      run('replacer spec/fixtures/titles spec/target --concat=sort-by-filename.txt');
+      run('replacer spec/fixtures/titles spec/target --concat=sort-by-title.txt --title-sort');
+      const actual = {
+         filename: fileToLines('spec/target/sort-by-filename.txt'),
+         title:    fileToLines('spec/target/sort-by-title.txt'),
+         };
+      const expected = {
+         filename: [
+            'A Tiny Guide to BBQ',
+            'Green Eggs and Ham',
+            'The Bacon Cookbook',
+            ],
+         title: [
+            'The Bacon Cookbook',   //ignore leading "The"
+            'Green Eggs and Ham',
+            'A Tiny Guide to BBQ',  //ignore leading "A"
+            ],
+         };
       assertDeepStrictEqual(actual, expected);
       });
 

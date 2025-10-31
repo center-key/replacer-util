@@ -30,7 +30,7 @@ import path from 'path';
 
 // Parameters and flags
 const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-liquid',
-   'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement', 'summary'];
+   'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement', 'summary', 'title-sort'];
 const cli =    cliArgvUtil.parse(validFlags);
 const source = cli.params[0];  //origin file or folder
 const target = cli.params[1];  //destination folder
@@ -82,6 +82,7 @@ const options = {
    rename:       cli.flagMap.rename ?? null,
    replacement:  escape(cli.flagMap.replacement),
    templatingOn: !cli.flagOn.noLiquid,
+   titleSort:    cli.flagOn.titleSort,
    };
 const results = replacer.transform(sourceFolder, target, options);
 if (!cli.flagOn.quiet)

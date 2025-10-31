@@ -65,6 +65,7 @@ Command-line flags:
 | `--rename`        | New output filename.                                  | **string** |
 | `--replacement`   | Text to insert into the target output files.          | **string** |
 | `--summary`       | Only print out the single line summary message.       | N/A        |
+| `--title-sort`    | Ignore leading articles in `--concat` filenames.      | N/A        |
 
 To avoid issues on the command line, problematic characters can be _"escaped"_ with safe strings as listed below.
 
@@ -119,7 +120,7 @@ Examples:
    Renames all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder structure.
 
    - `replacer --cd=spec fixtures/web --find=insect --replacement=A.I. target/web`<br>
-   Removes all insects.  See: [fixtures/web/mock1.html](spec/fixtures/web/mock1.html) and [target/web/mock1.html](spec/target/web/mock1.html)
+   Removes all insects.&nbsp; See: [fixtures/web/mock1.html](spec/fixtures/web/mock1.html) and [target/web/mock1.html](spec/target/exclude/mock1.html)
 
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.

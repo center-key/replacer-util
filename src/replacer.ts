@@ -26,6 +26,7 @@ export type Settings = {
    rename:       string | null,  //new output filename
    replacement:  string | null,  //text to insert into the target output files
    templatingOn: boolean,        //enable LiquidJS templating
+   titleSort:    boolean,        //ignore leading articles in "concat" filenames
    };
 export type Results = {
    source:   string,  //path of origination folder
@@ -86,6 +87,7 @@ const replacer = {
          regex:        null,
          replacement:  null,
          templatingOn: true,
+         titleSort:    false,
          };
       const settings =    { ...defaults, ...options };
       const startTime =   Date.now();
@@ -94,6 +96,7 @@ const replacer = {
       const target =      task.normalizeFolder(startFolder + targetFolder);
       const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
       const missingFind = !settings.find && !settings.regex && !!settings.replacement;
+      const invalidSort = settings.titleSort && !settings.concat;
       if (targetFolder)
          fs.mkdirSync(target, { recursive: true });
       const errorMessage =
@@ -104,6 +107,7 @@ const replacer = {
          !fs.statSync(source).isDirectory() ? 'Source is not a folder: ' + source :
          !fs.statSync(target).isDirectory() ? 'Target is not a folder: ' + target :
          missingFind ?                        'Must specify search text with --find or --regex' :
+         invalidSort ?                        'Use of --titleSort requires --concat' :
          null;
       if (errorMessage)
          throw new Error('[replacer-util] ' + errorMessage);
@@ -119,7 +123,11 @@ const replacer = {
          dest:   concatFile ?? getNewFilename(file) ?? outputFilename(file),
          });
       const readPaths =     (ext: string) => globSync(source + '/**/*' + ext).map(slash);
-      const getFiles =      () => exts.map(readPaths).flat().sort();
+      const toBase =        (filename: string) => path.basename(filename).toLocaleLowerCase();
+      const toTitle =       (filename: string) => toBase(filename).replace(/^(a|an|the)[- _]/, '');
+      const titleCase =     (a: string, b: string) => toTitle(a).localeCompare(toTitle(b));
+      const comparator =    settings.titleSort ? titleCase : undefined;
+      const getFiles =      () => exts.map(readPaths).flat().sort(comparator);
       const keep =          (file: string) => !settings.exclude || !file.includes(settings.exclude);
       const exts =          settings.extensions.length ? settings.extensions : [''];
       const filesRaw =      settings.filename ? [source + '/' + settings.filename] : getFiles();
