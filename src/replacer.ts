@@ -122,11 +122,15 @@ const replacer = {
          origin: file,
          dest:   concatFile ?? getNewFilename(file) ?? outputFilename(file),
          });
+      const titleCase = () => {
+         const psuedo =         /\/index\.[a-z]*$/;
+         const leadingArticle = /^(a|an|the)[- _]/;
+         const toTitle = (filename: string) =>
+            path.basename(filename.replace(psuedo, '')).toLowerCase().replace(leadingArticle, '');
+         return (a: string, b: string) => toTitle(a).localeCompare(toTitle(b));
+         };
       const readPaths =     (ext: string) => globSync(source + '/**/*' + ext).map(slash);
-      const toBase =        (filename: string) => path.basename(filename).toLocaleLowerCase();
-      const toTitle =       (filename: string) => toBase(filename).replace(/^(a|an|the)[- _]/, '');
-      const titleCase =     (a: string, b: string) => toTitle(a).localeCompare(toTitle(b));
-      const comparator =    settings.titleSort ? titleCase : undefined;
+      const comparator =    settings.titleSort ? titleCase() : undefined;
       const getFiles =      () => exts.map(readPaths).flat().sort(comparator);
       const keep =          (file: string) => !settings.exclude || !file.includes(settings.exclude);
       const exts =          settings.extensions.length ? settings.extensions : [''];

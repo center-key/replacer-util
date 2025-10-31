@@ -163,10 +163,12 @@ describe('Executing the CLI', () => {
       const expected = {
          filename: [
             'A Tiny Guide to BBQ',
+            'An Awesome BLT',
             'Green Eggs and Ham',
             'The Bacon Cookbook',
             ],
          title: [
+            'An Awesome BLT',       //ignore leading "An"
             'The Bacon Cookbook',   //ignore leading "The"
             'Green Eggs and Ham',
             'A Tiny Guide to BBQ',  //ignore leading "A"
