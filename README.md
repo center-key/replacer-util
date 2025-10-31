@@ -118,8 +118,8 @@ Examples:
    - `replacer src/web --ext=.html --rename=index.html dist/website`<br>
    Renames all HTML files, such as **src/web/about/about.html**, to **index.html** while preserving the folder structure.
 
-   - `replacer --cd=spec/fixtures source --find=insect --replacement=A.I. target`<br>
-   Removes all insects.  See: [source/mock1.html](spec/fixtures/source/mock1.html) and [target/mock1.html](spec/fixtures/target/mock1.html)
+   - `replacer --cd=spec fixtures/web --find=insect --replacement=A.I. target/web`<br>
+   Removes all insects.  See: [fixtures/web/mock1.html](spec/fixtures/web/mock1.html) and [target/web/mock1.html](spec/target/web/mock1.html)
 
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
@@ -226,7 +226,7 @@ One tool that does this is [git-restore-mtime](https://github.com/marketplace/ac
           ref: main       #fetch the full git history of the "main"
           fetch-depth: 0  #branch for git-restore-mtime-action below
       - uses: chetan/git-restore-mtime-action@v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
       - run: npm install
       - run: npm run publish
 ```

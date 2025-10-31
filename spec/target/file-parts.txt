@@ -1,0 +1,8 @@
+folder->web base->mock1.html name->mock1 ext->.html dir->spec/fixtures/web path->spec/fixtures/web/mock1.html
+folder->web base->mock1.js name->mock1 ext->.js dir->spec/fixtures/web path->spec/fixtures/web/mock1.js
+folder->web base->mock1.min.css name->mock1.min ext->.css dir->spec/fixtures/web path->spec/fixtures/web/mock1.min.css
+folder->subfolder-a base->mock2.html name->mock2 ext->.html dir->spec/fixtures/web/subfolder-a path->spec/fixtures/web/subfolder-a/mock2.html
+folder->subfolder-a base->mock2.js name->mock2 ext->.js dir->spec/fixtures/web/subfolder-a path->spec/fixtures/web/subfolder-a/mock2.js
+folder->subfolder-a base->mock2.min.css name->mock2.min ext->.css dir->spec/fixtures/web/subfolder-a path->spec/fixtures/web/subfolder-a/mock2.min.css
+folder->subfolder-b base->mock3.html name->mock3 ext->.html dir->spec/fixtures/web/subfolder-b path->spec/fixtures/web/subfolder-b/mock3.html
+folder->subfolder-bb base->mock4.html name->mock4 ext->.html dir->spec/fixtures/web/subfolder-b/subfolder-bb path->spec/fixtures/web/subfolder-b/subfolder-bb/mock4.html

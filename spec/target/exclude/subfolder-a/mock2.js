@@ -8,7 +8,7 @@ const info2 = {
    banner:      '🔍🔍🔍 replacer-util v1.4.1 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)',
    code:        'mock2',
-   file:        'spec/fixtures/source/subfolder-a/mock2.js',
+   file:        'spec/fixtures/web/subfolder-a/mock2.js',
    year:        '2025',
    list1:       'A.I. module, A.I. module, A.I. module',
    list2:       'A.I. module, iNsEcT, INSECT, A.I. module',
