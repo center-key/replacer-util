@@ -5,7 +5,7 @@ let π2 = 3.14;
 let τ2 = 2 * π2;
 
 const info2 = {
-   banner:      '🔍🔍🔍 replacer-util v1.4.3 🔍🔍🔍',
+   banner:      '🔍🔍🔍 replacer-util v1.4.4 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)',
    code:        'mock2',
    file:        'spec/fixtures/web/subfolder-a/mock2.js',

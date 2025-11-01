@@ -1,4 +1,4 @@
-//! replacer-util v1.4.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.4.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { EOL } from 'node:os';
 import { globSync } from 'glob';
