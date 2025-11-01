@@ -5,9 +5,14 @@
 ///////////////////
 
 // Usage in package.json:
+//    "replacerConfig": {
+//       "macros": {
+//          "my-macro": "robots{{bang}}"
+//       }
+//    }
 //    "scripts": {
 //       "build-web": "replacer src/web --ext=.html dist/website",
-//       "poetry": "replacer poems dystopian-poems --find=humans --replacement=robots"
+//       "poetry": "replacer poems dystopian-poems --find=humans --replacement={{macro:my-macro}}"
 //    },
 //
 // Usage from command line:
@@ -28,12 +33,15 @@ import { replacer } from '../dist/replacer.js';
 import fs   from 'fs';
 import path from 'path';
 
-// Parameters and flags
+// Parameters and Flags
 const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header', 'no-liquid',
    'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement', 'summary', 'title-sort'];
 const cli =    cliArgvUtil.parse(validFlags);
 const source = cli.params[0];  //origin file or folder
 const target = cli.params[1];  //destination folder
+
+// Project Configuration
+const pkg = fs.existsSync('package.json') && JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
 // Escapers
 const escapers = [
@@ -67,7 +75,14 @@ const sourceFolder = isFile ? path.dirname(source) : source;
 const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
 const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
 const escapeChar =   (param, escaper) => param.replace(escaper[0], escaper[1]);
-const escape =       (param) => !param ? null : escapers.reduce(escapeChar, param);
+const macroSub =     (param) => {
+   const macroName =  param.match(/^{{macro:(.*)}}$/)?.[1];
+   const macroValue = pkg?.replacerConfig?.macros?.[macroName];
+   if (macroName && !macroValue)
+      throw new Error(`[replacer-util] Macro "${macroName}" used but not defined in package.json`);
+   return macroName ? macroValue : param;
+   };
+const escape =       (param) => !param ? null : escapers.reduce(escapeChar, macroSub(param));
 const options = {
    cd:           cli.flagMap.cd ?? null,
    concat:       cli.flagMap.concat ?? null,

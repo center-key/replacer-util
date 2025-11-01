@@ -193,10 +193,10 @@ const replacer = {
          const text =     altText ?? fs.readFileSync(file.origin, 'utf-8');
          const content =  render(header) + text;
          const newStr =   render(rep);
-         const out1 =     settings.templatingOn ? render(content) : content;
-         const out2 =     settings.find ? out1.replaceAll(settings.find, newStr) : out1;
-         const out3 =     settings.regex ? out2.replace(settings.regex, newStr) : out2;
-         const out4 =     settings.noSourceMap ? out3.replace(sourceMapLine, '') : out3;
+         const out1 =     settings.templatingOn ? render(content) :                        content;
+         const out2 =     settings.find ?         out1.replaceAll(settings.find, newStr) : out1;
+         const out3 =     settings.regex ?        out2.replace(settings.regex, newStr) :   out2;
+         const out4 =     settings.noSourceMap ?  out3.replace(sourceMapLine, '') :        out3;
          const out5 =     eofNewline(out4.trimStart());
          const final =    append && settings.header ? EOL + out5 : out5;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });

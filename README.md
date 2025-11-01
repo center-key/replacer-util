@@ -106,6 +106,9 @@ Examples:
    - `replacer app/widgets --ext=.less --content=@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}} --concat=widgets.less app/style`<br>
    Creates a single LESS file that imports the LESS files of every widget component.
 
+   - `replacer app/widgets --ext=.less --content={{macro:less-import}} --concat=widgets.less app/style`<br>
+   Identical to the previous command assuming the `less-import` macro is properly defined in the **package.json** file.
+
    - `replacer src --summary build`<br>
    Displays the summary but not the individual files copied.
 
@@ -232,6 +235,19 @@ One tool that does this is [git-restore-mtime](https://github.com/marketplace/ac
       - run: npm run publish
 ```
 For a working example, see: [publish-website.yaml](https://github.com/center-key/think-metric/blob/main/.github/workflows/publish-website.yaml)
+
+### 8. Macros
+Example:
+```json
+   "replacerConfig": {
+      "macros": {
+         "less-import": "@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}}"
+      }
+   },
+   "scripts": {
+      "less": "replacer app/widgets --ext=.less --content={{macro:less-import}} --concat=widgets.less app/style"
+   },
+```
 
 ## C) Application Code
 Even though **replacer-util** is primarily intended for build scripts, the package can be used programmatically in ESM and TypeScript projects.

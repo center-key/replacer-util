@@ -153,6 +153,18 @@ describe('Executing the CLI', () => {
       assertDeepStrictEqual(actual, expected);
       });
 
+   it('with a macro generates the same result', () => {
+      run('replacer spec/fixtures/web --ext=.html spec/target --content={{macro:slogan-line}} --concat=page-variables-macro.txt');
+      const actual = fileToLines('spec/target/page-variables-macro.txt');
+      const expected = [
+         'mock1: I, for one, welcome our new insect overlords.',
+         'mock2: I, for one, welcome our new insect overlords.',
+         'mock3: I, for one, welcome our new insect overlords.',
+         'mock4: I, for one, welcome our new insect overlords.',
+         ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
    it('with both the --concat and --title-sort flags sorts content by title', () => {
       run('replacer spec/fixtures/titles spec/target --concat=sort-by-filename.txt');
       run('replacer spec/fixtures/titles spec/target --concat=sort-by-title.txt --title-sort');
