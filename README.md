@@ -84,6 +84,8 @@ Escape characters:
 | `;`       | `{{semi}}`           |
 | ` `       | `{{space}}`          |
 
+Alternatively, escaping for the command line can be avoided with macros you define in your project's **package.json** file (see documentation below).
+
 ### 4. Example CLI usage
 Examples:
    - `replacer src build`<br>
@@ -237,15 +239,17 @@ One tool that does this is [git-restore-mtime](https://github.com/marketplace/ac
 For a working example, see: [publish-website.yaml](https://github.com/center-key/think-metric/blob/main/.github/workflows/publish-website.yaml)
 
 ### 8. Macros
+Define macros in your project's **package.json** file and use them to make commands more compact and readable.
+
 Example:
 ```json
    "replacerConfig": {
       "macros": {
-         "less-import": "@import{{space}}{{quote}}{{file.dir}}/{{file.name}}{{quote}}{{semi}}"
+         "less-import": "@import {{quote}}{{file.dir}}/{{file.name}}{{quote}};"
       }
    },
    "scripts": {
-      "less": "replacer app/widgets --ext=.less --content={{macro:less-import}} --concat=widgets.less app/style"
+      "less-imports": "replacer app/widgets --ext=.less --content={{macro:less-import}} --concat=widgets.less app/style"
    },
 ```
 

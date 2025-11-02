@@ -7,7 +7,7 @@
 // Usage in package.json:
 //    "replacerConfig": {
 //       "macros": {
-//          "my-macro": "robots{{bang}}"
+//          "my-macro": "robots!"
 //       }
 //    }
 //    "scripts": {

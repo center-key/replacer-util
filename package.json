@@ -46,7 +46,7 @@
    },
    "replacerConfig": {
       "macros": {
-         "slogan-line": "{{file.name}}:{{space}}{{slogan}}"
+         "slogan-line": "{{file.name}}: {{slogan}}"
       }
    },
    "runScriptsConfig": {
