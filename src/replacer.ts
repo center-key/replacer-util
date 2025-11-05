@@ -44,17 +44,20 @@ type Pkg =      { [key: string]: PkgObj };
 type PageVars = { [name: string]: string };
 
 const task = {
-   normalizeFolder(folderPath: string): string {
+
+   cleanPath(folder: string): string {
       // Clean up path and remove trailing slash.
       // Example: 'data\books///123\' --> 'data/books/123'
-      const string =        typeof folderPath === 'string' ? folderPath : '';
+      const string =        typeof folder === 'string' ? folder : '';
       const trailingSlash = /\/$/;
       return slash(path.normalize(string)).trim().replace(trailingSlash, '');
       },
+
    isTextFile(filename: string): boolean {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
       return fs.statSync(filename).isFile() && !isBinary(filename);
       },
+
    readPackageJson(): Pkg {
       // Returns package.json as an object literal.
       const pkg = <Pkg>JSON.parse(fs.readFileSync('package.json', 'utf-8'));
@@ -72,34 +75,44 @@ const task = {
          fixHiddenKeys(pkg.devDependencies);
       return pkg;
       },
+
    };
 
 const replacer = {
 
+   assert(ok: unknown, message: string | null) {
+      if (!ok)
+         throw new Error(`[replacer-util] ${message}`);
+      },
+
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
-      const defaults = {
+      const defaults: Settings = {
          cd:           null,
          concat:       null,
+         content:      null,
          exclude:      null,
          extensions:   [],
+         filename:     null,
          find:         null,
+         header:       null,
          noSourceMap:  false,
          regex:        null,
+         rename:       null,
          replacement:  null,
          templatingOn: true,
          titleSort:    false,
          };
       const settings =    { ...defaults, ...options };
       const startTime =   Date.now();
-      const startFolder = settings.cd ? task.normalizeFolder(settings.cd) + '/' : '';
-      const source =      task.normalizeFolder(startFolder + sourceFolder);
-      const target =      task.normalizeFolder(startFolder + targetFolder);
+      const startFolder = settings.cd ? task.cleanPath(settings.cd) + '/' : '';
+      const source =      task.cleanPath(startFolder + sourceFolder);
+      const target =      task.cleanPath(startFolder + targetFolder);
       const concatFile =  settings.concat ? path.join(target, settings.concat) : null;
       const missingFind = !settings.find && !settings.regex && !!settings.replacement;
       const invalidSort = settings.titleSort && !settings.concat;
       if (targetFolder)
          fs.mkdirSync(target, { recursive: true });
-      const errorMessage =
+      const error =
          !sourceFolder ?                      'Must specify the source folder path.' :
          !targetFolder ?                      'Must specify the target folder path.' :
          !fs.existsSync(source) ?             'Source folder does not exist: ' + source :
@@ -109,8 +122,7 @@ const replacer = {
          missingFind ?                        'Must specify search text with --find or --regex' :
          invalidSort ?                        'Use of --titleSort requires --concat' :
          null;
-      if (errorMessage)
-         throw new Error('[replacer-util] ' + errorMessage);
+      replacer.assert(!error, error);
       const getNewFilename = (file: string) => {
          const baseNameLoc =  () => file.length - path.basename(file).length;
          const relativePath = () => file.substring(source.length, baseNameLoc());
@@ -218,7 +230,7 @@ const replacer = {
 
    reporter(results: Results, options?: Partial<ReporterSettings>): Results {
       // Pretty prints the output of the replacer.transform() function.
-      const defaults = {
+      const defaults: ReporterSettings = {
          summaryOnly: false,
          };
       const settings =  { ...defaults, ...options };

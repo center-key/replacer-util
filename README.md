@@ -86,8 +86,7 @@ Escape characters:
 
 Alternatively, escaping for the command line can be avoided with macros you define in your project's **package.json** file (see documentation below).
 
-### 4. Example CLI usage
-Examples:
+### 4. Examples
    - `replacer src build`<br>
    Recursively copies all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
 
