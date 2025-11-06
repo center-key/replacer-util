@@ -1,6 +1,7 @@
 // replacer-util ~~ MIT License
 
 // Imports
+import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -35,12 +36,12 @@ export type Results = {
    duration: number,  //execution time in milliseconds
    files:    { origin: string, dest: string }[],  //list of processed files
    };
-export type ResultsFile = Results['files'][0];
+export type ResultsFile = Results['files'][number];
 export type ReporterSettings = {
    summaryOnly: boolean,  //only print out the single line summary message
    };
-type PkgObj =   { [subkey: string]: string };
-type Pkg =      { [key: string]: PkgObj };
+type Json = string | number | boolean | null | undefined | JsonObject | Json[];
+type JsonObject = { [key: string]: Json };
 type PageVars = { [name: string]: string };
 
 const task = {
@@ -58,10 +59,11 @@ const task = {
       return fs.statSync(filename).isFile() && !isBinary(filename);
       },
 
-   readPackageJson(): Pkg {
+   readPackageJson() {
       // Returns package.json as an object literal.
-      const pkg = <Pkg>JSON.parse(fs.readFileSync('package.json', 'utf-8'));
-      const fixHiddenKeys = (pkgObj: PkgObj) => {
+      const pkgExists = fs.existsSync('package.json');
+      const pkg = pkgExists ? <JsonObject>JSON.parse(fs.readFileSync('package.json', 'utf-8')) : null;
+      const fixHiddenKeys = (pkgObj: JsonObject) => {
          const unhide = (key: string) => {
             const newKey = key.replace(/[@./]/g, '-');
             if (!pkgObj[newKey])
@@ -69,10 +71,10 @@ const task = {
             };
          Object.keys(pkgObj).forEach(unhide);
          };
-      if (pkg.dependencies)
-         fixHiddenKeys(pkg.dependencies);
-      if (pkg.devDependencies)
-         fixHiddenKeys(pkg.devDependencies);
+      if (pkg?.dependencies)
+         fixHiddenKeys(<JsonObject>pkg.dependencies);
+      if (pkg?.devDependencies)
+         fixHiddenKeys(<JsonObject>pkg.devDependencies);
       return pkg;
       },
 
@@ -83,6 +85,74 @@ const replacer = {
    assert(ok: unknown, message: string | null) {
       if (!ok)
          throw new Error(`[replacer-util] ${message}`);
+      },
+
+   cli() {
+      const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
+         'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
+         'summary', 'title-sort'];
+      const cli =    cliArgvUtil.parse(validFlags);
+      const source = cli.params[0];  //origin file or folder
+      const target = cli.params[1];  //destination folder
+      const pkg =    task.readPackageJson();
+      const escapers: [RegExp, string][] = [
+         [/{{apos}}/g,        "'"],
+         [/{{bang}}/g,        '!'],
+         [/{{close-curly}}/g, '}'],
+         [/{{equals}}/g,      '='],
+         [/{{gt}}/g,          '>'],
+         [/{{lt}}/g,          '<'],
+         [/{{open-curly}}/g,  '{'],
+         [/{{pipe}}/g,        '|'],
+         [/{{quote}}/g,       '"'],
+         [/{{semi}}/g,        ';'],
+         [/{{space}}/g,       ' '],
+         ];
+      const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex!);
+      const error =
+         cli.invalidFlag ?    cli.invalidFlagMsg :
+         !source ?            'Missing source folder.' :
+         !target ?            'Missing target folder.' :
+         badRegex ?           'Regex must be enclosed in slashes.' :
+         cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2]! :
+         null;
+      replacer.assert(!error, error);
+      const sourceFile =   path.join(cli.flagMap.cd ?? '', source!);
+      const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
+      const sourceFolder = isFile ? path.dirname(source!) : source;
+      const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
+      const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
+      const macros =       <JsonObject | undefined>(<JsonObject | undefined>pkg?.replacerConfig)?.macros;
+      const escapeChar = (param: string, escaper: typeof escapers[number]) =>
+         param.replace(escaper[0], escaper[1]);
+      const macroSub = (param: string) => {
+         const macroName =  <keyof JsonObject>param.match(/^{{macro:(.*)}}$/)?.[1];
+         const macroValue = <string>macros?.[macroName];
+         const noMacro =    macroName && !macroValue;
+         replacer.assert(!noMacro, `Macro "${macroName}" used but not defined in package.json`);
+         return macroName ? macroValue : param;
+         };
+      const escape = (param?: string) =>
+         !param ? null : escapers.reduce(escapeChar, macroSub(param));
+      const options = {
+         cd:           cli.flagMap.cd ?? null,
+         concat:       cli.flagMap.concat ?? null,
+         content:      escape(cli.flagMap.content),
+         exclude:      cli.flagMap.exclude ?? null,
+         extensions:   cli.flagMap.ext?.split(',') ?? [],
+         filename:     isFile ? path.basename(source!) : null,
+         find:         escape(cli.flagMap.find),
+         header:       escape(cli.flagMap.header),
+         noSourceMap:  cli.flagOn.noSourceMap,
+         regex:        cli.flagMap.regex ? new RegExp(escape(regex)!, regexCodes) : null,
+         rename:       cli.flagMap.rename ?? null,
+         replacement:  escape(cli.flagMap.replacement),
+         templatingOn: !cli.flagOn.noLiquid,
+         titleSort:    cli.flagOn.titleSort,
+         };
+      const results = replacer.transform(sourceFolder!, target!, options);
+      if (!cli.flagOn.quiet)
+         replacer.reporter(results, { summaryOnly: cli.flagOn.summary });
       },
 
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
