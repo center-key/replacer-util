@@ -1,5 +1,6 @@
-//! replacer-util v1.4.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.4.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
+import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
@@ -10,8 +11,8 @@ import log from 'fancy-log';
 import path from 'path';
 import slash from 'slash';
 const task = {
-    normalizeFolder(folderPath) {
-        const string = typeof folderPath === 'string' ? folderPath : '';
+    cleanPath(folder) {
+        const string = typeof folder === 'string' ? folder : '';
         const trailingSlash = /\/$/;
         return slash(path.normalize(string)).trim().replace(trailingSlash, '');
     },
@@ -19,7 +20,8 @@ const task = {
         return fs.statSync(filename).isFile() && !isBinary(filename);
     },
     readPackageJson() {
-        const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+        const pkgExists = fs.existsSync('package.json');
+        const pkg = pkgExists ? JSON.parse(fs.readFileSync('package.json', 'utf-8')) : null;
         const fixHiddenKeys = (pkgObj) => {
             const unhide = (key) => {
                 const newKey = key.replace(/[@./]/g, '-');
@@ -28,38 +30,110 @@ const task = {
             };
             Object.keys(pkgObj).forEach(unhide);
         };
-        if (pkg.dependencies)
+        if (pkg?.dependencies)
             fixHiddenKeys(pkg.dependencies);
-        if (pkg.devDependencies)
+        if (pkg?.devDependencies)
             fixHiddenKeys(pkg.devDependencies);
         return pkg;
     },
 };
 const replacer = {
+    assert(ok, message) {
+        if (!ok)
+            throw new Error(`[replacer-util] ${message}`);
+    },
+    cli() {
+        const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
+            'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
+            'summary', 'title-sort'];
+        const cli = cliArgvUtil.parse(validFlags);
+        const source = cli.params[0];
+        const target = cli.params[1];
+        const pkg = task.readPackageJson();
+        const escapers = [
+            [/{{apos}}/g, "'"],
+            [/{{bang}}/g, '!'],
+            [/{{close-curly}}/g, '}'],
+            [/{{equals}}/g, '='],
+            [/{{gt}}/g, '>'],
+            [/{{lt}}/g, '<'],
+            [/{{open-curly}}/g, '{'],
+            [/{{pipe}}/g, '|'],
+            [/{{quote}}/g, '"'],
+            [/{{semi}}/g, ';'],
+            [/{{space}}/g, ' '],
+        ];
+        const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex);
+        const error = cli.invalidFlag ? cli.invalidFlagMsg :
+            !source ? 'Missing source folder.' :
+                !target ? 'Missing target folder.' :
+                    badRegex ? 'Regex must be enclosed in slashes.' :
+                        cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2] :
+                            null;
+        replacer.assert(!error, error);
+        const sourceFile = path.join(cli.flagMap.cd ?? '', source);
+        const isFile = fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
+        const sourceFolder = isFile ? path.dirname(source) : source;
+        const regex = cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));
+        const regexCodes = cli.flagMap.regex?.replace(/.*\//, '');
+        const macros = pkg?.replacerConfig?.macros;
+        const escapeChar = (param, escaper) => param.replace(escaper[0], escaper[1]);
+        const macroSub = (param) => {
+            const macroName = param.match(/^{{macro:(.*)}}$/)?.[1];
+            const macroValue = macros?.[macroName];
+            const noMacro = macroName && !macroValue;
+            replacer.assert(!noMacro, `Macro "${macroName}" used but not defined in package.json`);
+            return macroName ? macroValue : param;
+        };
+        const escape = (param) => !param ? null : escapers.reduce(escapeChar, macroSub(param));
+        const options = {
+            cd: cli.flagMap.cd ?? null,
+            concat: cli.flagMap.concat ?? null,
+            content: escape(cli.flagMap.content),
+            exclude: cli.flagMap.exclude ?? null,
+            extensions: cli.flagMap.ext?.split(',') ?? [],
+            filename: isFile ? path.basename(source) : null,
+            find: escape(cli.flagMap.find),
+            header: escape(cli.flagMap.header),
+            noSourceMap: cli.flagOn.noSourceMap,
+            regex: cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
+            rename: cli.flagMap.rename ?? null,
+            replacement: escape(cli.flagMap.replacement),
+            templatingOn: !cli.flagOn.noLiquid,
+            titleSort: cli.flagOn.titleSort,
+        };
+        const results = replacer.transform(sourceFolder, target, options);
+        if (!cli.flagOn.quiet)
+            replacer.reporter(results, { summaryOnly: cli.flagOn.summary });
+    },
     transform(sourceFolder, targetFolder, options) {
         const defaults = {
             cd: null,
             concat: null,
+            content: null,
             exclude: null,
             extensions: [],
+            filename: null,
             find: null,
+            header: null,
             noSourceMap: false,
             regex: null,
+            rename: null,
             replacement: null,
             templatingOn: true,
             titleSort: false,
         };
         const settings = { ...defaults, ...options };
         const startTime = Date.now();
-        const startFolder = settings.cd ? task.normalizeFolder(settings.cd) + '/' : '';
-        const source = task.normalizeFolder(startFolder + sourceFolder);
-        const target = task.normalizeFolder(startFolder + targetFolder);
+        const startFolder = settings.cd ? task.cleanPath(settings.cd) + '/' : '';
+        const source = task.cleanPath(startFolder + sourceFolder);
+        const target = task.cleanPath(startFolder + targetFolder);
         const concatFile = settings.concat ? path.join(target, settings.concat) : null;
         const missingFind = !settings.find && !settings.regex && !!settings.replacement;
         const invalidSort = settings.titleSort && !settings.concat;
         if (targetFolder)
             fs.mkdirSync(target, { recursive: true });
-        const errorMessage = !sourceFolder ? 'Must specify the source folder path.' :
+        const error = !sourceFolder ? 'Must specify the source folder path.' :
             !targetFolder ? 'Must specify the target folder path.' :
                 !fs.existsSync(source) ? 'Source folder does not exist: ' + source :
                     !fs.existsSync(target) ? 'Target folder cannot be created: ' + target :
@@ -68,8 +142,7 @@ const replacer = {
                                 missingFind ? 'Must specify search text with --find or --regex' :
                                     invalidSort ? 'Use of --titleSort requires --concat' :
                                         null;
-        if (errorMessage)
-            throw new Error('[replacer-util] ' + errorMessage);
+        replacer.assert(!error, error);
         const getNewFilename = (file) => {
             const baseNameLoc = () => file.length - path.basename(file).length;
             const relativePath = () => file.substring(source.length, baseNameLoc());
