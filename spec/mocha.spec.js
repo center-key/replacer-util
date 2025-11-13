@@ -4,12 +4,14 @@
 // Imports
 import { assertDeepStrictEqual, fileToLines } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
+import { EOL } from 'node:os';
 import assert from 'assert';
 import fs     from 'fs';
 
 // Setup
 import { replacer } from '../dist/replacer.js';
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+const run = (posix) => cliArgvUtil.run(pkg, posix);
 
 ////////////////////////////////////////////////////////////////////////////////
 describe('The "dist" folder', () => {
@@ -94,7 +96,6 @@ describe('Correct error is thrown', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 describe('Executing the CLI', () => {
-   const run = (posix) => cliArgvUtil.run(pkg, posix);
 
    it('with basic parameters creates the expected new menu file', () => {
       run('replacer spec/fixtures/menu.txt spec/target --find=Meatloaf --replacement=Bulgogi');
@@ -188,6 +189,27 @@ describe('Executing the CLI', () => {
             'A Tiny Guide to BBQ',  //ignore leading "A"
             ],
          };
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////
+describe('Executing the CLI with the --virtual-input flag', () => {
+
+   it('can create a valid Robots Exclusion Protocol file', () => {
+      run('replacer spec spec/target/virtual --virtual-input --content={{hash}}{{space}}Allow{{space}}bots{{bang}} --rename=robots.txt');
+      const contents = fs.readFileSync('spec/target/virtual/robots.txt', 'utf-8');
+      const actual =   { contents: contents,              length: contents.length };
+      const expected = { contents: '# Allow bots!' + EOL, length: 14 };
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   it('can create a valid CNAME file', () => {
+      run('replacer --cd=spec . target/virtual --virtual-input --content=example.com --rename=CNAME');
+      const contents = fs.readFileSync('spec/target/virtual/CNAME', 'utf-8');
+      const actual =   { contents: contents,            length: contents.length };
+      const expected = { contents: 'example.com' + EOL, length: 12 };
       assertDeepStrictEqual(actual, expected);
       });
 

@@ -1,4 +1,27 @@
 // replacer-util ~~ MIT License
+//
+// Usage in package.json:
+//    "replacerConfig": {
+//       "macros": {
+//          "my-macro": "robots!"
+//       }
+//    }
+//    "scripts": {
+//       "build-web": "replacer src/web --ext=.html dist/website",
+//       "poetry": "replacer poems dystopian-poems --find=humans --replacement={{macro:my-macro}}"
+//    },
+//
+// Usage from command line:
+//    $ npm install --save-dev replacer-util
+//    $ npx replacer src/web --ext=.html docs --quiet
+//    $ npx replacer src --ext=.js build --regex=/^let/gm --replacement=const
+//
+// Contributors to this project:
+//    $ cd replacer-util
+//    $ npm install
+//    $ npm test
+//    $ node bin/cli.js --cd=spec fixtures target --find=insect --replacement=A.I.{{space}}{{package.type}} --no-source-map --note=space
+//    $ node bin/cli.js --cd=spec fixtures --ext=.js target --header=//{{bang}}\ 👾:\ {{file.base}} --concat=bundle.js
 
 // Imports
 import { cliArgvUtil } from 'cli-argv-util';
@@ -27,7 +50,8 @@ export type Settings = {
    rename:       string | null,  //new output filename
    replacement:  string | null,  //text to insert into the target output files
    templatingOn: boolean,        //enable LiquidJS templating
-   titleSort:    boolean,        //ignore leading articles in "concat" filenames
+   titleSort:    boolean,        //ignore leading articles in --concat filenames
+   virtualInput: boolean,        //do not read any files, use --content instead
    };
 export type Results = {
    source:   string,  //path of origination folder
@@ -90,7 +114,7 @@ const replacer = {
    cli() {
       const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
          'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
-         'summary', 'title-sort'];
+         'summary', 'title-sort', 'virtual-input'];
       const cli =    cliArgvUtil.parse(validFlags);
       const source = cli.params[0];  //origin file or folder
       const target = cli.params[1];  //destination folder
@@ -101,6 +125,7 @@ const replacer = {
          [/{{close-curly}}/g, '}'],
          [/{{equals}}/g,      '='],
          [/{{gt}}/g,          '>'],
+         [/{{hash}}/g,        '#'],
          [/{{lt}}/g,          '<'],
          [/{{open-curly}}/g,  '{'],
          [/{{pipe}}/g,        '|'],
@@ -108,12 +133,16 @@ const replacer = {
          [/{{semi}}/g,        ';'],
          [/{{space}}/g,       ' '],
          ];
-      const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex!);
+      const badRegex =       cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex!);
+      const missingContent = cli.flagOn.virtualInput && !cli.flagMap.content;
+      const missingRename =  cli.flagOn.virtualInput && !cli.flagMap.rename;
       const error =
          cli.invalidFlag ?    cli.invalidFlagMsg :
          !source ?            'Missing source folder.' :
          !target ?            'Missing target folder.' :
          badRegex ?           'Regex must be enclosed in slashes.' :
+         missingContent ?     'Use the --content flag to set the source.' :
+         missingRename ?      'Use the --rename flag to specify the output filename.' :
          cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2]! :
          null;
       replacer.assert(!error, error);
@@ -123,6 +152,7 @@ const replacer = {
       const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
       const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
       const macros =       <JsonObject | undefined>(<JsonObject | undefined>pkg?.replacerConfig)?.macros;
+      replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
       const escapeChar = (param: string, escaper: typeof escapers[number]) =>
          param.replace(escaper[0], escaper[1]);
       const macroSub = (param: string) => {
@@ -149,6 +179,7 @@ const replacer = {
          replacement:  escape(cli.flagMap.replacement),
          templatingOn: !cli.flagOn.noLiquid,
          titleSort:    cli.flagOn.titleSort,
+         virtualInput: cli.flagOn.virtualInput,
          };
       const results = replacer.transform(sourceFolder!, target!, options);
       if (!cli.flagOn.quiet)
@@ -171,6 +202,7 @@ const replacer = {
          replacement:  null,
          templatingOn: true,
          titleSort:    false,
+         virtualInput: false,
          };
       const settings =    { ...defaults, ...options };
       const startTime =   Date.now();
@@ -216,9 +248,11 @@ const replacer = {
       const getFiles =      () => exts.map(readPaths).flat().sort(comparator);
       const keep =          (file: string) => !settings.exclude || !file.includes(settings.exclude);
       const exts =          settings.extensions.length ? settings.extensions : [''];
-      const filesRaw =      settings.filename ? [source + '/' + settings.filename] : getFiles();
+      const filename =      settings.virtualInput ? '.' : settings.filename;
+      const filesRaw =      filename ? [source + '/' + filename] : getFiles();
       const filtered =      filesRaw.filter(task.isTextFile).filter(keep);
-      const fileRoutes =    filtered.map(file => slash(file)).map(getFileRoute);
+      const files =         settings.virtualInput ? filesRaw : filtered;
+      const fileRoutes =    files.map(file => slash(file)).map(getFileRoute);
       const pkg =           task.readPackageJson();
       const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
       const header =        settings.header ? settings.header + EOL : '';
@@ -264,11 +298,12 @@ const replacer = {
          const toPair =   (tag: AssignTag) => [tag.key, tag.value.initial.postfix[0]?.content];
          const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
          return <PageVars>Object.fromEntries(tagPairs);
-         }
+         };
       const eofNewline = (text: string) => text.endsWith(EOL) ? text : text + EOL;
       const processFile = (file: ResultsFile, index: number) => {
          const engine =   createEngine(file);
-         const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
+         const needVars = settings.content && !settings.virtualInput;
+         const pageVars = needVars ? extractPageVars(engine, file.origin) : {};
          const render =   (text: string) => <string>engine.parseAndRenderSync(text, pageVars);
          const append =   settings.concat && index > 0;
          const altText =  settings.content ? render(settings.content) : null;
@@ -284,18 +319,19 @@ const replacer = {
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
-      fileRoutes.map(processFile);
+      fileRoutes.forEach(processFile);
       const relativePaths = (file: ResultsFile) => ({
          origin: file.origin.substring(source.length + 1),
          dest:   file.dest.substring(target.length + 1),
          });
-      return {
+      const results: Results = {
          source:   source,
          target:   target,
          count:    fileRoutes.length,
          duration: Date.now() - startTime,
          files:    fileRoutes.map(relativePaths),
          };
+      return results;
       },
 
    reporter(results: Results, options?: Partial<ReporterSettings>): Results {

@@ -21,12 +21,16 @@ $ npm install --save-dev replacer-util
 ```
 
 ## B) Usage
-### 1. npm package.json scripts
-Run `replacer` from the `"scripts"` section of your **package.json** file.
-
+### 1. Synopsis
+```
+replacer [SOURCE] [TARGET]
+```
 Parameters:
 * The **first** parameter is the *source* folder or file.
 * The **second** parameter is the *target* folder.
+
+### 2. npm package.json scripts
+Run `replacer` from the `"scripts"` section of your **package.json** file.
 
 Example **package.json** scripts:
 ```json
@@ -38,7 +42,7 @@ Example **package.json** scripts:
 In addition to the `--find` and `--replacement` CLI flags, template outputs in the source files will be replaced with their corresponding template variable values.&nbsp;
 The template variable `package` points to the **package.json** object, enabling `{{package.version}}` in the source file to be replaced with the project's version number.
 
-### 2. Command-line npx
+### 3. Command-line npx
 Example terminal commands:
 ```shell
 $ npm install --save-dev replacer-util
@@ -46,7 +50,7 @@ $ npx replacer src/web ext=.html docs/api-manual
 ```
 You can also install **replacer-util** globally (`--global`) and then run it anywhere directly from the terminal.
 
-### 3. CLI flags
+### 4. CLI flags
 Command-line flags:
 | Flag              | Description                                           | Value      |
 | ----------------- | ----------------------------------------------------- | ---------- |
@@ -66,6 +70,7 @@ Command-line flags:
 | `--replacement`   | Text to insert into the target output files.          | **string** |
 | `--summary`       | Only print out the single line summary message.       | N/A        |
 | `--title-sort`    | Ignore leading articles in `--concat` filenames.      | N/A        |
+| `--virtual-input` | Do not read any files, use `--content` instead.       | N/A        |
 
 To avoid issues on the command line, problematic characters can be _"escaped"_ with safe strings as listed below.
 
@@ -77,6 +82,7 @@ Escape characters:
 | `}`       | `{{close-curly}}`    |
 | `=`       | `{{equals}}`         |
 | `>`       | `{{gt}}`             |
+| `#`       | `{{hash}}`           |
 | `<`       | `{{lt}}`             |
 | `{`       | `{{open-curly}}`     |
 | `\|`      | `{{pipe}}`           |
@@ -86,7 +92,7 @@ Escape characters:
 
 Alternatively, escaping for the command line can be avoided with macros you define in your project's **package.json** file (see documentation below).
 
-### 4. Examples
+### 5. Examples
    - `replacer src build`<br>
    Recursively copies all the files in the **src** folder to the **build** folder using the data in **package.json** to update the template outputs.
 
@@ -111,7 +117,7 @@ Alternatively, escaping for the command line can be avoided with macros you defi
    Identical to the previous command assuming the `less-import` macro is properly defined in the **package.json** file.
 
    - `replacer src --summary build`<br>
-   Displays the summary but not the individual files copied.
+   Displays the summary informaion but not informaion about individual files copied.
 
    - `replacer src --regex=/^--/gm --replacement=🥕🥕🥕 build`<br>
    Finds double dashes at the start of lines and replace them with 3 carrots.&nbsp;
@@ -129,12 +135,18 @@ Alternatively, escaping for the command line can be avoided with macros you defi
    - `replacer node_modules/chart.js/dist/chart.umd.js --no-source-map build/1-pre/libs`<br>
    Removes the `//# sourceMappingURL=chart.umd.js.map` line at the bottom of the **Chart.js** distribution file.
 
+   - `replacer . docs --rename=robots.txt --virtual-input --content={{hash}}{{space}}Allow{{space}}bots{{bang}}`<br>
+   Creates a **robots.txt** file with the line `# Allow bots!` in the **docs** folder.
+
+   - `replacer --cd=docs . . --virtual-input --content=example.com --rename=CNAME`<br>
+   Creates a **CNAME** file with the line `example.com` in the **docs** folder.
+
 For examples of using `replacer` as part of front-end build process, check out the `"runScriptsConfig"` section of:<br>
 https://github.com/dna-engine/data-dashboard/blob/main/package.json
 
 _**Note:** Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
 
-### 5. Template outputs and filter formatters
+### 6. Template outputs and filter formatters
 The source files are processed by LiquidJS, so you can use [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs) and [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
 Custom variables are created with the [assign](ttps://liquidjs.com/tags/assign.html) tag.
 
@@ -174,7 +186,7 @@ Example outputs and formatters:
 
 _**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
 
-### 6. SemVer
+### 7. SemVer
 Your project's dependancies declared in **package.json** can be used to automatically keep your
 CDN links up-to-date.
 
@@ -200,7 +212,7 @@ For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"
 <script src=https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@{{package.devDependencies.highlight-js|version}}/build/highlight.min.js></script>
 ```
 
-### 7. Last Updated
+### 8. Last Updated
 The special `file` varaible can be leveraged to create a "Last Updated" field that is
 automatically populated with the date the source file was most recently modified.
 
@@ -237,7 +249,7 @@ One tool that does this is [git-restore-mtime](https://github.com/marketplace/ac
 ```
 For a working example, see: [publish-website.yaml](https://github.com/center-key/think-metric/blob/main/.github/workflows/publish-website.yaml)
 
-### 8. Macros
+### 9. Macros
 Define macros in your project's **package.json** file and use them to make commands more compact and readable.
 
 Example:
