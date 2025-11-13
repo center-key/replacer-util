@@ -1,4 +1,4 @@
-//! replacer-util v1.4.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.5.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
@@ -45,7 +45,7 @@ const replacer = {
     cli() {
         const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
             'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
-            'summary', 'title-sort'];
+            'summary', 'title-sort', 'virtual-input'];
         const cli = cliArgvUtil.parse(validFlags);
         const source = cli.params[0];
         const target = cli.params[1];
@@ -56,6 +56,7 @@ const replacer = {
             [/{{close-curly}}/g, '}'],
             [/{{equals}}/g, '='],
             [/{{gt}}/g, '>'],
+            [/{{hash}}/g, '#'],
             [/{{lt}}/g, '<'],
             [/{{open-curly}}/g, '{'],
             [/{{pipe}}/g, '|'],
@@ -64,12 +65,16 @@ const replacer = {
             [/{{space}}/g, ' '],
         ];
         const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex);
+        const missingContent = cli.flagOn.virtualInput && !cli.flagMap.content;
+        const missingRename = cli.flagOn.virtualInput && !cli.flagMap.rename;
         const error = cli.invalidFlag ? cli.invalidFlagMsg :
             !source ? 'Missing source folder.' :
                 !target ? 'Missing target folder.' :
                     badRegex ? 'Regex must be enclosed in slashes.' :
-                        cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2] :
-                            null;
+                        missingContent ? 'Use the --content flag to set the source.' :
+                            missingRename ? 'Use the --rename flag to specify the output filename.' :
+                                cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2] :
+                                    null;
         replacer.assert(!error, error);
         const sourceFile = path.join(cli.flagMap.cd ?? '', source);
         const isFile = fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
@@ -77,6 +82,7 @@ const replacer = {
         const regex = cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));
         const regexCodes = cli.flagMap.regex?.replace(/.*\//, '');
         const macros = pkg?.replacerConfig?.macros;
+        replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
         const escapeChar = (param, escaper) => param.replace(escaper[0], escaper[1]);
         const macroSub = (param) => {
             const macroName = param.match(/^{{macro:(.*)}}$/)?.[1];
@@ -101,6 +107,7 @@ const replacer = {
             replacement: escape(cli.flagMap.replacement),
             templatingOn: !cli.flagOn.noLiquid,
             titleSort: cli.flagOn.titleSort,
+            virtualInput: cli.flagOn.virtualInput,
         };
         const results = replacer.transform(sourceFolder, target, options);
         if (!cli.flagOn.quiet)
@@ -122,6 +129,7 @@ const replacer = {
             replacement: null,
             templatingOn: true,
             titleSort: false,
+            virtualInput: false,
         };
         const settings = { ...defaults, ...options };
         const startTime = Date.now();
@@ -165,9 +173,11 @@ const replacer = {
         const getFiles = () => exts.map(readPaths).flat().sort(comparator);
         const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
         const exts = settings.extensions.length ? settings.extensions : [''];
-        const filesRaw = settings.filename ? [source + '/' + settings.filename] : getFiles();
+        const filename = settings.virtualInput ? '.' : settings.filename;
+        const filesRaw = filename ? [source + '/' + filename] : getFiles();
         const filtered = filesRaw.filter(task.isTextFile).filter(keep);
-        const fileRoutes = filtered.map(file => slash(file)).map(getFileRoute);
+        const files = settings.virtualInput ? filesRaw : filtered;
+        const fileRoutes = files.map(file => slash(file)).map(getFileRoute);
         const pkg = task.readPackageJson();
         const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
         const header = settings.header ? settings.header + EOL : '';
@@ -209,7 +219,8 @@ const replacer = {
         const eofNewline = (text) => text.endsWith(EOL) ? text : text + EOL;
         const processFile = (file, index) => {
             const engine = createEngine(file);
-            const pageVars = settings.content ? extractPageVars(engine, file.origin) : {};
+            const needVars = settings.content && !settings.virtualInput;
+            const pageVars = needVars ? extractPageVars(engine, file.origin) : {};
             const render = (text) => engine.parseAndRenderSync(text, pageVars);
             const append = settings.concat && index > 0;
             const altText = settings.content ? render(settings.content) : null;
@@ -225,18 +236,19 @@ const replacer = {
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
         };
-        fileRoutes.map(processFile);
+        fileRoutes.forEach(processFile);
         const relativePaths = (file) => ({
             origin: file.origin.substring(source.length + 1),
             dest: file.dest.substring(target.length + 1),
         });
-        return {
+        const results = {
             source: source,
             target: target,
             count: fileRoutes.length,
             duration: Date.now() - startTime,
             files: fileRoutes.map(relativePaths),
         };
+        return results;
     },
     reporter(results, options) {
         const defaults = {

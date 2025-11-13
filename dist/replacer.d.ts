@@ -1,4 +1,4 @@
-//! replacer-util v1.4.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.5.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
@@ -15,6 +15,7 @@ export type Settings = {
     replacement: string | null;
     templatingOn: boolean;
     titleSort: boolean;
+    virtualInput: boolean;
 };
 export type Results = {
     source: string;
