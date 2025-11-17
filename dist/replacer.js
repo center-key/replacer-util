@@ -1,4 +1,4 @@
-//! replacer-util v1.5.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.5.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';

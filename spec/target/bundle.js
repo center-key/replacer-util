@@ -6,7 +6,7 @@ let π1 = 3.14;
 let τ1 = 2 * π1;
 
 const info1 = {
-   banner:      '🔍🔍🔍 replacer-util v1.5.0 🔍🔍🔍',
+   banner:      '🔍🔍🔍 replacer-util v1.5.1 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)',
    list1:       'insect, insect, insect',
    list2:       'insect, iNsEcT, INSECT, insect',
@@ -23,7 +23,7 @@ let π2 = 3.14;
 let τ2 = 2 * π2;
 
 const info2 = {
-   banner:      '🔍🔍🔍 replacer-util v1.5.0 🔍🔍🔍',
+   banner:      '🔍🔍🔍 replacer-util v1.5.1 🔍🔍🔍',
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)',
    code:        'mock2',
    file:        'spec/fixtures/web/subfolder-a/mock2.js',
