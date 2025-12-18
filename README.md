@@ -144,7 +144,8 @@ Alternatively, escaping for the command line can be avoided with macros you defi
 For examples of using `replacer` as part of front-end build process, check out the `"runScriptsConfig"` section of:<br>
 https://github.com/dna-engine/data-dashboard/blob/main/package.json
 
-_**Note:** Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
+> [!NOTE]
+> _Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
 
 ### 6. Template outputs and filter formatters
 The source files are processed by LiquidJS, so you can use [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs) and [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
@@ -184,7 +185,8 @@ Example outputs and formatters:
 | `{{"now"\|date:"%Y-%m-%d"}}`   | `2024-01-21`               | Build date timestamp                           |
 | `{{myVariable\|upcase}}`       | `DARK MODE`                | Custom variable set with: `{% assign myVariable = 'dark mode' %}` |
 
-_**Note:** Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
+> [!NOTE]
+> _Use the `--no-liquid` flag if characters in your source files are inadvertently being interpreted as templating commands and causing errors._
 
 ### 7. SemVer
 Your project's dependancies declared in **package.json** can be used to automatically keep your
@@ -203,7 +205,8 @@ will be transformed into:
 ```html
 <script src=https://cdn.jsdelivr.net/npm/fetch-json@3.1/dist/fetch-json.min.js></script>
 ```
-_**Note:** Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
+> [!WARNING]
+> _Some package names contain one or more of the characters `@`, `/`, and `.`, and these 3
 characters are not supported for replacement.&nbsp; Use `-` in the package name instead._
 
 For example, CDN links for the packages `"@fortawesome/fontawesome-free"` and `"highlight.js"` can be created with:
