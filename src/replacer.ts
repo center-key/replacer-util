@@ -341,14 +341,13 @@ const replacer = {
          };
       const settings =  { ...defaults, ...options };
       const name =      chalk.gray('replacer');
-      const source =    chalk.blue.bold(results.source);
-      const target =    chalk.magenta(results.target);
-      const arrow =     { big: chalk.gray.bold(' ⟹  '), little: chalk.gray.bold('→') };
+      const indent =    chalk.gray('|');
+      const ancestor =  cliArgvUtil.calcAncestor(results.source, results.target);
       const infoColor = results.count ? chalk.white : chalk.red.bold;
       const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
-      log(name, source, arrow.big, target, info);
+      log(name, ancestor.message, info);
       const logFile = (file: ResultsFile) =>
-         log(name, chalk.white(file.origin), arrow.little, chalk.green(file.dest));
+         log(name, indent, cliArgvUtil.calcAncestor(file.origin, file.dest).message);
       if (!settings.summaryOnly)
          results.files.forEach(logFile);
       return results;
