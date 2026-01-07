@@ -155,28 +155,30 @@ const replacer = {
       replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
       const escapeChar = (param: string, escaper: typeof escapers[number]) =>
          param.replace(escaper[0], escaper[1]);
-      const macroSub = (param: string) => {
+      const expandMacro = (param: string) => {
+         // If param is a macro defined in package.json, return the macro's value.
          const macroName =  <keyof JsonObject>param.match(/^{{macro:(.*)}}$/)?.[1];
          const macroValue = <string>macros?.[macroName];
          const noMacro =    macroName && !macroValue;
          replacer.assert(!noMacro, `Macro "${macroName}" used but not defined in package.json`);
          return macroName ? macroValue : param;
          };
-      const escape = (param?: string) =>
-         !param ? null : escapers.reduce(escapeChar, macroSub(param));
+      const unescape = (param?: string) =>
+         // Example: '{{hash}}{{space}}Allow{{space}}bots{{bang}}' --> '# Allow bots!'
+         !param ? null : escapers.reduce(escapeChar, expandMacro(param));
       const options = {
          cd:           cli.flagMap.cd ?? null,
          concat:       cli.flagMap.concat ?? null,
-         content:      escape(cli.flagMap.content),
+         content:      unescape(cli.flagMap.content),
          exclude:      cli.flagMap.exclude ?? null,
          extensions:   cli.flagMap.ext?.split(',') ?? [],
          filename:     isFile ? path.basename(source!) : null,
-         find:         escape(cli.flagMap.find),
-         header:       escape(cli.flagMap.header),
+         find:         unescape(cli.flagMap.find),
+         header:       unescape(cli.flagMap.header),
          noSourceMap:  cli.flagOn.noSourceMap,
-         regex:        cli.flagMap.regex ? new RegExp(escape(regex)!, regexCodes) : null,
+         regex:        cli.flagMap.regex ? new RegExp(unescape(regex)!, regexCodes) : null,
          rename:       cli.flagMap.rename ?? null,
-         replacement:  escape(cli.flagMap.replacement),
+         replacement:  unescape(cli.flagMap.replacement),
          templatingOn: !cli.flagOn.noLiquid,
          titleSort:    cli.flagOn.titleSort,
          virtualInput: cli.flagOn.virtualInput,

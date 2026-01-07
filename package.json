@@ -93,7 +93,7 @@
       "rimraf": "~6.1",
       "run-scripts-util": "~1.3",
       "typescript": "~5.9",
-      "typescript-eslint": "~8.50",
-      "w3c-html-validator": "~2.0"
+      "typescript-eslint": "~8.52",
+      "w3c-html-validator": "~2.1"
    }
 }

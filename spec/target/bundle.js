@@ -27,7 +27,7 @@ const info2 = {
    description: 'Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)',
    code:        'mock2',
    file:        'spec/fixtures/web/subfolder-a/mock2.js',
-   year:        '2025',
+   year:        '2026',
    list1:       'insect, insect, insect',
    list2:       'insect, iNsEcT, INSECT, insect',
    math:        { π2, τ2 },
