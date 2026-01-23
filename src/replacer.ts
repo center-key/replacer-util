@@ -45,6 +45,7 @@ export type Settings = {
    filename:     string | null,  //single file in the source folder to be processed
    find:         string | null,  //text to search for in the source input files
    header:       string | null,  //prepend a line of text to each file
+   nonRecursive: boolean,        //only read files in the source folder not subfolders
    noSourceMap:  boolean,        //remove all "sourceMappingURL" comments directives
    regex:        RegExp | null,  //pattern to search for in the source input files
    rename:       string | null,  //new output filename
@@ -113,8 +114,8 @@ const replacer = {
 
    cli() {
       const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
-         'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
-         'summary', 'title-sort', 'virtual-input'];
+         'no-liquid', 'no-source-map', 'non-recursive', 'note', 'quiet', 'regex', 'rename',
+         'replacement', 'summary', 'title-sort', 'virtual-input'];
       const cli =    cliArgvUtil.parse(validFlags);
       const source = cli.params[0];  //origin file or folder
       const target = cli.params[1];  //destination folder
@@ -175,6 +176,7 @@ const replacer = {
          filename:     isFile ? path.basename(source!) : null,
          find:         unescape(cli.flagMap.find),
          header:       unescape(cli.flagMap.header),
+         nonRecursive: cli.flagOn.nonRecursive,
          noSourceMap:  cli.flagOn.noSourceMap,
          regex:        cli.flagMap.regex ? new RegExp(unescape(regex)!, regexCodes) : null,
          rename:       cli.flagMap.rename ?? null,
@@ -198,6 +200,7 @@ const replacer = {
          filename:     null,
          find:         null,
          header:       null,
+         nonRecursive: false,
          noSourceMap:  false,
          regex:        null,
          rename:       null,
@@ -245,7 +248,8 @@ const replacer = {
             path.basename(filename.replace(psuedo, '')).toLowerCase().replace(leadingArticle, '');
          return (a: string, b: string) => toTitle(a).localeCompare(toTitle(b));
          };
-      const readPaths =     (ext: string) => globSync(source + '/**/*' + ext).map(slash);
+      const wildcard =      settings.nonRecursive ? '/*' : '/**/*';
+      const readPaths =     (ext: string) => globSync(source + wildcard + ext).map(slash);
       const comparator =    settings.titleSort ? titleCase() : undefined;
       const getFiles =      () => exts.map(readPaths).flat().sort(comparator);
       const keep =          (file: string) => !settings.exclude || !file.includes(settings.exclude);

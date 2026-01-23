@@ -63,6 +63,7 @@ Command-line flags:
 | `--header`        | Prepend a line of text to each file.                  | **string** |
 | `--no-liquid`     | Turn off LiquidJS templating.                         | N/A        |
 | `--no-source-map` | Remove any `sourceMappingURL` comment directives.     | N/A        |
+| `--non-recursive` | Only read files in the source folder not subfolders.  | N/A        |
 | `--note`          | Place to add a comment only for humans.               | **string** |
 | `--quiet`         | Suppress informational messages.                      | N/A        |
 | `--regex`         | Pattern to search for in the source input files.      | **string** |
@@ -241,7 +242,7 @@ If you use GitHub Actions to publish your website, you'll need to restore file m
 One tool that does this is [git-restore-mtime](https://github.com/marketplace/actions/git-restore-mtime):
 ```yaml
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: main       #fetch the full git history of the "main"
           fetch-depth: 0  #branch for git-restore-mtime-action below

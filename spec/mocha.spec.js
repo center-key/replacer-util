@@ -104,6 +104,13 @@ describe('Executing the CLI', () => {
       assertDeepStrictEqual(actual, expected);
       });
 
+   it('with the --non-recursive flag skips all subfolders', () => {
+      run('replacer spec/fixtures/web --ext=.js --non-recursive spec/target/non-recursive');
+      const actual = cliArgvUtil.readFolder('spec/target/non-recursive');
+      const expected = ['mock1.js'];
+      assertDeepStrictEqual(actual, expected);
+      });
+
    it('to concatenate file metadata generates the correct list of file parts', () => {
       const fileParts = ['folder', 'base', 'name', 'ext', 'dir', 'path'];
       const template =  fileParts.map(part => `${part}-{{gt}}{{file.${part}}}`).join('{{space}}');
