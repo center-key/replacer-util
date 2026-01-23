@@ -1,4 +1,4 @@
-//! replacer-util v1.5.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.5.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
@@ -9,6 +9,7 @@ export type Settings = {
     filename: string | null;
     find: string | null;
     header: string | null;
+    nonRecursive: boolean;
     noSourceMap: boolean;
     regex: RegExp | null;
     rename: string | null;

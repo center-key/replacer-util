@@ -1,4 +1,4 @@
-//! replacer-util v1.5.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.5.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
@@ -44,8 +44,8 @@ const replacer = {
     },
     cli() {
         const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
-            'no-liquid', 'no-source-map', 'note', 'quiet', 'regex', 'rename', 'replacement',
-            'summary', 'title-sort', 'virtual-input'];
+            'no-liquid', 'no-source-map', 'non-recursive', 'note', 'quiet', 'regex', 'rename',
+            'replacement', 'summary', 'title-sort', 'virtual-input'];
         const cli = cliArgvUtil.parse(validFlags);
         const source = cli.params[0];
         const target = cli.params[1];
@@ -84,27 +84,28 @@ const replacer = {
         const macros = pkg?.replacerConfig?.macros;
         replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
         const escapeChar = (param, escaper) => param.replace(escaper[0], escaper[1]);
-        const macroSub = (param) => {
+        const expandMacro = (param) => {
             const macroName = param.match(/^{{macro:(.*)}}$/)?.[1];
             const macroValue = macros?.[macroName];
             const noMacro = macroName && !macroValue;
             replacer.assert(!noMacro, `Macro "${macroName}" used but not defined in package.json`);
             return macroName ? macroValue : param;
         };
-        const escape = (param) => !param ? null : escapers.reduce(escapeChar, macroSub(param));
+        const unescape = (param) => !param ? null : escapers.reduce(escapeChar, expandMacro(param));
         const options = {
             cd: cli.flagMap.cd ?? null,
             concat: cli.flagMap.concat ?? null,
-            content: escape(cli.flagMap.content),
+            content: unescape(cli.flagMap.content),
             exclude: cli.flagMap.exclude ?? null,
             extensions: cli.flagMap.ext?.split(',') ?? [],
             filename: isFile ? path.basename(source) : null,
-            find: escape(cli.flagMap.find),
-            header: escape(cli.flagMap.header),
+            find: unescape(cli.flagMap.find),
+            header: unescape(cli.flagMap.header),
+            nonRecursive: cli.flagOn.nonRecursive,
             noSourceMap: cli.flagOn.noSourceMap,
-            regex: cli.flagMap.regex ? new RegExp(escape(regex), regexCodes) : null,
+            regex: cli.flagMap.regex ? new RegExp(unescape(regex), regexCodes) : null,
             rename: cli.flagMap.rename ?? null,
-            replacement: escape(cli.flagMap.replacement),
+            replacement: unescape(cli.flagMap.replacement),
             templatingOn: !cli.flagOn.noLiquid,
             titleSort: cli.flagOn.titleSort,
             virtualInput: cli.flagOn.virtualInput,
@@ -123,6 +124,7 @@ const replacer = {
             filename: null,
             find: null,
             header: null,
+            nonRecursive: false,
             noSourceMap: false,
             regex: null,
             rename: null,
@@ -168,7 +170,8 @@ const replacer = {
             const toTitle = (filename) => path.basename(filename.replace(psuedo, '')).toLowerCase().replace(leadingArticle, '');
             return (a, b) => toTitle(a).localeCompare(toTitle(b));
         };
-        const readPaths = (ext) => globSync(source + '/**/*' + ext).map(slash);
+        const wildcard = settings.nonRecursive ? '/*' : '/**/*';
+        const readPaths = (ext) => globSync(source + wildcard + ext).map(slash);
         const comparator = settings.titleSort ? titleCase() : undefined;
         const getFiles = () => exts.map(readPaths).flat().sort(comparator);
         const keep = (file) => !settings.exclude || !file.includes(settings.exclude);
