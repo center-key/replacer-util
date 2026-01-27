@@ -1,4 +1,4 @@
-//! replacer-util v1.5.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
@@ -19,23 +19,6 @@ const task = {
     isTextFile(filename) {
         return fs.statSync(filename).isFile() && !isBinary(filename);
     },
-    readPackageJson() {
-        const pkgExists = fs.existsSync('package.json');
-        const pkg = pkgExists ? JSON.parse(fs.readFileSync('package.json', 'utf-8')) : null;
-        const fixHiddenKeys = (pkgObj) => {
-            const unhide = (key) => {
-                const newKey = key.replace(/[@./]/g, '-');
-                if (!pkgObj[newKey])
-                    pkgObj[newKey] = pkgObj[key];
-            };
-            Object.keys(pkgObj).forEach(unhide);
-        };
-        if (pkg?.dependencies)
-            fixHiddenKeys(pkg.dependencies);
-        if (pkg?.devDependencies)
-            fixHiddenKeys(pkg.devDependencies);
-        return pkg;
-    },
 };
 const replacer = {
     assert(ok, message) {
@@ -49,21 +32,6 @@ const replacer = {
         const cli = cliArgvUtil.parse(validFlags);
         const source = cli.params[0];
         const target = cli.params[1];
-        const pkg = task.readPackageJson();
-        const escapers = [
-            [/{{apos}}/g, "'"],
-            [/{{bang}}/g, '!'],
-            [/{{close-curly}}/g, '}'],
-            [/{{equals}}/g, '='],
-            [/{{gt}}/g, '>'],
-            [/{{hash}}/g, '#'],
-            [/{{lt}}/g, '<'],
-            [/{{open-curly}}/g, '{'],
-            [/{{pipe}}/g, '|'],
-            [/{{quote}}/g, '"'],
-            [/{{semi}}/g, ';'],
-            [/{{space}}/g, ' '],
-        ];
         const badRegex = cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex);
         const missingContent = cli.flagOn.virtualInput && !cli.flagMap.content;
         const missingRename = cli.flagOn.virtualInput && !cli.flagMap.rename;
@@ -81,31 +49,21 @@ const replacer = {
         const sourceFolder = isFile ? path.dirname(source) : source;
         const regex = cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));
         const regexCodes = cli.flagMap.regex?.replace(/.*\//, '');
-        const macros = pkg?.replacerConfig?.macros;
         replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
-        const escapeChar = (param, escaper) => param.replace(escaper[0], escaper[1]);
-        const expandMacro = (param) => {
-            const macroName = param.match(/^{{macro:(.*)}}$/)?.[1];
-            const macroValue = macros?.[macroName];
-            const noMacro = macroName && !macroValue;
-            replacer.assert(!noMacro, `Macro "${macroName}" used but not defined in package.json`);
-            return macroName ? macroValue : param;
-        };
-        const unescape = (param) => !param ? null : escapers.reduce(escapeChar, expandMacro(param));
         const options = {
             cd: cli.flagMap.cd ?? null,
             concat: cli.flagMap.concat ?? null,
-            content: unescape(cli.flagMap.content),
+            content: cli.flagMap.content,
             exclude: cli.flagMap.exclude ?? null,
             extensions: cli.flagMap.ext?.split(',') ?? [],
             filename: isFile ? path.basename(source) : null,
-            find: unescape(cli.flagMap.find),
-            header: unescape(cli.flagMap.header),
+            find: cli.flagMap.find,
+            header: cli.flagMap.header,
             nonRecursive: cli.flagOn.nonRecursive,
             noSourceMap: cli.flagOn.noSourceMap,
-            regex: cli.flagMap.regex ? new RegExp(unescape(regex), regexCodes) : null,
+            regex: cli.flagMap.regex ? new RegExp(regex, regexCodes) : null,
             rename: cli.flagMap.rename ?? null,
-            replacement: unescape(cli.flagMap.replacement),
+            replacement: cli.flagMap.replacement,
             templatingOn: !cli.flagOn.noLiquid,
             titleSort: cli.flagOn.titleSort,
             virtualInput: cli.flagOn.virtualInput,
@@ -181,7 +139,7 @@ const replacer = {
         const filtered = filesRaw.filter(task.isTextFile).filter(keep);
         const files = settings.virtualInput ? filesRaw : filtered;
         const fileRoutes = files.map(file => slash(file)).map(getFileRoute);
-        const pkg = task.readPackageJson();
+        const pkg = cliArgvUtil.readPackageJson();
         const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
         const header = settings.header ? settings.header + EOL : '';
         const rep = settings.replacement ?? '';
