@@ -91,7 +91,7 @@ Escape characters:
 | `;`       | `{{semi}}`           |
 | ` `       | `{{space}}`          |
 
-Alternatively, escaping for the command line can be avoided with macros you define in your project's **package.json** file (see documentation below).
+Alternatively, escaping for the command line can be avoided with [macros](#9-macros) you define in your project's **package.json** file (see documentation below).
 
 ### 5. Examples
    - `replacer src build`<br>
@@ -258,7 +258,7 @@ Define macros in your project's **package.json** file and use them to make comma
 
 Example:
 ```json
-   "replacerConfig": {
+   "cliConfig": {
       "macros": {
          "less-import": "@import {{quote}}{{file.dir}}/{{file.name}}{{quote}};"
       }

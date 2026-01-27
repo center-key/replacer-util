@@ -175,6 +175,20 @@ describe('Executing the CLI', () => {
       assertDeepStrictEqual(actual, expected);
       });
 
+   it('with a regex macro does the correct replacement', () => {
+      run('replacer spec/fixtures/menu.txt spec/target --rename=regex-macro.txt --regex={{macro:all-colons}} --replacement={{macro:arrow}}');
+      const actual = fileToLines('spec/target/regex-macro.txt');
+      const expected = [
+         '*** MENU ***',
+         'Monday -->    Meatloaf',
+         'Tuesday -->   Tacos',
+         'Wednesday --> Spaghetti',
+         'Thursday -->  Meatloaf',
+         'Friday -->    Teriyaki',
+         ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
    it('with both the --concat and --title-sort flags sorts content by title', () => {
       run('replacer spec/fixtures/titles spec/target --concat=sort-by-filename.txt');
       run('replacer spec/fixtures/titles spec/target --concat=sort-by-title.txt --title-sort');
