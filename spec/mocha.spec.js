@@ -4,7 +4,6 @@
 // Imports
 import { assertDeepStrictEqual, fileToLines } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
-import { EOL } from 'node:os';
 import assert from 'assert';
 import fs     from 'fs';
 
@@ -220,17 +219,17 @@ describe('Executing the CLI with the --virtual-input flag', () => {
 
    it('can create a valid Robots Exclusion Protocol file', () => {
       run('replacer spec spec/target/virtual --virtual-input --content={{hash}}{{space}}Allow{{space}}bots{{bang}} --rename=robots.txt');
-      const contents = fs.readFileSync('spec/target/virtual/robots.txt', 'utf-8');
-      const actual =   { contents: contents,              length: contents.length };
-      const expected = { contents: '# Allow bots!' + EOL, length: 14 };
+      const contents = fs.readFileSync('spec/target/virtual/robots.txt', 'utf-8').trim();
+      const actual =   { contents: contents,        length: contents.length };
+      const expected = { contents: '# Allow bots!', length: 13 };
       assertDeepStrictEqual(actual, expected);
       });
 
    it('can create a valid CNAME file', () => {
       run('replacer --cd=spec . target/virtual --virtual-input --content=example.com --rename=CNAME');
-      const contents = fs.readFileSync('spec/target/virtual/CNAME', 'utf-8');
-      const actual =   { contents: contents,            length: contents.length };
-      const expected = { contents: 'example.com' + EOL, length: 12 };
+      const contents = fs.readFileSync('spec/target/virtual/CNAME', 'utf-8').trim();
+      const actual =   { contents: contents,      length: contents.length };
+      const expected = { contents: 'example.com', length: 11 };
       assertDeepStrictEqual(actual, expected);
       });
 

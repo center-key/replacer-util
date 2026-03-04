@@ -143,7 +143,7 @@ Alternatively, escaping for the command line can be avoided with [macros](#9-mac
    Creates a **CNAME** file with the line `example.com` in the **docs** folder.
 
 For examples of using `replacer` as part of front-end build process, check out the `"runScriptsConfig"` section of:<br>
-https://github.com/dna-engine/data-dashboard/blob/main/package.json
+https://github.com/dna-dom/data-dashboard/blob/main/package.json
 
 > [!NOTE]
 > _Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
