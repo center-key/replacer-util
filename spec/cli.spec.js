@@ -1,97 +1,14 @@
 // replacer-util
-// Mocha Specification Suite
+// CLI Specification Suite
 
 // Imports
 import { assertDeepStrictEqual, fileToLines } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
-import assert from 'assert';
-import fs     from 'fs';
+import fs from 'fs';
 
 // Setup
-import { replacer } from '../dist/replacer.js';
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 const run = (posix) => cliArgvUtil.run(pkg, posix);
-
-////////////////////////////////////////////////////////////////////////////////
-describe('The "dist" folder', () => {
-
-   it('contains the correct files', () => {
-      const actual = fs.readdirSync('dist').sort();
-      const expected = [
-         'replacer.d.ts',
-         'replacer.js',
-         ];
-      assertDeepStrictEqual(actual, expected);
-      });
-
-   });
-
-////////////////////////////////////////////////////////////////////////////////
-describe('Library module', () => {
-
-   it('is an object', () => {
-      const actual =   { constructor: replacer.constructor.name };
-      const expected = { constructor: 'Object' };
-      assertDeepStrictEqual(actual, expected);
-      });
-
-   it('has functions named assert(), cli(), reporter(), and transform()', () => {
-      const module = replacer;
-      const actual = Object.keys(module).sort().map(key => [key, typeof module[key]]);
-      const expected = [
-         ['assert',    'function'],
-         ['cli',       'function'],
-         ['reporter',  'function'],
-         ['transform', 'function'],
-         ];
-      assertDeepStrictEqual(actual, expected);
-      });
-
-   });
-
-////////////////////////////////////////////////////////////////////////////////
-describe('Calling replacer.transform()', () => {
-
-   it('creates the correct text files in the target folder', () => {
-      const options = {
-         cd:          'spec',
-         exclude:     'subfolder-b',
-         find:        'insect',
-         noSourceMap: true,
-         replacement: 'A.I. {{package.type}}',  //'A.I. module'
-         };
-      replacer.transform('fixtures/web', 'target/exclude', options);
-      const actual = cliArgvUtil.readFolder('spec/target/exclude');
-      const expected = [
-         'mock1.html',
-         'mock1.js',
-         'mock1.min.css',
-         'subfolder-a',
-         'subfolder-a/mock2.html',
-         'subfolder-a/mock2.js',
-         'subfolder-a/mock2.min.css',
-         ];
-      assertDeepStrictEqual(actual, expected);
-      });
-
-   });
-
-////////////////////////////////////////////////////////////////////////////////
-describe('Correct error is thrown', () => {
-
-   it('when the "source" folder is missing', () => {
-      const makeBogusCall = () => replacer.transform();
-      const exception =     { message: '[replacer-util] Must specify the source folder path.' };
-      assert.throws(makeBogusCall, exception);
-      });
-
-   it('when the "target" folder is missing', () => {
-      const makeBogusCall = () => replacer.transform('spec/fixtures');
-      const exception =     { message: '[replacer-util] Must specify the target folder path.' };
-      assert.throws(makeBogusCall, exception);
-      });
-
-   });
 
 ////////////////////////////////////////////////////////////////////////////////
 describe('Executing the CLI', () => {
