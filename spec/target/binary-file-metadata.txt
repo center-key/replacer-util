@@ -1,0 +1,6 @@
+replacer-util|spec/fixtures/web/mock1.html
+replacer-util|spec/fixtures/web/mock1.png
+replacer-util|spec/fixtures/web/subfolder-a/mock2.html
+replacer-util|spec/fixtures/web/subfolder-a/mock2.jpg
+replacer-util|spec/fixtures/web/subfolder-b/mock3.html
+replacer-util|spec/fixtures/web/subfolder-b/subfolder-bb/mock4.html

@@ -30,7 +30,7 @@ describe('Executing the CLI', () => {
    it('to concatenate file metadata generates the correct list of file parts', () => {
       const fileParts = ['folder', 'base', 'name', 'ext', 'dir', 'path'];
       const template =  fileParts.map(part => `${part}-{{gt}}{{file.${part}}}`).join('{{space}}');
-      run('replacer spec/fixtures/web spec/target --content=' + template + ' --concat=file-parts.txt');
+      run(`replacer spec/fixtures/web spec/target --content=${template} --concat=file-parts.txt`);
       const actual = fileToLines('spec/target/file-parts.txt');
       const expected = [
          'folder->web base->mock1.html name->mock1 ext->.html dir->spec/fixtures/web path->spec/fixtures/web/mock1.html',
@@ -75,6 +75,20 @@ describe('Executing the CLI', () => {
          'mock2: I, for one, welcome our new insect overlords.',
          'mock3: I, for one, welcome our new insect overlords.',
          'mock4: I, for one, welcome our new insect overlords.',
+         ];
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   it('with the --content flag on binary files is able to access file metadata', () => {
+      run('replacer spec/fixtures/web --ext=.html,.png,.jpg spec/target --content={{package.name}}{{pipe}}{{file.path}} --concat=binary-file-metadata.txt');
+      const actual = fileToLines('spec/target/binary-file-metadata.txt');
+      const expected = [
+         'replacer-util|spec/fixtures/web/mock1.html',
+         'replacer-util|spec/fixtures/web/mock1.png',
+         'replacer-util|spec/fixtures/web/subfolder-a/mock2.html',
+         'replacer-util|spec/fixtures/web/subfolder-a/mock2.jpg',
+         'replacer-util|spec/fixtures/web/subfolder-b/mock3.html',
+         'replacer-util|spec/fixtures/web/subfolder-b/subfolder-bb/mock4.html',
          ];
       assertDeepStrictEqual(actual, expected);
       });
