@@ -139,7 +139,7 @@ Alternatively, escaping for the command line can be avoided with [macros](#9-mac
    - `replacer . docs --rename=robots.txt --virtual-input --content={{hash}}{{space}}Allow{{space}}bots{{bang}}`<br>
    Creates a **robots.txt** file with the line `# Allow bots!` in the **docs** folder.
 
-   - `replacer --cd=docs . . --virtual-input --content=example.com --rename=CNAME`<br>
+   - `replacer --virtual-input . --rename=CNAME docs --content=example.com`<br>
    Creates a **CNAME** file with the line `example.com` in the **docs** folder.
 
 For examples of using `replacer` as part of front-end build process, check out the `"runScriptsConfig"` section of:<br>

@@ -1,4 +1,4 @@
-//! replacer-util v1.6.0 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
@@ -128,6 +128,10 @@ const replacer = {
             const toTitle = (filename) => path.basename(filename.replace(psuedo, '')).toLowerCase().replace(leadingArticle, '');
             return (a, b) => toTitle(a).localeCompare(toTitle(b));
         };
+        const correctType = (file) => {
+            const extInList = settings.extensions.includes(path.extname(file));
+            return task.isTextFile(file) || (settings.content && extInList);
+        };
         const wildcard = settings.nonRecursive ? '/*' : '/**/*';
         const readPaths = (ext) => globSync(source + wildcard + ext).map(slash);
         const comparator = settings.titleSort ? titleCase() : undefined;
@@ -136,13 +140,13 @@ const replacer = {
         const exts = settings.extensions.length ? settings.extensions : [''];
         const filename = settings.virtualInput ? '.' : settings.filename;
         const filesRaw = filename ? [source + '/' + filename] : getFiles();
-        const filtered = filesRaw.filter(task.isTextFile).filter(keep);
+        const filtered = filesRaw.filter(correctType).filter(keep);
         const files = settings.virtualInput ? filesRaw : filtered;
         const fileRoutes = files.map(file => slash(file)).map(getFileRoute);
         const pkg = cliArgvUtil.readPackageJson();
         const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
         const header = settings.header ? settings.header + EOL : '';
-        const rep = settings.replacement ?? '';
+        const replacement = settings.replacement ?? '';
         const getFileInfo = (origin) => {
             const parsedPath = path.parse(origin);
             const dir = slash(parsedPath.dir);
@@ -187,7 +191,7 @@ const replacer = {
             const altText = settings.content ? render(settings.content) : null;
             const text = altText ?? fs.readFileSync(file.origin, 'utf-8');
             const content = render(header) + text;
-            const newStr = render(rep);
+            const newStr = render(replacement);
             const out1 = settings.templatingOn ? render(content) : content;
             const out2 = settings.find ? out1.replaceAll(settings.find, newStr) : out1;
             const out3 = settings.regex ? out2.replace(settings.regex, newStr) : out2;
