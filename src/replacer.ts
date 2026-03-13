@@ -264,9 +264,9 @@ const replacer = {
       const eofNewline = (text: string) => text.endsWith(EOL) ? text : text + EOL;
       const processFile = (file: ResultsFile, index: number) => {
          const engine =   createEngine(file);
-         const needVars = settings.content && !settings.virtualInput;
+         const needVars = settings.content && !settings.virtualInput && task.isTextFile(file.origin);
          const pageVars = needVars ? extractPageVars(engine, file.origin) : {};
-         const render =   (text: string) => <string>engine.parseAndRenderSync(text, pageVars);
+         const render =   (text: string) => String(engine.parseAndRenderSync(text, pageVars));
          const append =   settings.concat && index > 0;
          const altText =  settings.content ? render(settings.content) : null;
          const text =     altText ?? fs.readFileSync(file.origin, 'utf-8');
