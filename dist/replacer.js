@@ -1,4 +1,4 @@
-//! replacer-util v1.6.1 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { EOL } from 'node:os';
@@ -184,9 +184,9 @@ const replacer = {
         const eofNewline = (text) => text.endsWith(EOL) ? text : text + EOL;
         const processFile = (file, index) => {
             const engine = createEngine(file);
-            const needVars = settings.content && !settings.virtualInput;
+            const needVars = settings.content && !settings.virtualInput && task.isTextFile(file.origin);
             const pageVars = needVars ? extractPageVars(engine, file.origin) : {};
-            const render = (text) => engine.parseAndRenderSync(text, pageVars);
+            const render = (text) => String(engine.parseAndRenderSync(text, pageVars));
             const append = settings.concat && index > 0;
             const altText = settings.content ? render(settings.content) : null;
             const text = altText ?? fs.readFileSync(file.origin, 'utf-8');

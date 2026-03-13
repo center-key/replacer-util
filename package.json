@@ -1,6 +1,6 @@
 {
    "name": "replacer-util",
-   "version": "1.6.1",
+   "version": "1.6.2",
    "description": "Find and replace strings or template outputs in text files (CLI tool designed for use in npm package.json scripts)",
    "license": "MIT",
    "type": "module",
@@ -82,7 +82,7 @@
       "@eslint/js": "~10.0",
       "@fortawesome/fontawesome-free": "~7.2",
       "@types/fancy-log": "~2.0",
-      "@types/node": "~25.4",
+      "@types/node": "~25.5",
       "add-dist-header": "~1.6",
       "assert-deep-strict-equal": "~1.2",
       "copy-file-util": "~1.3",
