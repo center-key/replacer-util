@@ -122,24 +122,24 @@ const replacer = {
       const options = {
          cd:           cli.flagMap.cd ?? null,
          concat:       cli.flagMap.concat ?? null,
-         content:      cli.flagMap.content,
+         content:      cli.flagMap.content ?? null,
          exclude:      cli.flagMap.exclude ?? null,
          extensions:   cli.flagMap.ext?.split(',') ?? [],
          filename:     isFile ? path.basename(source!) : null,
-         find:         cli.flagMap.find,
-         header:       cli.flagMap.header,
-         nonRecursive: cli.flagOn.nonRecursive,
-         noSourceMap:  cli.flagOn.noSourceMap,
+         find:         cli.flagMap.find ?? null,
+         header:       cli.flagMap.header ?? null,
+         nonRecursive: cli.flagOn.nonRecursive!,
+         noSourceMap:  cli.flagOn.noSourceMap!,
          regex:        cli.flagMap.regex ? new RegExp(regex!, regexCodes) : null,
          rename:       cli.flagMap.rename ?? null,
-         replacement:  cli.flagMap.replacement,
+         replacement:  cli.flagMap.replacement ?? null,
          templatingOn: !cli.flagOn.noLiquid,
-         titleSort:    cli.flagOn.titleSort,
-         virtualInput: cli.flagOn.virtualInput,
+         titleSort:    cli.flagOn.titleSort!,
+         virtualInput: cli.flagOn.virtualInput!,
          };
       const results = replacer.transform(sourceFolder!, target!, options);
       if (!cli.flagOn.quiet)
-         replacer.reporter(results, { summaryOnly: cli.flagOn.summary });
+         replacer.reporter(results, { summaryOnly: cli.flagOn.summary! });
       },
 
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
