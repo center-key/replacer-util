@@ -4,7 +4,7 @@
 // Imports
 import { assertDeepStrictEqual, fileToLines } from 'assert-deep-strict-equal';
 import { cliArgvUtil } from 'cli-argv-util';
-import fs from 'fs';
+import fs from 'node:fs';
 
 // Setup
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));

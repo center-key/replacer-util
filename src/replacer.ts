@@ -25,14 +25,14 @@
 
 // Imports
 import { cliArgvUtil } from 'cli-argv-util';
-import { EOL } from 'node:os';
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
 import chalk from 'chalk';
-import fs    from 'fs';
+import fs    from 'node:fs';
 import log   from 'fancy-log';
-import path  from 'path';
+import os    from 'node:os';
+import path  from 'node:path';
 import slash from 'slash';
 
 // Types
@@ -217,7 +217,7 @@ const replacer = {
       const fileRoutes =    files.map(file => slash(file)).map(getFileRoute);
       const pkg =           cliArgvUtil.readPackageJson();
       const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
-      const header =        settings.header ? settings.header + EOL : '';
+      const header =        settings.header ? settings.header + os.EOL : '';
       const replacement =   settings.replacement ?? '';
       const getFileInfo = (origin: string) => {
          const parsedPath = path.parse(origin);
@@ -261,7 +261,7 @@ const replacer = {
          const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
          return <PageVars>Object.fromEntries(tagPairs);
          };
-      const eofNewline = (text: string) => text.endsWith(EOL) ? text : text + EOL;
+      const eofNewline = (text: string) => text.endsWith(os.EOL) ? text : text + os.EOL;
       const processFile = (file: ResultsFile, index: number) => {
          const engine =   createEngine(file);
          const needVars = settings.content && !settings.virtualInput && task.isTextFile(file.origin);
@@ -277,7 +277,7 @@ const replacer = {
          const out3 =     settings.regex ?        out2.replace(settings.regex, newStr) :   out2;
          const out4 =     settings.noSourceMap ?  out3.replace(sourceMapLine, '') :        out3;
          const out5 =     eofNewline(out4.trimStart());
-         const final =    append && settings.header ? EOL + out5 : out5;
+         const final =    append && settings.header ? os.EOL + out5 : out5;
          fs.mkdirSync(path.dirname(file.dest), { recursive: true });
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
