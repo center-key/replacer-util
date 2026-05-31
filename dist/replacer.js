@@ -1,14 +1,14 @@
-//! replacer-util v1.6.2 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
-import { EOL } from 'node:os';
 import { globSync } from 'glob';
 import { isBinary } from 'istextorbinary';
 import { Liquid } from 'liquidjs';
 import chalk from 'chalk';
-import fs from 'fs';
+import fs from 'node:fs';
 import log from 'fancy-log';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import slash from 'slash';
 const task = {
     cleanPath(folder) {
@@ -53,17 +53,17 @@ const replacer = {
         const options = {
             cd: cli.flagMap.cd ?? null,
             concat: cli.flagMap.concat ?? null,
-            content: cli.flagMap.content,
+            content: cli.flagMap.content ?? null,
             exclude: cli.flagMap.exclude ?? null,
             extensions: cli.flagMap.ext?.split(',') ?? [],
             filename: isFile ? path.basename(source) : null,
-            find: cli.flagMap.find,
-            header: cli.flagMap.header,
+            find: cli.flagMap.find ?? null,
+            header: cli.flagMap.header ?? null,
             nonRecursive: cli.flagOn.nonRecursive,
             noSourceMap: cli.flagOn.noSourceMap,
             regex: cli.flagMap.regex ? new RegExp(regex, regexCodes) : null,
             rename: cli.flagMap.rename ?? null,
-            replacement: cli.flagMap.replacement,
+            replacement: cli.flagMap.replacement ?? null,
             templatingOn: !cli.flagOn.noLiquid,
             titleSort: cli.flagOn.titleSort,
             virtualInput: cli.flagOn.virtualInput,
@@ -145,7 +145,7 @@ const replacer = {
         const fileRoutes = files.map(file => slash(file)).map(getFileRoute);
         const pkg = cliArgvUtil.readPackageJson();
         const sourceMapLine = /^\/.#\ssourceMappingURL=.*\r?\n/gm;
-        const header = settings.header ? settings.header + EOL : '';
+        const header = settings.header ? settings.header + os.EOL : '';
         const replacement = settings.replacement ?? '';
         const getFileInfo = (origin) => {
             const parsedPath = path.parse(origin);
@@ -181,7 +181,7 @@ const replacer = {
             const tagPairs = tags.filter(tag => tag.name === 'assign').map(toPair);
             return Object.fromEntries(tagPairs);
         };
-        const eofNewline = (text) => text.endsWith(EOL) ? text : text + EOL;
+        const eofNewline = (text) => text.endsWith(os.EOL) ? text : text + os.EOL;
         const processFile = (file, index) => {
             const engine = createEngine(file);
             const needVars = settings.content && !settings.virtualInput && task.isTextFile(file.origin);
@@ -197,7 +197,7 @@ const replacer = {
             const out3 = settings.regex ? out2.replace(settings.regex, newStr) : out2;
             const out4 = settings.noSourceMap ? out3.replace(sourceMapLine, '') : out3;
             const out5 = eofNewline(out4.trimStart());
-            const final = append && settings.header ? EOL + out5 : out5;
+            const final = append && settings.header ? os.EOL + out5 : out5;
             fs.mkdirSync(path.dirname(file.dest), { recursive: true });
             return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
         };
