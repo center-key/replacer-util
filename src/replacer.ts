@@ -88,7 +88,9 @@ const task = {
 
 const replacer = {
 
-   assert(ok: unknown, message: string | null) {
+   version: '{{package.version}}',
+
+   assertOk(ok: unknown, message: string | null) {
       if (!ok)
          throw new Error(`[replacer-util] ${message}`);
       },
@@ -112,13 +114,13 @@ const replacer = {
          missingRename ?      'Use the --rename flag to specify the output filename.' :
          cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2]! :
          null;
-      replacer.assert(!error, error);
+      replacer.assertOk(!error, error);
       const sourceFile =   path.join(cli.flagMap.cd ?? '', source!);
       const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
       const sourceFolder = isFile ? path.dirname(source!) : source;
       const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
       const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
-      replacer.assert(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
+      replacer.assertOk(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
       const options = {
          cd:           cli.flagMap.cd ?? null,
          concat:       cli.flagMap.concat ?? null,
@@ -181,7 +183,7 @@ const replacer = {
          missingFind ?                        'Must specify search text with --find or --regex' :
          invalidSort ?                        'Use of --titleSort requires --concat' :
          null;
-      replacer.assert(!error, error);
+      replacer.assertOk(!error, error);
       const getNewFilename = (file: string) => {
          const baseNameLoc =  () => file.length - path.basename(file).length;
          const relativePath = () => file.substring(source.length, baseNameLoc());

@@ -25,20 +25,22 @@ describe('The "dist" folder', () => {
 ////////////////////////////////////////////////////////////////////////////////
 describe('Library module', () => {
 
+   const module = replacer;
+
    it('is an object', () => {
-      const actual =   { constructor: replacer.constructor.name };
-      const expected = { constructor: 'Object' };
+      const actual =   { type: typeof module };
+      const expected = { type: 'object' };
       assertDeepStrictEqual(actual, expected);
       });
 
    it('has functions named assert(), cli(), reporter(), and transform()', () => {
-      const module = replacer;
       const actual = Object.keys(module).sort().map(key => [key, typeof module[key]]);
       const expected = [
-         ['assert',    'function'],
+         ['assertOk',  'function'],
          ['cli',       'function'],
          ['reporter',  'function'],
          ['transform', 'function'],
+         ['version',   'string'],
          ];
       assertDeepStrictEqual(actual, expected);
       });
