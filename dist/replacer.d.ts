@@ -1,4 +1,4 @@
-//! replacer-util v1.6.3 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
@@ -22,6 +22,7 @@ export type Results = {
     source: string;
     target: string;
     count: number;
+    concat: boolean;
     duration: number;
     files: {
         origin: string;
@@ -33,9 +34,10 @@ export type ReporterSettings = {
     summaryOnly: boolean;
 };
 declare const replacer: {
-    assert(ok: unknown, message: string | null): void;
-    cli(): void;
+    version: string;
+    assertOk(ok: unknown, message: string | null): void;
     transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results;
     reporter(results: Results, options?: Partial<ReporterSettings>): Results;
+    cli(): void;
 };
 export { replacer };

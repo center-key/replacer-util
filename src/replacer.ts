@@ -96,55 +96,6 @@ const replacer = {
          throw new Error(`[replacer-util] ${message}`);
       },
 
-   cli() {
-      const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
-         'no-liquid', 'no-source-map', 'non-recursive', 'note', 'quiet', 'regex', 'rename',
-         'replacement', 'summary', 'title-sort', 'virtual-input'];
-      const cli =            cliArgvUtil.parse(validFlags);
-      const source =         cli.params[0];  //origin file or folder
-      const target =         cli.params[1];  //destination folder
-      const badRegex =       cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex!);
-      const missingContent = cli.flagOn.virtualInput && !cli.flagMap.content;
-      const missingRename =  cli.flagOn.virtualInput && !cli.flagMap.rename;
-      const error =
-         cli.invalidFlag ?    cli.invalidFlagMsg :
-         !source ?            'Missing source folder.' :
-         !target ?            'Missing target folder.' :
-         badRegex ?           'Regex must be enclosed in slashes.' :
-         missingContent ?     'Use the --content flag to set the source.' :
-         missingRename ?      'Use the --rename flag to specify the output filename.' :
-         cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2]! :
-         null;
-      replacer.assertOk(!error, error);
-      const sourceFile =   path.join(cli.flagMap.cd ?? '', source!);
-      const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
-      const sourceFolder = isFile ? path.dirname(source!) : source;
-      const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
-      const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
-      replacer.assertOk(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
-      const options = {
-         cd:           cli.flagMap.cd ?? null,
-         concat:       cli.flagMap.concat ?? null,
-         content:      cli.flagMap.content ?? null,
-         exclude:      cli.flagMap.exclude ?? null,
-         extensions:   cli.flagMap.ext?.split(',') ?? [],
-         filename:     isFile ? path.basename(source!) : null,
-         find:         cli.flagMap.find ?? null,
-         header:       cli.flagMap.header ?? null,
-         nonRecursive: cli.flagOn.nonRecursive!,
-         noSourceMap:  cli.flagOn.noSourceMap!,
-         regex:        cli.flagMap.regex ? new RegExp(regex!, regexCodes) : null,
-         rename:       cli.flagMap.rename ?? null,
-         replacement:  cli.flagMap.replacement ?? null,
-         templatingOn: !cli.flagOn.noLiquid,
-         titleSort:    cli.flagOn.titleSort!,
-         virtualInput: cli.flagOn.virtualInput!,
-         };
-      const results = replacer.transform(sourceFolder!, target!, options);
-      if (!cli.flagOn.quiet)
-         replacer.reporter(results, { summaryOnly: cli.flagOn.summary! });
-      },
-
    transform(sourceFolder: string, targetFolder: string, options?: Partial<Settings>): Results {
       const defaults: Settings = {
          cd:           null,
@@ -316,6 +267,55 @@ const replacer = {
       if (!settings.summaryOnly)
          results.files.forEach(logFile);
       return results;
+      },
+
+   cli() {
+      const validFlags = ['cd', 'concat', 'content', 'exclude', 'ext', 'find', 'header',
+         'no-liquid', 'no-source-map', 'non-recursive', 'note', 'quiet', 'regex', 'rename',
+         'replacement', 'summary', 'title-sort', 'virtual-input'];
+      const cli =            cliArgvUtil.parse(validFlags);
+      const source =         cli.params[0];  //origin file or folder
+      const target =         cli.params[1];  //destination folder
+      const badRegex =       cli.flagOn.regex && !/^\/.*\/[a-z]*$/.test(cli.flagMap.regex!);
+      const missingContent = cli.flagOn.virtualInput && !cli.flagMap.content;
+      const missingRename =  cli.flagOn.virtualInput && !cli.flagMap.rename;
+      const error =
+         cli.invalidFlag ?    cli.invalidFlagMsg :
+         !source ?            'Missing source folder.' :
+         !target ?            'Missing target folder.' :
+         badRegex ?           'Regex must be enclosed in slashes.' :
+         missingContent ?     'Use the --content flag to set the source.' :
+         missingRename ?      'Use the --rename flag to specify the output filename.' :
+         cli.paramCount > 2 ? 'Extraneous parameter: ' + cli.params[2]! :
+         null;
+      replacer.assertOk(!error, error);
+      const sourceFile =   path.join(cli.flagMap.cd ?? '', source!);
+      const isFile =       fs.existsSync(sourceFile) && fs.statSync(sourceFile).isFile();
+      const sourceFolder = isFile ? path.dirname(source!) : source;
+      const regex =        cli.flagMap.regex?.substring(1, cli.flagMap.regex.lastIndexOf('/'));  //remove enclosing slashes
+      const regexCodes =   cli.flagMap.regex?.replace(/.*\//, '');                               //grab the regex options
+      replacer.assertOk(!cli.flagOn.virtualInput || !isFile, 'Source must be a folder not a file.');
+      const options = {
+         cd:           cli.flagMap.cd ?? null,
+         concat:       cli.flagMap.concat ?? null,
+         content:      cli.flagMap.content ?? null,
+         exclude:      cli.flagMap.exclude ?? null,
+         extensions:   cli.flagMap.ext?.split(',') ?? [],
+         filename:     isFile ? path.basename(source!) : null,
+         find:         cli.flagMap.find ?? null,
+         header:       cli.flagMap.header ?? null,
+         nonRecursive: cli.flagOn.nonRecursive!,
+         noSourceMap:  cli.flagOn.noSourceMap!,
+         regex:        cli.flagMap.regex ? new RegExp(regex!, regexCodes) : null,
+         rename:       cli.flagMap.rename ?? null,
+         replacement:  cli.flagMap.replacement ?? null,
+         templatingOn: !cli.flagOn.noLiquid,
+         titleSort:    cli.flagOn.titleSort!,
+         virtualInput: cli.flagOn.virtualInput!,
+         };
+      const results = replacer.transform(sourceFolder!, target!, options);
+      if (!cli.flagOn.quiet)
+         replacer.reporter(results, { summaryOnly: cli.flagOn.summary! });
       },
 
    };
