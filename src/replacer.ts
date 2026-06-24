@@ -261,9 +261,10 @@ const replacer = {
       const version =   chalk.gray('v' + replacer.version);
       const infoColor = results.count ? chalk.white : chalk.red.bold;
       const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
+      const countMsg =  (index: number) => results.count > 1 ? chalk.magenta(index + 1) + ' ' : '';
       log(name, version, results.target, info);
-      const logFile = (file: ResultsFile, i: number) =>
-         log(name, chalk.magenta(i + 1), cliArgvUtil.calcAncestor(file.origin, file.dest).message);
+      const logFile = (file: ResultsFile, index: number) =>
+         log(name, countMsg(index) + cliArgvUtil.calcAncestor(file.origin, file.dest).message);
       if (!settings.summaryOnly)
          results.files.forEach(logFile);
       return results;
