@@ -55,10 +55,11 @@ export type Settings = {
    virtualInput: boolean,        //do not read any files, use --content instead
    };
 export type Results = {
-   source:   string,  //path of origination folder
-   target:   string,  //path of destination folder
-   count:    number,  //number of files copied
-   duration: number,  //execution time in milliseconds
+   source:   string,   //path of origination folder
+   target:   string,   //path of destination folder
+   count:    number,   //number of files copied
+   concat:   boolean,  //mulitiple input file are combined into a single output file
+   duration: number,   //execution time in milliseconds
    files:    { origin: string, dest: string }[],  //list of processed files
    };
 export type ResultsFile = Results['files'][number];
@@ -292,6 +293,7 @@ const replacer = {
          source:   source,
          target:   target,
          count:    fileRoutes.length,
+         concat:   !!settings.concat && fileRoutes.length > 0,
          duration: Date.now() - startTime,
          files:    fileRoutes.map(relativePaths),
          };
@@ -305,13 +307,12 @@ const replacer = {
          };
       const settings =  { ...defaults, ...options };
       const name =      chalk.gray('replacer');
-      const indent =    chalk.gray('|');
-      const ancestor =  cliArgvUtil.calcAncestor(results.source, results.target);
+      const version =   chalk.gray('v' + replacer.version);
       const infoColor = results.count ? chalk.white : chalk.red.bold;
       const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
-      log(name, ancestor.message, info);
-      const logFile = (file: ResultsFile) =>
-         log(name, indent, cliArgvUtil.calcAncestor(file.origin, file.dest).message);
+      log(name, version, results.target, info);
+      const logFile = (file: ResultsFile, i: number) =>
+         log(name, chalk.magenta(i + 1), cliArgvUtil.calcAncestor(file.origin, file.dest).message);
       if (!settings.summaryOnly)
          results.files.forEach(logFile);
       return results;
