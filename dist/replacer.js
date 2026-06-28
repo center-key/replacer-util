@@ -1,4 +1,4 @@
-//! replacer-util v1.6.4 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { globSync } from 'glob';
@@ -21,7 +21,7 @@ const task = {
     },
 };
 const replacer = {
-    version: '1.6.4',
+    version: '1.6.5',
     assertOk(ok, message) {
         if (!ok)
             throw new Error(`[replacer-util] ${message}`);
@@ -159,12 +159,15 @@ const replacer = {
         const relativePaths = (file) => ({
             origin: file.origin.substring(source.length + 1),
             dest: file.dest.substring(target.length + 1),
+            originPath: file.origin,
+            destPath: file.dest,
         });
         const results = {
             source: source,
             target: target,
             count: fileRoutes.length,
             concat: !!settings.concat && fileRoutes.length > 0,
+            virtual: settings.virtualInput,
             duration: Date.now() - startTime,
             files: fileRoutes.map(relativePaths),
         };
@@ -177,13 +180,19 @@ const replacer = {
         const settings = { ...defaults, ...options };
         const name = chalk.gray('replacer');
         const version = chalk.gray('v' + replacer.version);
-        const infoColor = results.count ? chalk.white : chalk.red.bold;
-        const info = infoColor(`(files: ${results.count}, ${results.duration}ms)`);
-        const countMsg = (index) => results.count > 1 ? chalk.magenta(index + 1) + ' ' : '';
-        log(name, version, results.target, info);
-        const logFile = (file, index) => log(name, countMsg(index) + cliArgvUtil.calcAncestor(file.origin, file.dest).message);
+        const source = results.count === 1 ? results.files[0].originPath : results.source;
+        const target = results.concat ? results.files[0]?.destPath : results.files[0]?.dest;
+        const header = results.concat || results.virtual ? target : source;
+        const message = `(files: ${results.count}, ${results.duration}ms)`;
+        const summary = results.count ? chalk.white(message) : chalk.red.bold(message);
+        const status = chalk.green(results.concat ? 'concatenated' : '');
+        const single = results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
+        const lineItem = (file) => results.concat ? file.originPath : file.destPath;
+        log(name, version, header, summary, status);
+        const logSingleFile = () => log(name, chalk.green(single));
+        const logFile = (file, index) => log(name, chalk.magenta(index + 1), chalk.green(lineItem(file)));
         if (!settings.summaryOnly)
-            results.files.forEach(logFile);
+            results.files.forEach(results.count === 1 ? logSingleFile : logFile);
         return results;
     },
     cli() {
