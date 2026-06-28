@@ -15,15 +15,18 @@ describe('Executing the CLI', () => {
 
    it('with basic parameters creates the expected new menu file', () => {
       run('replacer spec/fixtures/menu.txt spec/target --find=Meatloaf --replacement=Bulgogi');
-      const actual =   ['menu.txt', fs.readdirSync('spec/target')?.includes('menu.txt')];
-      const expected = ['menu.txt', true];
+      const lines =    fileToLines('spec/target/menu.txt');
+      const actual =   { lines: lines.length, first: lines[0] };
+      const expected = { lines: 6,            first: '*** MENU ***' };
       assertDeepStrictEqual(actual, expected);
       });
 
    it('with the --non-recursive flag skips all subfolders', () => {
       run('replacer spec/fixtures/web --ext=.js --non-recursive spec/target/non-recursive');
-      const actual = cliArgvUtil.readFolder('spec/target/non-recursive');
-      const expected = ['mock1.js'];
+      const files =    cliArgvUtil.readFolder('spec/target/non-recursive');
+      const lines =    fileToLines('spec/target/non-recursive/mock1.js');
+      const actual =   { files: files,        lines: lines.length, first: lines[0] };
+      const expected = { files: ['mock1.js'], lines: 15,           first: '//! replacer-util ~~ MIT License' };
       assertDeepStrictEqual(actual, expected);
       });
 
@@ -47,8 +50,17 @@ describe('Executing the CLI', () => {
 
    it('with --header and --concat flags creates the expected bundle file', () => {
       run('replacer --cd=spec fixtures/web --ext=.js target --header=//{{bang}}\\ 👾:\\ {{file.base}} --concat=bundle.js');
-      const actual =   ['bundle.js', fs.readdirSync('spec/target')?.includes('bundle.js')];
-      const expected = ['bundle.js', true];
+      const lines =    fileToLines('spec/target/bundle.js');
+      const actual =   { lines: lines.length, first: lines[0] };
+      const expected = { lines: 37,           first: '//! 👾: mock1.js' };
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   it('with the --concat flag on a single file creates a bundle of one', () => {
+      run('replacer spec/fixtures/web/subfolder-a --ext=.js spec/target --header=//{{bang}}\\ 👽:\\ {{file.base}} --concat=bundle-one.js');
+      const lines =    fileToLines('spec/target/bundle-one.js');
+      const actual =   { lines: lines.length, first: lines[0] };
+      const expected = { lines: 20,           first: '//! 👽: mock2.js' };
       assertDeepStrictEqual(actual, expected);
       });
 
@@ -161,6 +173,18 @@ describe('Executing the CLI with the --virtual-input flag', () => {
       const contents = fs.readFileSync('spec/target/virtual/CNAME', 'utf-8').trim();
       const actual =   { contents: contents,      length: contents.length };
       const expected = { contents: 'example.com', length: 11 };
+      assertDeepStrictEqual(actual, expected);
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////
+describe('Executing the CLI on no files', () => {
+
+   it('creates an empty target folder', () => {
+      run('replacer spec/fixtures/web --ext=.bogus spec/target/no-files');
+      const actual =   cliArgvUtil.readFolder('spec/target/no-files');
+      const expected = [];
       assertDeepStrictEqual(actual, expected);
       });
 

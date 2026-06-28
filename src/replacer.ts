@@ -59,16 +59,23 @@ export type Results = {
    target:   string,   //path of destination folder
    count:    number,   //number of files copied
    concat:   boolean,  //mulitiple input file are combined into a single output file
+   virtual:  boolean,  //content flag used instead of input files
    duration: number,   //execution time in milliseconds
-   files:    { origin: string, dest: string }[],  //list of processed files
+   files: {            //list of processed files
+      origin:     string,
+      dest:       string,
+      originPath: string,
+      destPath:   string,
+      }[],
    };
-export type ResultsFile = Results['files'][number];
 export type ReporterSettings = {
    summaryOnly: boolean,  //only print out the single line summary message
    };
-type Json = string | number | boolean | null | undefined | JsonObject | Json[];
-type JsonObject = { [key: string]: Json };
-type PageVars = { [name: string]: string };
+type ResultsFile = Results['files'][number];
+type FileRoute =   { origin: string, dest: string };
+type Json =        string | number | boolean | null | undefined | JsonObject | Json[];
+type JsonObject =  { [key: string]: Json };
+type PageVars =    { [name: string]: string };
 
 const task = {
 
@@ -188,7 +195,7 @@ const replacer = {
          const depth = origin.substring(source.length).split('/').length - 2;
          return depth === 0 ? '.' : '..' + '/..'.repeat(depth - 1);
          };
-      const createEngine = (file: ResultsFile) => {
+      const createEngine = (file: FileRoute) => {
          const globals = {
             package: pkg,
             file:    getFileInfo(file.origin),
@@ -216,7 +223,7 @@ const replacer = {
          return <PageVars>Object.fromEntries(tagPairs);
          };
       const eofNewline = (text: string) => text.endsWith(os.EOL) ? text : text + os.EOL;
-      const processFile = (file: ResultsFile, index: number) => {
+      const processFile = (file: FileRoute, index: number) => {
          const engine =   createEngine(file);
          const needVars = settings.content && !settings.virtualInput && task.isTextFile(file.origin);
          const pageVars = needVars ? extractPageVars(engine, file.origin) : {};
@@ -236,15 +243,18 @@ const replacer = {
          return append ? fs.appendFileSync(file.dest, final) : fs.writeFileSync(file.dest, final);
          };
       fileRoutes.forEach(processFile);
-      const relativePaths = (file: ResultsFile) => ({
-         origin: file.origin.substring(source.length + 1),
-         dest:   file.dest.substring(target.length + 1),
+      const relativePaths = (file: FileRoute) => ({
+         origin:     file.origin.substring(source.length + 1),
+         dest:       file.dest.substring(target.length + 1),
+         originPath: file.origin,
+         destPath:   file.dest,
          });
       const results: Results = {
          source:   source,
          target:   target,
          count:    fileRoutes.length,
          concat:   !!settings.concat && fileRoutes.length > 0,
+         virtual:  settings.virtualInput,
          duration: Date.now() - startTime,
          files:    fileRoutes.map(relativePaths),
          };
@@ -256,17 +266,24 @@ const replacer = {
       const defaults: ReporterSettings = {
          summaryOnly: false,
          };
-      const settings =  { ...defaults, ...options };
-      const name =      chalk.gray('replacer');
-      const version =   chalk.gray('v' + replacer.version);
-      const infoColor = results.count ? chalk.white : chalk.red.bold;
-      const info =      infoColor(`(files: ${results.count}, ${results.duration}ms)`);
-      const countMsg =  (index: number) => results.count > 1 ? chalk.magenta(index + 1) + ' ' : '';
-      log(name, version, results.target, info);
+      const settings = { ...defaults, ...options };
+      const name =     chalk.gray('replacer');
+      const version =  chalk.gray('v' + replacer.version);
+      const source =   results.count === 1 ? results.files[0]!.originPath : results.source;
+      const target =   results.concat ? results.files[0]?.destPath : results.files[0]?.dest;
+      const header =   results.concat || results.virtual ? target : source;
+      const message =  `(files: ${results.count}, ${results.duration}ms)`;
+      const summary =  results.count ? chalk.white(message) : chalk.red.bold(message);
+      const status =   chalk.green(results.concat ? 'concatenated' : '');
+      const single =   results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
+      const lineItem = (file: ResultsFile) => results.concat ? file.originPath : file.destPath;
+      log(name, version, header, summary, status);
+      const logSingleFile = () =>
+         log(name, chalk.green(single));
       const logFile = (file: ResultsFile, index: number) =>
-         log(name, countMsg(index) + cliArgvUtil.calcAncestor(file.origin, file.dest).message);
+         log(name, chalk.magenta(index + 1), chalk.green(lineItem(file)));
       if (!settings.summaryOnly)
-         results.files.forEach(logFile);
+         results.files.forEach(results.count === 1 ? logSingleFile : logFile);
       return results;
       },
 

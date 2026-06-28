@@ -27,13 +27,13 @@ describe('Library module', () => {
 
    const module = replacer;
 
-   it('is an object', () => {
+   it('is exported as an object', () => {
       const actual =   { type: typeof module };
       const expected = { type: 'object' };
       assertDeepStrictEqual(actual, expected);
       });
 
-   it('has functions named assert(), cli(), reporter(), and transform()', () => {
+   it('has the correct properties', () => {
       const actual = Object.keys(module).sort().map(key => [key, typeof module[key]]);
       const expected = [
          ['assertOk',  'function'],
