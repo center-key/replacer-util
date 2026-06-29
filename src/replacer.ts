@@ -68,14 +68,14 @@ export type Results = {
       destPath:   string,
       }[],
    };
+export type ResultsFile = Results['files'][number];
 export type ReporterSettings = {
    summaryOnly: boolean,  //only print out the single line summary message
    };
-type ResultsFile = Results['files'][number];
-type FileRoute =   { origin: string, dest: string };
-type Json =        string | number | boolean | null | undefined | JsonObject | Json[];
-type JsonObject =  { [key: string]: Json };
-type PageVars =    { [name: string]: string };
+type FileRoute =  { origin: string, dest: string };
+type Json =       string | number | boolean | null | undefined | JsonObject | Json[];
+type JsonObject = { [key: string]: Json };
+type PageVars =   { [name: string]: string };
 
 const task = {
 
@@ -274,7 +274,7 @@ const replacer = {
       const header =   results.concat || results.virtual ? target : source;
       const message =  `(files: ${results.count}, ${results.duration}ms)`;
       const summary =  results.count ? chalk.white(message) : chalk.red.bold(message);
-      const status =   chalk.green(results.concat ? 'concatenated' : '');
+      const status =   chalk.green(results.concat ? '[concatenated]' : '');
       const single =   results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
       const lineItem = (file: ResultsFile) => results.concat ? file.originPath : file.destPath;
       log(name, version, header, summary, status);
