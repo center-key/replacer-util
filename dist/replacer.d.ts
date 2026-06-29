@@ -1,4 +1,4 @@
-//! replacer-util v1.6.5 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.6 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 export type Settings = {
     cd: string | null;
@@ -32,6 +32,7 @@ export type Results = {
         destPath: string;
     }[];
 };
+export type ResultsFile = Results['files'][number];
 export type ReporterSettings = {
     summaryOnly: boolean;
 };

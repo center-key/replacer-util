@@ -279,9 +279,9 @@ const replacer = {
       const lineItem = (file: ResultsFile) => results.concat ? file.originPath : file.destPath;
       log(name, version, header, summary, status);
       const logSingleFile = () =>
-         log(name, chalk.green(single));
+         log(name, cliArgvUtil.colorizePath(single!));
       const logFile = (file: ResultsFile, index: number) =>
-         log(name, chalk.magenta(index + 1), chalk.green(lineItem(file)));
+         log(name, chalk.magenta(index + 1), cliArgvUtil.colorizePath(lineItem(file)));
       if (!settings.summaryOnly)
          results.files.forEach(results.count === 1 ? logSingleFile : logFile);
       return results;
