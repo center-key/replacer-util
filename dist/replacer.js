@@ -1,4 +1,4 @@
-//! replacer-util v1.6.6 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.7 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { globSync } from 'glob';
@@ -21,7 +21,7 @@ const task = {
     },
 };
 const replacer = {
-    version: '1.6.6',
+    version: '1.6.7',
     assertOk(ok, message) {
         if (!ok)
             throw new Error(`[replacer-util] ${message}`);
@@ -181,14 +181,14 @@ const replacer = {
         const name = chalk.gray('replacer');
         const version = chalk.gray('v' + replacer.version);
         const source = results.count === 1 ? results.files[0].originPath : results.source;
-        const target = results.concat ? results.files[0]?.destPath : results.files[0]?.dest;
+        const dest = results.concat ? results.files[0]?.destPath : results.files[0]?.dest;
+        const target = String(dest) + chalk.gray(' output');
         const header = results.concat || results.virtual ? target : source;
-        const message = `(files: ${results.count}, ${results.duration}ms)`;
-        const summary = results.count ? chalk.white(message) : chalk.red.bold(message);
-        const status = chalk.green(results.concat ? '[concatenated]' : '');
+        const summary = chalk.blue(`(files: ${results.count}, ${results.duration}ms)`);
+        const errorMsg = results.count ? '' : chalk.redBright.bold('[no files found]');
         const single = results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
         const lineItem = (file) => results.concat ? file.originPath : file.destPath;
-        log(name, version, header, summary, status);
+        log(name, version, header, summary, errorMsg);
         const logSingleFile = () => log(name, cliArgvUtil.colorizePath(single));
         const logFile = (file, index) => log(name, chalk.magenta(index + 1), cliArgvUtil.colorizePath(lineItem(file)));
         if (!settings.summaryOnly)
