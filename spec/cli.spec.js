@@ -92,13 +92,15 @@ describe('Executing the CLI', () => {
       });
 
    it('with the --content flag on binary files is able to access file metadata', () => {
-      run('replacer spec/fixtures/web --ext=.html,.png,.jpg spec/target --content={{package.name}}{{pipe}}{{file.path}} --concat=binary-file-metadata.txt');
+      run('replacer spec/fixtures/web --ext=.html,.png,.jpg,.webp spec/target --content={{package.name}}{{pipe}}{{file.path}} --concat=binary-file-metadata.txt');
       const actual = fileToLines('spec/target/binary-file-metadata.txt');
       const expected = [
          'replacer-util|spec/fixtures/web/mock1.html',
          'replacer-util|spec/fixtures/web/mock1.png',
+         'replacer-util|spec/fixtures/web/mock1.webp',
          'replacer-util|spec/fixtures/web/subfolder-a/mock2.html',
          'replacer-util|spec/fixtures/web/subfolder-a/mock2.jpg',
+         'replacer-util|spec/fixtures/web/subfolder-a/mock2.webp',
          'replacer-util|spec/fixtures/web/subfolder-b/mock3.html',
          'replacer-util|spec/fixtures/web/subfolder-b/subfolder-bb/mock4.html',
          ];

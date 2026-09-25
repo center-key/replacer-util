@@ -89,7 +89,9 @@ const task = {
 
    isTextFile(filename: string): boolean {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
-      return fs.statSync(filename).isFile() && !isBinary(filename);
+      const binaryExts = ['.webp'];  //file types istextorbinary library misidentifies
+      const fileExt =    path.extname(filename).toLowerCase();
+      return fs.statSync(filename).isFile() && !isBinary(filename) && !binaryExts.includes(fileExt);
       },
 
    };
@@ -274,7 +276,7 @@ const replacer = {
       const target =   String(dest) + chalk.gray(' output');
       const header =   results.concat || results.virtual ? target : source;
       const summary =  chalk.blue(`(files: ${results.count}, ${results.duration}ms)`);
-      const errorMsg = results.count ? '' : chalk.redBright.bold('[no files found]');
+      const errorMsg = results.count ? '' : chalk.redBright('[no files found]');
       const single =   results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
       const lineItem = (file: ResultsFile) => results.concat ? file.originPath : file.destPath;
       log(name, version, header, summary, errorMsg);
