@@ -1,4 +1,4 @@
-//! replacer-util v1.6.7 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.8 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { globSync } from 'glob';
@@ -17,11 +17,13 @@ const task = {
         return slash(path.normalize(string)).trim().replace(trailingSlash, '');
     },
     isTextFile(filename) {
-        return fs.statSync(filename).isFile() && !isBinary(filename);
+        const binaryExts = ['.webp'];
+        const fileExt = path.extname(filename).toLowerCase();
+        return fs.statSync(filename).isFile() && !isBinary(filename) && !binaryExts.includes(fileExt);
     },
 };
 const replacer = {
-    version: '1.6.7',
+    version: '1.6.8',
     assertOk(ok, message) {
         if (!ok)
             throw new Error(`[replacer-util] ${message}`);
@@ -185,7 +187,7 @@ const replacer = {
         const target = String(dest) + chalk.gray(' output');
         const header = results.concat || results.virtual ? target : source;
         const summary = chalk.blue(`(files: ${results.count}, ${results.duration}ms)`);
-        const errorMsg = results.count ? '' : chalk.redBright.bold('[no files found]');
+        const errorMsg = results.count ? '' : chalk.redBright('[no files found]');
         const single = results.concat ? results.files[0]?.originPath : results.files[0]?.destPath;
         const lineItem = (file) => results.concat ? file.originPath : file.destPath;
         log(name, version, header, summary, errorMsg);
