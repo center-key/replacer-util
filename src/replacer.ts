@@ -89,7 +89,7 @@ const task = {
 
    isTextFile(filename: string): boolean {
       // Returns true if the file is not a binary file such as a .png or .jpg file.
-      const binaryExts = ['.webp'];  //file types istextorbinary library misidentifies
+      const binaryExts = ['.avif', '.webp'];  //misidentified file types (istextorbinary library)
       const fileExt =    path.extname(filename).toLowerCase();
       return fs.statSync(filename).isFile() && !isBinary(filename) && !binaryExts.includes(fileExt);
       },
