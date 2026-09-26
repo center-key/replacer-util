@@ -1,4 +1,4 @@
-//! replacer-util v1.6.8 ~~ https://github.com/center-key/replacer-util ~~ MIT License
+//! replacer-util v1.6.9 ~~ https://github.com/center-key/replacer-util ~~ MIT License
 
 import { cliArgvUtil } from 'cli-argv-util';
 import { globSync } from 'glob';
@@ -17,13 +17,13 @@ const task = {
         return slash(path.normalize(string)).trim().replace(trailingSlash, '');
     },
     isTextFile(filename) {
-        const binaryExts = ['.webp'];
+        const binaryExts = ['.avif', '.webp'];
         const fileExt = path.extname(filename).toLowerCase();
         return fs.statSync(filename).isFile() && !isBinary(filename) && !binaryExts.includes(fileExt);
     },
 };
 const replacer = {
-    version: '1.6.8',
+    version: '1.6.9',
     assertOk(ok, message) {
         if (!ok)
             throw new Error(`[replacer-util] ${message}`);
