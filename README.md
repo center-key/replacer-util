@@ -29,7 +29,7 @@ Parameters:
 * The **first** parameter is the *source* folder or file.
 * The **second** parameter is the *target* folder.
 
-### 2. npm package.json scripts
+### 2. npm `package.json` Scripts
 Run `replacer` from the `"scripts"` section of your **package.json** file.
 
 Example **package.json** scripts:
@@ -42,7 +42,7 @@ Example **package.json** scripts:
 In addition to the `--find` and `--replacement` CLI flags, template outputs in the source files will be replaced with their corresponding template variable values.&nbsp;
 The template variable `package` points to the **package.json** object, enabling `{{package.version}}` in the source file to be replaced with the project's version number.
 
-### 3. Command-line npx
+### 3. Command-Line npx
 Example terminal commands:
 ```shell
 $ npm install --save-dev replacer-util
@@ -50,7 +50,7 @@ $ npx replacer src/web ext=.html docs/api-manual
 ```
 You can also install **replacer-util** globally (`--global`) and then run it anywhere directly from the terminal.
 
-### 4. CLI flags
+### 4. CLI Flags
 Command-line flags:
 | Flag              | Description                                           | Value      |
 | ----------------- | ----------------------------------------------------- | ---------- |
@@ -148,7 +148,7 @@ https://github.com/dna-dom/data-dashboard/blob/main/package.json
 > [!NOTE]
 > _Single quotes in commands are normalized so they work cross-platform and avoid the errors often encountered on Microsoft Windows._
 
-### 6. Template outputs and filter formatters
+### 6. Template Outputs and Filter Formatters
 The source files are processed by LiquidJS, so you can use [template outputs](https://liquidjs.com/tutorials/intro-to-liquid.html#Outputs) and [filter formatters](https://liquidjs.com/filters/overview.html).&nbsp;
 Custom variables are created with the [assign](ttps://liquidjs.com/tags/assign.html) tag.
 
